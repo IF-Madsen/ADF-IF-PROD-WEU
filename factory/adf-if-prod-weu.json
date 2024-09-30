@@ -1,0 +1,9 @@
+{
+	"name": "adf-if-prod-weu",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e1d92bc7-5206-405b-a11f-82de6ca079aa",
+		"tenantId": "d4894685-0807-4578-a538-77143ab48788"
+	}
+}
