@@ -61,6 +61,10 @@
 			"blob_bronze": {
 				"type": "string",
 				"value": "bronze"
+			},
+			"blob_silver": {
+				"type": "string",
+				"value": "silver"
 			}
 		}
 	},
