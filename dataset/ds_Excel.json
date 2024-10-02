@@ -5,10 +5,18 @@
 			"referenceName": "D365bcDataLakeProd",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": "\"test.excel\"",
+			"sheetName": {
+				"value": "@concat(dataset().filename,'.xslt')",
+				"type": "Expression"
+			},
 			"location": {
 				"type": "AzureBlobFSLocation"
 			}
