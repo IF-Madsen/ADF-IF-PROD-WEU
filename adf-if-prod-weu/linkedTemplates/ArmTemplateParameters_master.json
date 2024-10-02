@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-if-prod-weu"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_url": {
+			"value": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionUS/ODataV4/"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_tenant": {
+			"value": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_aadResourceId": {
+			"value": "https://api.businesscentral.dynamics.com/"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_servicePrincipalId": {
+			"value": "da05df75-7988-40b9-8aad-c4f0b7372481"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_url": {
+			"value": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionDK/ODataV4/"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_tenant": {
+			"value": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_aadResourceId": {
+			"value": "https://api.businesscentral.dynamics.com/"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
+			"value": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
+		"D365bcDataLakeProd_properties_typeProperties_url": {
+			"value": "https://saadfifprodeun.dfs.core.windows.net/"
+		},
+		"KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl": {
+			"value": "https://kv-adf-if-neu.vault.azure.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

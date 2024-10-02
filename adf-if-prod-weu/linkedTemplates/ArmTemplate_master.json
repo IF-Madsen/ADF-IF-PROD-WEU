@@ -1,0 +1,152 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-if-prod-weu"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionUS/ODataV4/"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_aadResourceId": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/"
+		},
+		"D365bcConnector_IFA_PROD_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "da05df75-7988-40b9-8aad-c4f0b7372481"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionDK/ODataV4/"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_aadResourceId": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/"
+		},
+		"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
+		"D365bcDataLakeProd_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadfifprodeun.dfs.core.windows.net/"
+		},
+		"KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kv-adf-if-neu.vault.azure.net/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adf-if-prod-weu_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"D365bcDataLakeProd_properties_typeProperties_url": {
+						"value": "[parameters('D365bcDataLakeProd_properties_typeProperties_url')]"
+					},
+					"KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl": {
+						"value": "[parameters('KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl')]"
+					},
+					"D365bcConnector_IFA_PROD_properties_typeProperties_url": {
+						"value": "[parameters('D365bcConnector_IFA_PROD_properties_typeProperties_url')]"
+					},
+					"D365bcConnector_IFA_PROD_properties_typeProperties_tenant": {
+						"value": "[parameters('D365bcConnector_IFA_PROD_properties_typeProperties_tenant')]"
+					},
+					"D365bcConnector_IFA_PROD_properties_typeProperties_aadResourceId": {
+						"value": "[parameters('D365bcConnector_IFA_PROD_properties_typeProperties_aadResourceId')]"
+					},
+					"D365bcConnector_IFA_PROD_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('D365bcConnector_IFA_PROD_properties_typeProperties_servicePrincipalId')]"
+					},
+					"D365bcConnector_IFE_PROD_properties_typeProperties_url": {
+						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_url')]"
+					},
+					"D365bcConnector_IFE_PROD_properties_typeProperties_tenant": {
+						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_tenant')]"
+					},
+					"D365bcConnector_IFE_PROD_properties_typeProperties_aadResourceId": {
+						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_aadResourceId')]"
+					},
+					"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adf-if-prod-weu_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "adf-if-prod-weu_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_1')]"
+			]
+		}
+	]
+}
