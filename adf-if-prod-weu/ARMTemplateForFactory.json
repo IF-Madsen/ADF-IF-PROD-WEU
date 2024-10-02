@@ -7,6 +7,18 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
 		},
+		"AzureDataLakeStorageProd_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageProd'"
+		},
+		"AzureDataLakeStorageProd_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
+		},
+		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
+		},
 		"D365bcConnector_IFA_PROD_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionUS/ODataV4/"
@@ -41,11 +53,110 @@
 		},
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://saadfifprodeun.dfs.core.windows.net/"
+			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
 		},
-		"KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl": {
+		"default_properties_ServicePrincipalID_value": {
 			"type": "string",
-			"defaultValue": "https://kv-adf-if-neu.vault.azure.net/"
+			"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
+		},
+		"default_properties_d365bc_Instance_europe_value": {
+			"type": "string",
+			"defaultValue": "ProductionDK"
+		},
+		"default_properties_d365bc_instance_america_value": {
+			"type": "string",
+			"defaultValue": "ProductionUS"
+		},
+		"default_properties_d365bc_apiurl_value": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/"
+		},
+		"default_properties_d365bc_company_europe_value": {
+			"type": "string",
+			"defaultValue": "Company('Iron%20Fortress%20ApS')"
+		},
+		"default_properties_d365bc_company_america_value": {
+			"type": "string",
+			"defaultValue": "Company('My%20Company')"
+		},
+		"default_properties_TenantID_value": {
+			"type": "string",
+			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"default_properties_d365bc_ds_ItemCard_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemCard"
+		},
+		"default_properties_d365bc_ds_ItemCategories_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemCategories"
+		},
+		"default_properties_d365bc_ds_Vendors_value": {
+			"type": "string",
+			"defaultValue": "ADF_Vendors"
+		},
+		"default_properties_d365bc_ds_PurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "ADF_PurchaseOrders"
+		},
+		"default_properties_d365bc_ds_PurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "ADF_PurchaseOrderLines"
+		},
+		"default_properties_d365bc_ds_VendorPostingGroups_value": {
+			"type": "string",
+			"defaultValue": "ADF_VendorPostingGroups"
+		},
+		"default_properties_d365bc_ds_ItemLedgerEntries_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemLedgerEntries"
+		},
+		"default_properties_blob_bronze_value": {
+			"type": "string",
+			"defaultValue": "bronze"
+		},
+		"default_properties_blob_silver_value": {
+			"type": "string",
+			"defaultValue": "silver"
+		},
+		"default_properties_blob_gold_value": {
+			"type": "string",
+			"defaultValue": "gold"
+		},
+		"default_properties_folder_d365bc_value": {
+			"type": "string",
+			"defaultValue": "d365bc"
+		},
+		"default_properties_folder_json_value": {
+			"type": "string",
+			"defaultValue": "json"
+		},
+		"default_properties_folder_logs_value": {
+			"type": "string",
+			"defaultValue": "logs"
+		},
+		"default_properties_d365bc_vendor_rank_value": {
+			"type": "int",
+			"defaultValue": 5
+		},
+		"default_properties_Region_EU_value": {
+			"type": "string",
+			"defaultValue": "EU"
+		},
+		"default_properties_Region_US_value": {
+			"type": "string",
+			"defaultValue": "US"
+		},
+		"default_properties_d365bc_regions_value": {
+			"type": "string",
+			"defaultValue": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
+		},
+		"default_properties_ExcludeEU_value": {
+			"type": "array",
+			"defaultValue": [
+				"CA",
+				"US"
+			]
 		}
 	},
 	"variables": {
@@ -572,7 +683,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -720,7 +831,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataEU')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataUS')]",
-				"[concat(variables('factoryId'), '/datasets/Parquet_PROD')]",
+				"[concat(variables('factoryId'), '/datasets/ds_Parquet')]",
 				"[concat(variables('factoryId'), '/datasets/ds_Json')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractPrimoAll')]",
 				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
@@ -786,7 +897,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -799,7 +910,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -865,7 +976,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": {
@@ -881,7 +992,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1519,7 +1630,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -1532,7 +1643,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1605,7 +1716,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -1618,7 +1729,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1691,7 +1802,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -1704,7 +1815,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1777,7 +1888,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_EU_PROD",
+								"referenceName": "ds_OData_EU",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -1790,7 +1901,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1828,8 +1939,8 @@
 				"lastPublishTime": "2024-01-23T16:45:34Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/OData_EU_PROD')]",
-				"[concat(variables('factoryId'), '/datasets/Parquet_PROD')]"
+				"[concat(variables('factoryId'), '/datasets/ds_OData_EU')]",
+				"[concat(variables('factoryId'), '/datasets/ds_Parquet')]"
 			]
 		},
 		{
@@ -1892,7 +2003,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": {
@@ -1908,7 +2019,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -1974,7 +2085,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": {
@@ -1990,7 +2101,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -2063,7 +2174,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_america",
@@ -2076,7 +2187,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -2149,7 +2260,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_america",
@@ -2162,7 +2273,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -2235,7 +2346,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_america",
@@ -2248,7 +2359,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -2321,7 +2432,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "OData_US_PROD",
+								"referenceName": "ds_OData_US",
 								"type": "DatasetReference",
 								"parameters": {
 									"company": "@pipeline().globalParameters.d365bc_company_america",
@@ -2334,7 +2445,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "Parquet_PROD",
+								"referenceName": "ds_Parquet",
 								"type": "DatasetReference",
 								"parameters": {
 									"blob": {
@@ -2372,8 +2483,8 @@
 				"lastPublishTime": "2024-01-23T16:45:34Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/OData_US_PROD')]",
-				"[concat(variables('factoryId'), '/datasets/Parquet_PROD')]"
+				"[concat(variables('factoryId'), '/datasets/ds_OData_US')]",
+				"[concat(variables('factoryId'), '/datasets/ds_Parquet')]"
 			]
 		},
 		{
@@ -4054,122 +4165,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/OData_EU_PROD')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "D365bcConnector_IFE_PROD",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"company": {
-						"type": "string"
-					},
-					"apipath": {
-						"type": "string"
-					}
-				},
-				"annotations": [
-					"eu",
-					"prod"
-				],
-				"type": "ODataResource",
-				"schema": [],
-				"typeProperties": {
-					"path": {
-						"value": "@concat(dataset().company,'/',dataset().apipath)",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcConnector_IFE_PROD')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OData_US_PROD')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "D365bcConnector_IFA_PROD",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"company": {
-						"type": "string"
-					},
-					"apipath": {
-						"type": "string"
-					}
-				},
-				"annotations": [
-					"us",
-					"prod"
-				],
-				"type": "ODataResource",
-				"schema": [],
-				"typeProperties": {
-					"path": {
-						"value": "@concat(dataset().company,'/',dataset().apipath)",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcConnector_IFA_PROD')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Parquet_PROD')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "D365bcDataLakeProd",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"blob": {
-						"type": "string"
-					},
-					"folder": {
-						"type": "string"
-					},
-					"filename": {
-						"type": "string"
-					}
-				},
-				"annotations": [
-					"prod"
-				],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat(dataset().filename,'.parquet')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().folder",
-							"type": "Expression"
-						},
-						"fileSystem": {
-							"value": "@dataset().blob",
-							"type": "Expression"
-						}
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_Excel')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4232,6 +4227,153 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_OData_EU')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcConnector_IFE_PROD",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"company": {
+						"type": "string"
+					},
+					"apipath": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"eu",
+					"prod"
+				],
+				"type": "ODataResource",
+				"schema": [],
+				"typeProperties": {
+					"path": {
+						"value": "@concat(dataset().company,'/',dataset().apipath)",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcConnector_IFE_PROD')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_OData_US')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcConnector_IFA_PROD",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"company": {
+						"type": "string"
+					},
+					"apipath": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"us",
+					"prod"
+				],
+				"type": "ODataResource",
+				"schema": [],
+				"typeProperties": {
+					"path": {
+						"value": "@concat(dataset().company,'/',dataset().apipath)",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcConnector_IFA_PROD')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"blob": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"prod"
+				],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().filename,'.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().blob",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorageProd')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorageProd_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorageProd_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultProd')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "KeyVault for Azure Data Factory Prod",
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/D365bcConnector_IFA_PROD')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -4251,7 +4393,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-US"
@@ -4259,7 +4401,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -4282,7 +4424,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-DK"
@@ -4290,7 +4432,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -4302,20 +4444,6 @@
 				"type": "AzureBlobFS",
 				"typeProperties": {
 					"url": "[parameters('D365bcDataLakeProd_properties_typeProperties_url')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KeyVaultForAzureDataFactory')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "KeyVault for Azure Data Factory",
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
@@ -4361,7 +4489,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -5795,7 +5923,7 @@
 			"properties": {
 				"description": "Sum Items that are in the purchase orders. In-order or In-Transit",
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -5990,7 +6118,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -6320,7 +6448,7 @@
 			"properties": {
 				"description": "Read ever Instance and get the earliest date and save the date in silver-layer as json.",
 				"folder": {
-					"name": "1.Bronze/V2"
+					"name": "1.Bronze"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -6483,7 +6611,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -6774,7 +6902,7 @@
 			"properties": {
 				"description": "Post : \nSource : Silver\nTarget : Silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -6880,92 +7008,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventoryPrimo_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GetPositiveAdjustments"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "AddPrDate"
-						},
-						{
-							"name": "PrDate"
-						},
-						{
-							"name": "sortTransactions"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Item_No as string,",
-						"          EndDate as date,",
-						"          Quantity as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'InventorySumPosAdj.parquet',",
-						"     compressionCodec: 'snappy') ~> GetPositiveAdjustments",
-						"PrDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
-						"GetPositiveAdjustments filter(year(EndDate) == 2022 &&",
-						"month(EndDate)==1 && dayOfMonth(EndDate)==31) ~> PrDate",
-						"AddPrDate sort(asc(Item_No, true),",
-						"     asc(PrDate, true)) ~> sortTransactions",
-						"sortTransactions sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InitialInventory.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_InventorySumPrEntryType')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "Sum on each Itemno for each transactiontype pr. EOM\n",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -7355,396 +7404,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventorySumPrEntryType_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Sum pr. end of month pr Item",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile",
-							"description": "Import data from ItemLedgerEntries D365bcDataLakeProd"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePurch",
-							"description": "Export InventorySumPurchase pr. month"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePosAdj"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileSales"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileNegAdj"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileTransfer"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssCons"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssOut"
-						}
-					],
-					"transformations": [
-						{
-							"name": "RemoveUnwantedItems"
-						},
-						{
-							"name": "OnlyPurchase"
-						},
-						{
-							"name": "SumupQtyPurch"
-						},
-						{
-							"name": "OnlySales"
-						},
-						{
-							"name": "OnlyPosAdjmnt"
-						},
-						{
-							"name": "RemoveFields"
-						},
-						{
-							"name": "SumupPosAdj"
-						},
-						{
-							"name": "SumupSales"
-						},
-						{
-							"name": "sort1"
-						},
-						{
-							"name": "sort2"
-						},
-						{
-							"name": "sort3"
-						},
-						{
-							"name": "OnlyNegAdjmnt"
-						},
-						{
-							"name": "AddEndDate"
-						},
-						{
-							"name": "SumupNegAdj"
-						},
-						{
-							"name": "sort4"
-						},
-						{
-							"name": "OnlyTransfer"
-						},
-						{
-							"name": "SumupQtyTransfer"
-						},
-						{
-							"name": "sort5"
-						},
-						{
-							"name": "OnlyAssCons"
-						},
-						{
-							"name": "SumupAssCons"
-						},
-						{
-							"name": "sort6"
-						},
-						{
-							"name": "OnlyAssOut"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "sort7"
-						},
-						{
-							"name": "sort8"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemLedgerEntries_All.parquet',",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"AddEndDate filter(!startsWith(Item_No,\"BOX\") && !startsWith(Item_No, \"PREBOX\") && !startsWith(Item_No, \"ZIP\") && !startsWith(Item_No, \"FREIGHT\") &&",
-						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> RemoveUnwantedItems",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Purchase\")) ~> OnlyPurchase",
-						"OnlyPurchase aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyPurch",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Sale\")) ~> OnlySales",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Positive Adjmt.\")) ~> OnlyPosAdjmnt",
-						"sort8 select(mapColumn(",
-						"          Posting_Date,",
-						"          Entry_Type,",
-						"          Item_No,",
-						"          Quantity,",
-						"          Region",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveFields",
-						"OnlyPosAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupPosAdj",
-						"OnlySales aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupSales",
-						"SumupSales sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort1",
-						"SumupPosAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort2",
-						"SumupQtyPurch sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort3",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Negative Adjmt.\")) ~> OnlyNegAdjmnt",
-						"RemoveFields derive(EndDate = lastDayOfMonth(Posting_Date)) ~> AddEndDate",
-						"OnlyNegAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupNegAdj",
-						"SumupNegAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort4",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Transfer\")) ~> OnlyTransfer",
-						"OnlyTransfer aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyTransfer",
-						"SumupQtyTransfer sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort5",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Consumption\")) ~> OnlyAssCons",
-						"OnlyAssCons aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupAssCons",
-						"SumupAssCons sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort6",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Output\")) ~> OnlyAssOut",
-						"OnlyAssOut aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> aggregate1",
-						"aggregate1 sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort7",
-						"LoadFile sort(asc(Item_No, true)) ~> sort8",
-						"sort3 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumPurchase.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFilePurch",
-						"sort2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumPosAdj.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 6,",
-						"     partitionBy('hash', 1)) ~> WriteFilePosAdj",
-						"sort1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumSales.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 7,",
-						"     partitionBy('hash', 1)) ~> WriteFileSales",
-						"sort4 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumNegAdj.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 5,",
-						"     partitionBy('hash', 1)) ~> WriteFileNegAdj",
-						"sort5 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumTransfer.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 4,",
-						"     partitionBy('hash', 1)) ~> WriteFileTransfer",
-						"sort6 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumAssCons.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 3,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssCons",
-						"sort7 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumAssOut.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 2,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssOut"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemCategoriesGroup')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -7862,449 +7527,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemCategoriesGroup_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategories"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategoriesGroups"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileJson"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ConvertCodeToInt"
-						},
-						{
-							"name": "JoinCategoryGroups"
-						},
-						{
-							"name": "ItemCodesAndGroups"
-						},
-						{
-							"name": "ConvertCodeToStr"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Code as string,",
-						"          Description as string,",
-						"          Not_Webshipper as boolean",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemsCategories_EU.parquet') ~> ItemCategories",
-						"source(output(",
-						"          Description as string,",
-						"          FromICC as short,",
-						"          ItemCategoryGroup as integer,",
-						"          ToICC as short",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'json',",
-						"     fileName: 'ItemCategoryGroupsFromTo.json',",
-						"     documentForm: 'arrayOfDocuments') ~> ItemCategoriesGroups",
-						"ItemCategories derive(CodeInt = toInteger(Code),",
-						"          Description = Description) ~> ConvertCodeToInt",
-						"ConvertCodeToInt, ItemCategoriesGroups join(CodeInt >= FromICC",
-						"     && CodeInt <= ToICC,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'both')~> JoinCategoryGroups",
-						"JoinCategoryGroups derive(CodeInt = CodeInt,",
-						"          ItemCategoryGroup = ItemCategoryGroup,",
-						"          Description = ItemCategoriesGroups@Description) ~> ItemCodesAndGroups",
-						"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
-						"ConvertCodeToStr sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'json',",
-						"     partitionFileNames:['ItemCategoriesAndGroups.json'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFileJson"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemLedgerEntriesEntryTypes_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ItemLedgerEntriesEntryTypes",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadItemLedgerEntries"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Writefile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "GroupByEntryType"
-						},
-						{
-							"name": "sortRank"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as timestamp,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as timestamp,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemsLedgerEntries_EU.parquet') ~> LoadItemLedgerEntries",
-						"LoadItemLedgerEntries aggregate(groupBy(Entry_Type),",
-						"     Rank = count(Entry_Type)) ~> GroupByEntryType",
-						"GroupByEntryType sort(asc(Rank, true)) ~> sortRank",
-						"sortRank sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['EntryTypes.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> Writefile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemLedgerEntries_Merge_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadFileEU"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadFileUS"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "unionTransactions"
-						},
-						{
-							"name": "sort1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmBlob as string,",
-						"     parmFolder as string",
-						"}",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as string,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemsLedgerEntries_EU.parquet',",
-						"     partitionBy('hash', 1)) ~> loadFileEU",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as string,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemsLedgerEntries_US.parquet',",
-						"     partitionBy('hash', 1)) ~> loadFileUS",
-						"loadFileEU, loadFileUS union(byName: true)~> unionTransactions",
-						"unionTransactions sort(desc(Posting_Date, true)) ~> sort1",
-						"sort1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['ItemLedgerEntries_All.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemPrices')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "Extract Of ItemNo, Description and Prices",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -8531,7 +7760,7 @@
 			"properties": {
 				"description": "Builds list of Items with each instance of the vaule from the reorder interval.",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -8755,438 +7984,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemReorderInterval_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Builds list of Items with each instance of the vaule from the reorder interval.",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadUSItems"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadEUitems"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveJsonFile"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveParquetFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						},
-						{
-							"name": "select2"
-						},
-						{
-							"name": "joinSelects"
-						},
-						{
-							"name": "filter1"
-						},
-						{
-							"name": "RemoveFields"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Ava_AFC_Transaction_Type as integer,",
-						"          Ava_AFC_Service_Type as integer,",
-						"          Ava_AFC_Sales_Type as string,",
-						"          Ava_VAT_isGoodsSecondHand as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          SAT_Item_Classification as string,",
-						"          SAT_Hazardous_Material as string,",
-						"          SAT_Packaging_Type as string,",
-						"          SAT_Material_Type as string,",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as timestamp,",
-						"          Last_Counting_Period_Update as timestamp,",
-						"          Next_Counting_Start_Date as timestamp,",
-						"          Next_Counting_End_Date as timestamp,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'Items_US.parquet') ~> loadUSItems",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as timestamp,",
-						"          Last_Counting_Period_Update as timestamp,",
-						"          Next_Counting_Start_Date as timestamp,",
-						"          Next_Counting_End_Date as timestamp,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'Items_EU.parquet') ~> loadEUitems",
-						"loadUSItems select(mapColumn(",
-						"          ItemNo = No,",
-						"          ReorderInterval_US = Reorder_Interval_58501",
-						"     ),",
-						"     partitionBy('hash', 1),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"loadEUitems select(mapColumn(",
-						"          ItemNo = No,",
-						"          ReorderInterval_EU = Reorder_Interval_58501",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select2",
-						"select1, select2 join(select1@ItemNo == select2@ItemNo,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinSelects",
-						"RemoveFields filter(!isNull(ItemNo) && (ReorderInterval_US>0 || ReorderInterval_EU>0)) ~> filter1",
-						"joinSelects select(mapColumn(",
-						"          ItemNo = select1@ItemNo,",
-						"          ReorderInterval_US,",
-						"          ReorderInterval_EU",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveFields",
-						"filter1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'json',",
-						"     partitionFileNames:['ItemReorderInterval.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1) ~> saveJsonFile",
-						"filter1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'gold',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['ItemReorderAll.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 2,",
-						"     partitionBy('hash', 1)) ~> saveParquetFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemsFiltered')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "source : bronze\ntarget : silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -9407,331 +8211,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemsFiltered_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Items"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategoriesGroups"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "TopRankVendors"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "RemoveTypesBlocked"
-						},
-						{
-							"name": "ItemsSelectedFields"
-						},
-						{
-							"name": "joinItemsAndGroups"
-						},
-						{
-							"name": "MapDrifted1",
-							"description": "Creates an explicit mapping for each drifted column"
-						},
-						{
-							"name": "joinTop5Vendors"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as string,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as string,",
-						"          Last_Counting_Period_Update as string,",
-						"          Next_Counting_Start_Date as string,",
-						"          Next_Counting_End_Date as string,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string,",
-						"          loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'Items_EU.parquet') ~> Items",
-						"source(useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'json',",
-						"     fileName: 'ItemCategoriesAndGroups.json',",
-						"     documentForm: 'documentPerLine') ~> ItemCategoriesGroups",
-						"source(output(",
-						"          Allow_Multiple_Posting_Groups as boolean,",
-						"          Application_Method as string,",
-						"          Balance_Due_LCY as double,",
-						"          Balance_LCY as double,",
-						"          Base_Calendar_Code as string,",
-						"          Blocked as string,",
-						"          CDOOutputProfile as string,",
-						"          Contact as string,",
-						"          Country_Region_Code as string,",
-						"          Coupled_to_CRM as boolean,",
-						"          Coupled_to_Dataverse as boolean,",
-						"          Currency_Code as string,",
-						"          Currency_Filter as string,",
-						"          Date_Filter as string,",
-						"          Fax_No as string,",
-						"          Fin_Charge_Terms_Code as string,",
-						"          Gen_Bus_Posting_Group as string,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          IC_Partner_Code as string,",
-						"          ItemsRelated as short,",
-						"          Language_Code as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          Lead_Time_Calculation as string,",
-						"          Location_Code as string,",
-						"          Location_Code2 as string,",
-						"          Name as string,",
-						"          Name_2 as string,",
-						"          No as integer,",
-						"          Payment_Terms_Code as string,",
-						"          Payments_LCY as double,",
-						"          Phone_No as string,",
-						"          Post_Code as string,",
-						"          Privacy_Blocked as boolean,",
-						"          Purchaser_Code as string,",
-						"          Rank as short,",
-						"          Responsibility_Center as string,",
-						"          Search_Name as string,",
-						"          Shipment_Method_Code as string,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          Vendor_No as integer,",
-						"          Vendor_Posting_Group as string",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'json',",
-						"     fileName: 'TopRankVendors.json',",
-						"     documentForm: 'documentPerLine') ~> TopRankVendors",
-						"Items filter(Type!=\"Service\" && !Blocked && Vendor_No!=\"\" && !startsWith(No,\"BOX\") && !startsWith(No, \"PREBOX\") && !startsWith(No, \"ZIP\") && !startsWith(No, \"FREIGHT\")) ~> RemoveTypesBlocked",
-						"RemoveTypesBlocked select(mapColumn(",
-						"          ItemNo = No,",
-						"          ItemDescription = Description,",
-						"          VendorNo = Vendor_No,",
-						"          ItemCategoryCode = Item_Category_Code",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> ItemsSelectedFields",
-						"ItemsSelectedFields, MapDrifted1 join(ItemCategoryCode == Code,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     partitionBy('hash', 1),",
-						"     broadcast: 'both')~> joinItemsAndGroups",
-						"ItemCategoriesGroups derive(Code = toString(byName('Code')),",
-						"          GroupDescription = toString(byName('GroupDescription')),",
-						"          ItemCategoryGroup = toString(byName('ItemCategoryGroup'))) ~> MapDrifted1",
-						"joinItemsAndGroups, TopRankVendors join(VendorNo == toString(Vendor_No),",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinTop5Vendors",
-						"joinTop5Vendors sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['ItemsWithGroups.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemsWithGroups')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "source Items : silver\nsource others : silver\ntarget : silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -10058,7 +8544,7 @@
 			"properties": {
 				"description": "Create all periods",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -10218,147 +8704,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_LedgerPeriods_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "source : bronze\ntarget : silver",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Groupby"
-						},
-						{
-							"name": "SortDates"
-						},
-						{
-							"name": "SelectFields"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as timestamp,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as timestamp,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'D365bc',",
-						"     fileName: 'ItemsLedgerEntries_EU.parquet',",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"LoadFile aggregate(groupBy(StartDate = addDays(Posting_Date,-dayOfMonth(Posting_Date)+1),",
-						"          EndDate = lastDayOfMonth(Posting_Date)),",
-						"     Quantity = sum(Quantity)) ~> Groupby",
-						"Groupby sort(asc(StartDate, true)) ~> SortDates",
-						"SortDates select(mapColumn(",
-						"          StartDate,",
-						"          EndDate",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SelectFields",
-						"SelectFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['LedgerPeriods.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_PurchLineFile')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -10562,7 +8913,7 @@
 			"properties": {
 				"description": "source : bronze\ntarget : silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -10834,542 +9185,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_PurchaseOrderFiles_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "source : bronze\ntarget : silver",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "PurchOrders"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "PurchLines"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SavePurchOrderFile"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SavePurchOrderlineFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "PurchOrderFields"
-						},
-						{
-							"name": "PurchOrderLineFields"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Document_Type as string,",
-						"          No as string,",
-						"          Buy_from_Vendor_No as string,",
-						"          Buy_from_Vendor_Name as string,",
-						"          Posting_Description as string,",
-						"          Buy_from_Address as string,",
-						"          Buy_from_Address_2 as string,",
-						"          Buy_from_City as string,",
-						"          Buy_from_County as string,",
-						"          Buy_from_Post_Code as string,",
-						"          Buy_from_Country_Region_Code as string,",
-						"          Buy_from_Contact_No as string,",
-						"          BuyFromContactPhoneNo as string,",
-						"          BuyFromContactMobilePhoneNo as string,",
-						"          BuyFromContactEmail as string,",
-						"          Buy_from_Contact as string,",
-						"          Document_Date as timestamp,",
-						"          Invoice_Received_Date as timestamp,",
-						"          Posting_Date as timestamp,",
-						"          VAT_Reporting_Date as timestamp,",
-						"          Due_Date as timestamp,",
-						"          Vendor_Invoice_No as string,",
-						"          CDCPurchaserCode as string,",
-						"          CDCApprovalFlowCode as string,",
-						"          Your_Reference as string,",
-						"          CDCReasonCode as string,",
-						"          No_of_Archived_Versions as integer,",
-						"          Order_Date as timestamp,",
-						"          Quote_No as string,",
-						"          Vendor_Order_No as string,",
-						"          Vendor_Shipment_No as string,",
-						"          Order_Address_Code as string,",
-						"          Responsibility_Center as string,",
-						"          Assigned_User_ID as string,",
-						"          Job_Queue_Status as string,",
-						"          Language_Code as string,",
-						"          Format_Region as string,",
-						"          CDCAmountExclVAT as decimal(38,18),",
-						"          CDCAmountInclVAT as decimal(38,18),",
-						"          Status as string,",
-						"          CDCApprovBy as string,",
-						"          CDCApprovComments as string,",
-						"          CDCDocuments as string,",
-						"          Currency_Code as string,",
-						"          EU_3rd_Party_Trade as boolean,",
-						"          Expected_Receipt_Date as timestamp,",
-						"          Prices_Including_VAT as boolean,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          Vendor_Posting_Group as string,",
-						"          CPMBalAcc as string,",
-						"          CPM_Preferred_Bank_Account_Code as string,",
-						"          CPM_Payment_Method_Code as string,",
-						"          CPM_Payment_Method_Description as string,",
-						"          CPM_Pmt_Reference_Def_Code as string,",
-						"          CPMCostTypeCode as string,",
-						"          Payment_Terms_Code as string,",
-						"          Shortcut_Dimension_1_Code as string,",
-						"          Shortcut_Dimension_2_Code as string,",
-						"          Payment_Discount_Percent as decimal(38,18),",
-						"          Pmt_Discount_Date as timestamp,",
-						"          Journal_Templ_Name as string,",
-						"          Tax_Liable as boolean,",
-						"          Tax_Area_Code as string,",
-						"          Shipment_Method_Code as string,",
-						"          Payment_Reference as string,",
-						"          Creditor_No as string,",
-						"          Giro_Acc_No as string,",
-						"          On_Hold as string,",
-						"          Inbound_Whse_Handling_Time as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Requested_Receipt_Date as timestamp,",
-						"          Promised_Receipt_Date as timestamp,",
-						"          ShippingOptionWithLocation as string,",
-						"          Sell_to_Customer_No as string,",
-						"          Ship_to_Code as string,",
-						"          Location_Code as string,",
-						"          Ship_to_Name as string,",
-						"          Ship_to_Address as string,",
-						"          Ship_to_Address_2 as string,",
-						"          Ship_to_City as string,",
-						"          Ship_to_County as string,",
-						"          Ship_to_Post_Code as string,",
-						"          Ship_to_Country_Region_Code as string,",
-						"          Ship_to_Contact as string,",
-						"          PayToOptions as string,",
-						"          Pay_to_Name as string,",
-						"          Pay_to_Address as string,",
-						"          Pay_to_Address_2 as string,",
-						"          Pay_to_City as string,",
-						"          Pay_to_County as string,",
-						"          Pay_to_Post_Code as string,",
-						"          Pay_to_Country_Region_Code as string,",
-						"          Pay_to_Contact_No as string,",
-						"          Pay_to_Contact as string,",
-						"          PayToContactPhoneNo as string,",
-						"          PayToContactMobilePhoneNo as string,",
-						"          PayToContactEmail as string,",
-						"          Remit_to_Code as string,",
-						"          Remit_to_Name as string,",
-						"          Remit_to_Address as string,",
-						"          Remit_to_Address_2 as string,",
-						"          Remit_to_City as string,",
-						"          Remit_to_County as string,",
-						"          Remit_to_Post_Code as string,",
-						"          Remit_to_Country_Region_Code as string,",
-						"          Remit_to_Contact as string,",
-						"          Transaction_Specification as string,",
-						"          Transaction_Type as string,",
-						"          Transport_Method as string,",
-						"          Entry_Point as string,",
-						"          Area as string,",
-						"          Applicable_For_Serv_Decl as boolean,",
-						"          Prepayment_Percent as decimal(38,18),",
-						"          Compress_Prepayment as boolean,",
-						"          Prepmt_Payment_Terms_Code as string,",
-						"          Prepayment_Due_Date as timestamp,",
-						"          Prepmt_Payment_Discount_Percent as decimal(38,18),",
-						"          Prepmt_Pmt_Discount_Date as timestamp,",
-						"          Vendor_Cr_Memo_No as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'D365bc',",
-						"     fileName: 'PurchaseOrders_EU.parquet',",
-						"     compressionCodec: 'snappy') ~> PurchOrders",
-						"source(output(",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Line_No as integer,",
-						"          Type as string,",
-						"          FilteredTypeField as string,",
-						"          No as string,",
-						"          Item_Reference_No as string,",
-						"          IC_Partner_Code as string,",
-						"          IC_Partner_Ref_Type as string,",
-						"          IC_Partner_Reference as string,",
-						"          Variant_Code as string,",
-						"          Nonstock as boolean,",
-						"          Gen_Bus_Posting_Group as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Description as string,",
-						"          Description_2 as string,",
-						"          Drop_Shipment as boolean,",
-						"          Return_Reason_Code as string,",
-						"          Location_Code as string,",
-						"          Bin_Code as string,",
-						"          Quantity as double,",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Job_Remaining_Qty as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Unit_of_Measure as string,",
-						"          Direct_Unit_Cost as double,",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Unit_Cost_LCY as decimal(38,18),",
-						"          Unit_Price_LCY as decimal(38,18),",
-						"          Tax_Liable as boolean,",
-						"          Tax_Area_Code as string,",
-						"          Tax_Group_Code as string,",
-						"          Use_Tax as boolean,",
-						"          Line_Discount_Percent as double,",
-						"          Line_Amount as double,",
-						"          Line_Discount_Amount as double,",
-						"          NonDeductibleVATBase as decimal(38,18),",
-						"          NonDeductibleVATAmount as decimal(38,18),",
-						"          Prepayment_Percent as decimal(38,18),",
-						"          Prepmt_Line_Amount as decimal(38,18),",
-						"          Prepmt_Amt_Inv as decimal(38,18),",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Inv_Discount_Amount as decimal(38,18),",
-						"          Inv_Disc_Amount_to_Invoice as decimal(38,18),",
-						"          Qty_to_Receive as decimal(38,18),",
-						"          Quantity_Received as decimal(38,18),",
-						"          Qty_to_Invoice as decimal(38,18),",
-						"          Quantity_Invoiced as decimal(38,18),",
-						"          Prepmt_Amt_to_Deduct as decimal(38,18),",
-						"          Prepmt_Amt_Deducted as decimal(38,18),",
-						"          Allow_Item_Charge_Assignment as boolean,",
-						"          Qty_to_Assign as decimal(38,18),",
-						"          Service_Transaction_Type_Code as string,",
-						"          Applicable_For_Serv_Decl as boolean,",
-						"          Item_Charge_Qty_to_Handle as decimal(38,18),",
-						"          Qty_Assigned as decimal(38,18),",
-						"          Allocation_Account_No as string,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Job_Planning_Line_No as integer,",
-						"          Job_Line_Type as string,",
-						"          Job_Unit_Price as decimal(38,18),",
-						"          Job_Line_Amount as decimal(38,18),",
-						"          Job_Line_Discount_Amount as decimal(38,18),",
-						"          Job_Line_Discount_Percent as decimal(38,18),",
-						"          Job_Total_Price as decimal(38,18),",
-						"          Job_Unit_Price_LCY as decimal(38,18),",
-						"          Job_Total_Price_LCY as decimal(38,18),",
-						"          Job_Line_Amount_LCY as decimal(38,18),",
-						"          Job_Line_Disc_Amount_LCY as decimal(38,18),",
-						"          Requested_Receipt_Date as timestamp,",
-						"          Promised_Receipt_Date as timestamp,",
-						"          Planned_Receipt_Date as timestamp,",
-						"          Expected_Receipt_Date as timestamp,",
-						"          Order_Date as timestamp,",
-						"          Lead_Time_Calculation as string,",
-						"          Planning_Flexibility as string,",
-						"          Prod_Order_No as string,",
-						"          Prod_Order_Line_No as integer,",
-						"          Operation_No as string,",
-						"          Work_Center_No as string,",
-						"          Finished as boolean,",
-						"          Whse_Outstanding_Qty_Base as decimal(38,18),",
-						"          Inbound_Whse_Handling_Time as string,",
-						"          Blanket_Order_No as string,",
-						"          Blanket_Order_Line_No as integer,",
-						"          Appl_to_Item_Entry as integer,",
-						"          Deferral_Code as string,",
-						"          Shortcut_Dimension_1_Code as string,",
-						"          Shortcut_Dimension_2_Code as string,",
-						"          ShortcutDimCode3 as string,",
-						"          ShortcutDimCode4 as string,",
-						"          ShortcutDimCode5 as string,",
-						"          ShortcutDimCode6 as string,",
-						"          ShortcutDimCode7 as string,",
-						"          ShortcutDimCode8 as string,",
-						"          Over_Receipt_Quantity as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Gross_Weight as decimal(38,18),",
-						"          Net_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Units_per_Parcel as decimal(38,18),",
-						"          FA_Posting_Date as timestamp,",
-						"          Attached_to_Line_No as integer,",
-						"          Attached_Lines_Count as integer,",
-						"          CDCIsPurchContract as string,",
-						"          CDCPurchContractNo as string,",
-						"          CDCPurchContractLineNo as integer,",
-						"          CDCPurchContractLineAmount as decimal(38,18),",
-						"          AmountBeforeDiscount as decimal(38,18),",
-						"          Invoice_Discount_Amount as decimal(38,18),",
-						"          Invoice_Disc_Pct as decimal(38,18),",
-						"          Total_Amount_Excl_VAT as decimal(38,18),",
-						"          Total_VAT_Amount as decimal(38,18),",
-						"          Total_Amount_Incl_VAT as decimal(38,18)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'PurchaseLines_EU.parquet',",
-						"     compressionCodec: 'snappy') ~> PurchLines",
-						"PurchOrders select(mapColumn(",
-						"          Document_Type,",
-						"          No,",
-						"          Buy_from_Vendor_No,",
-						"          Buy_from_Vendor_Name,",
-						"          Posting_Description,",
-						"          Buy_from_Address,",
-						"          Buy_from_Address_2,",
-						"          Buy_from_City,",
-						"          Buy_from_County,",
-						"          Buy_from_Post_Code,",
-						"          Buy_from_Country_Region_Code,",
-						"          Buy_from_Contact_No,",
-						"          BuyFromContactPhoneNo,",
-						"          BuyFromContactMobilePhoneNo,",
-						"          BuyFromContactEmail,",
-						"          Buy_from_Contact,",
-						"          Document_Date,",
-						"          Invoice_Received_Date,",
-						"          Posting_Date,",
-						"          VAT_Reporting_Date,",
-						"          Due_Date,",
-						"          Vendor_Invoice_No,",
-						"          CDCPurchaserCode,",
-						"          CDCApprovalFlowCode,",
-						"          Order_Date,",
-						"          Quote_No,",
-						"          Vendor_Order_No,",
-						"          Vendor_Shipment_No,",
-						"          Order_Address_Code,",
-						"          Responsibility_Center,",
-						"          Assigned_User_ID,",
-						"          Job_Queue_Status,",
-						"          Language_Code,",
-						"          Format_Region,",
-						"          Currency_Code,",
-						"          VAT_Bus_Posting_Group,",
-						"          Vendor_Posting_Group,",
-						"          Payment_Terms_Code,",
-						"          Shortcut_Dimension_1_Code,",
-						"          Shortcut_Dimension_2_Code,",
-						"          Payment_Discount_Percent,",
-						"          Pmt_Discount_Date,",
-						"          On_Hold,",
-						"          Requested_Receipt_Date,",
-						"          Promised_Receipt_Date,",
-						"          ShippingOptionWithLocation,",
-						"          Ship_to_Code,",
-						"          Location_Code,",
-						"          Ship_to_Name,",
-						"          Ship_to_Address,",
-						"          Ship_to_Address_2,",
-						"          Ship_to_City,",
-						"          Ship_to_County,",
-						"          Ship_to_Post_Code,",
-						"          Ship_to_Country_Region_Code,",
-						"          Ship_to_Contact,",
-						"          PayToOptions,",
-						"          Pay_to_Name,",
-						"          Pay_to_Address,",
-						"          Pay_to_Address_2,",
-						"          Pay_to_City,",
-						"          Pay_to_County,",
-						"          Pay_to_Post_Code,",
-						"          Pay_to_Country_Region_Code,",
-						"          Pay_to_Contact_No,",
-						"          Pay_to_Contact,",
-						"          PayToContactPhoneNo,",
-						"          PayToContactMobilePhoneNo,",
-						"          PayToContactEmail,",
-						"          Remit_to_Code,",
-						"          Remit_to_Name,",
-						"          Remit_to_Address,",
-						"          Remit_to_Address_2,",
-						"          Remit_to_City,",
-						"          Remit_to_County,",
-						"          Remit_to_Post_Code,",
-						"          Remit_to_Country_Region_Code,",
-						"          Remit_to_Contact,",
-						"          Transaction_Specification,",
-						"          Transaction_Type,",
-						"          Transport_Method",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> PurchOrderFields",
-						"PurchLines select(mapColumn(",
-						"          Document_Type,",
-						"          Document_No,",
-						"          Line_No,",
-						"          Type,",
-						"          FilteredTypeField,",
-						"          No,",
-						"          Item_Reference_No,",
-						"          Gen_Bus_Posting_Group,",
-						"          Gen_Prod_Posting_Group,",
-						"          VAT_Bus_Posting_Group,",
-						"          VAT_Prod_Posting_Group,",
-						"          Description,",
-						"          Description_2,",
-						"          Drop_Shipment,",
-						"          Return_Reason_Code,",
-						"          Location_Code,",
-						"          Bin_Code,",
-						"          Quantity,",
-						"          Reserved_Quantity,",
-						"          Job_Remaining_Qty,",
-						"          Unit_of_Measure_Code,",
-						"          Unit_of_Measure,",
-						"          Direct_Unit_Cost,",
-						"          Indirect_Cost_Percent,",
-						"          Unit_Cost_LCY,",
-						"          Unit_Price_LCY,",
-						"          Tax_Liable,",
-						"          Tax_Area_Code,",
-						"          Tax_Group_Code,",
-						"          Use_Tax,",
-						"          Line_Discount_Percent,",
-						"          Line_Amount,",
-						"          Line_Discount_Amount,",
-						"          NonDeductibleVATBase,",
-						"          NonDeductibleVATAmount,",
-						"          Prepayment_Percent,",
-						"          Prepmt_Line_Amount,",
-						"          Prepmt_Amt_Inv,",
-						"          Allow_Invoice_Disc,",
-						"          Inv_Discount_Amount,",
-						"          Inv_Disc_Amount_to_Invoice,",
-						"          Qty_to_Receive,",
-						"          Quantity_Received,",
-						"          Qty_to_Invoice,",
-						"          Quantity_Invoiced,",
-						"          Prepmt_Amt_to_Deduct,",
-						"          Prepmt_Amt_Deducted,",
-						"          Allow_Item_Charge_Assignment,",
-						"          Qty_to_Assign,",
-						"          Service_Transaction_Type_Code,",
-						"          Applicable_For_Serv_Decl,",
-						"          Item_Charge_Qty_to_Handle,",
-						"          Qty_Assigned,",
-						"          Allocation_Account_No,",
-						"          Job_No,",
-						"          Job_Task_No,",
-						"          Job_Planning_Line_No,",
-						"          Job_Line_Type,",
-						"          Job_Unit_Price,",
-						"          Job_Line_Amount,",
-						"          Job_Line_Discount_Amount,",
-						"          Job_Line_Discount_Percent,",
-						"          Job_Total_Price,",
-						"          Job_Unit_Price_LCY,",
-						"          Job_Total_Price_LCY,",
-						"          Job_Line_Amount_LCY,",
-						"          Job_Line_Disc_Amount_LCY,",
-						"          Requested_Receipt_Date,",
-						"          Promised_Receipt_Date,",
-						"          Planned_Receipt_Date,",
-						"          Expected_Receipt_Date,",
-						"          Order_Date,",
-						"          Lead_Time_Calculation,",
-						"          Planning_Flexibility,",
-						"          Prod_Order_No,",
-						"          Prod_Order_Line_No,",
-						"          Operation_No,",
-						"          Work_Center_No,",
-						"          Finished,",
-						"          Whse_Outstanding_Qty_Base,",
-						"          Inbound_Whse_Handling_Time,",
-						"          Blanket_Order_No,",
-						"          Blanket_Order_Line_No,",
-						"          Appl_to_Item_Entry,",
-						"          Deferral_Code,",
-						"          Shortcut_Dimension_1_Code,",
-						"          Shortcut_Dimension_2_Code,",
-						"          ShortcutDimCode3,",
-						"          ShortcutDimCode4,",
-						"          ShortcutDimCode5,",
-						"          ShortcutDimCode6,",
-						"          ShortcutDimCode7,",
-						"          ShortcutDimCode8,",
-						"          Over_Receipt_Quantity,",
-						"          Over_Receipt_Code,",
-						"          Gross_Weight,",
-						"          Net_Weight,",
-						"          Unit_Volume,",
-						"          Units_per_Parcel",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> PurchOrderLineFields",
-						"PurchOrderFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['PurchOrders_EU.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SavePurchOrderFile",
-						"PurchOrderLineFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['PurchOrderLines_EU.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SavePurchOrderlineFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_TopRankVendor')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "source : bronze\ntarget : silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -11664,295 +9486,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_TopRankVendors_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Items"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Vendors"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileJson",
-							"description": "Create json file in Silver Layer"
-						}
-					],
-					"transformations": [
-						{
-							"name": "GroupByVendorNo"
-						},
-						{
-							"name": "SortByItemsReleated"
-						},
-						{
-							"name": "TopRanks"
-						},
-						{
-							"name": "Rank"
-						},
-						{
-							"name": "join1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     vendorrank as integer (5)",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as string,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as string,",
-						"          Last_Counting_Period_Update as string,",
-						"          Next_Counting_Start_Date as string,",
-						"          Next_Counting_End_Date as string,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string,",
-						"          loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'Items_EU.parquet') ~> Items",
-						"source(output(",
-						"          No as string,",
-						"          Name as string,",
-						"          Name_2 as string,",
-						"          Responsibility_Center as string,",
-						"          Location_Code as string,",
-						"          Post_Code as string,",
-						"          Country_Region_Code as string,",
-						"          Phone_No as string,",
-						"          Fax_No as string,",
-						"          IC_Partner_Code as string,",
-						"          Contact as string,",
-						"          Purchaser_Code as string,",
-						"          Vendor_Posting_Group as string,",
-						"          Allow_Multiple_Posting_Groups as boolean,",
-						"          Gen_Bus_Posting_Group as string,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          Payment_Terms_Code as string,",
-						"          Fin_Charge_Terms_Code as string,",
-						"          Currency_Code as string,",
-						"          Language_Code as string,",
-						"          Search_Name as string,",
-						"          Blocked as string,",
-						"          Privacy_Blocked as boolean,",
-						"          Last_Date_Modified as timestamp,",
-						"          Application_Method as string,",
-						"          Location_Code2 as string,",
-						"          Shipment_Method_Code as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Base_Calendar_Code as string,",
-						"          Balance_LCY as decimal(38,18),",
-						"          Balance_Due_LCY as decimal(38,18),",
-						"          Payments_LCY as decimal(38,18),",
-						"          Coupled_to_CRM as boolean,",
-						"          Coupled_to_Dataverse as boolean,",
-						"          CDOOutputProfile as string,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Currency_Filter as string,",
-						"          Date_Filter as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'bronze',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'Vendors_EU.parquet') ~> Vendors",
-						"Items aggregate(groupBy(Vendor_No),",
-						"     ItemsRelated = count(Vendor_No)) ~> GroupByVendorNo",
-						"GroupByVendorNo sort(desc(ItemsRelated, false)) ~> SortByItemsReleated",
-						"Rank filter(Rank<=$vendorrank) ~> TopRanks",
-						"SortByItemsReleated keyGenerate(output(Rank as long),",
-						"     startAt: 1L,",
-						"     stepValue: 1L) ~> Rank",
-						"TopRanks, Vendors join(Vendor_No == No,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"join1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'json',",
-						"     partitionFileNames:['TopRankVendors.json'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFileJson"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -12125,7 +9658,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-DK"
@@ -12133,7 +9666,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -12149,7 +9682,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-US"
@@ -12157,7 +9690,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -12165,6 +9698,114 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/globalparameters",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"ServicePrincipalID": {
+					"type": "string",
+					"value": "[parameters('default_properties_ServicePrincipalID_value')]"
+				},
+				"d365bc_Instance_europe": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_Instance_europe_value')]"
+				},
+				"d365bc_instance_america": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_instance_america_value')]"
+				},
+				"d365bc_apiurl": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_apiurl_value')]"
+				},
+				"d365bc_company_europe": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_company_europe_value')]"
+				},
+				"d365bc_company_america": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_company_america_value')]"
+				},
+				"TenantID": {
+					"type": "string",
+					"value": "[parameters('default_properties_TenantID_value')]"
+				},
+				"d365bc_ds_ItemCard": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemCard_value')]"
+				},
+				"d365bc_ds_ItemCategories": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemCategories_value')]"
+				},
+				"d365bc_ds_Vendors": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_Vendors_value')]"
+				},
+				"d365bc_ds_PurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrders_value')]"
+				},
+				"d365bc_ds_PurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrderLines_value')]"
+				},
+				"d365bc_ds_VendorPostingGroups": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_VendorPostingGroups_value')]"
+				},
+				"d365bc_ds_ItemLedgerEntries": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemLedgerEntries_value')]"
+				},
+				"blob_bronze": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_bronze_value')]"
+				},
+				"blob_silver": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_silver_value')]"
+				},
+				"blob_gold": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_gold_value')]"
+				},
+				"folder_d365bc": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_d365bc_value')]"
+				},
+				"folder_json": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_json_value')]"
+				},
+				"folder_logs": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_logs_value')]"
+				},
+				"d365bc_vendor_rank": {
+					"type": "int",
+					"value": "[parameters('default_properties_d365bc_vendor_rank_value')]"
+				},
+				"Region_EU": {
+					"type": "string",
+					"value": "[parameters('default_properties_Region_EU_value')]"
+				},
+				"Region_US": {
+					"type": "string",
+					"value": "[parameters('default_properties_Region_US_value')]"
+				},
+				"d365bc_regions": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_regions_value')]"
+				},
+				"ExcludeEU": {
+					"type": "array",
+					"value": "[parameters('default_properties_ExcludeEU_value')]"
+				}
+			},
 			"dependsOn": []
 		}
 	]

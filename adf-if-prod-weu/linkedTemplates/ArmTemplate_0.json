@@ -7,13 +7,124 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
 		},
+		"AzureDataLakeStorageProd_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageProd'"
+		},
+		"default_properties_ServicePrincipalID_value": {
+			"type": "string",
+			"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
+		},
+		"default_properties_d365bc_Instance_europe_value": {
+			"type": "string",
+			"defaultValue": "ProductionDK"
+		},
+		"default_properties_d365bc_instance_america_value": {
+			"type": "string",
+			"defaultValue": "ProductionUS"
+		},
+		"default_properties_d365bc_apiurl_value": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/"
+		},
+		"default_properties_d365bc_company_europe_value": {
+			"type": "string",
+			"defaultValue": "Company('Iron%20Fortress%20ApS')"
+		},
+		"default_properties_d365bc_company_america_value": {
+			"type": "string",
+			"defaultValue": "Company('My%20Company')"
+		},
+		"default_properties_TenantID_value": {
+			"type": "string",
+			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
+		},
+		"default_properties_d365bc_ds_ItemCard_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemCard"
+		},
+		"default_properties_d365bc_ds_ItemCategories_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemCategories"
+		},
+		"default_properties_d365bc_ds_Vendors_value": {
+			"type": "string",
+			"defaultValue": "ADF_Vendors"
+		},
+		"default_properties_d365bc_ds_PurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "ADF_PurchaseOrders"
+		},
+		"default_properties_d365bc_ds_PurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "ADF_PurchaseOrderLines"
+		},
+		"default_properties_d365bc_ds_VendorPostingGroups_value": {
+			"type": "string",
+			"defaultValue": "ADF_VendorPostingGroups"
+		},
+		"default_properties_d365bc_ds_ItemLedgerEntries_value": {
+			"type": "string",
+			"defaultValue": "ADF_ItemLedgerEntries"
+		},
+		"default_properties_blob_bronze_value": {
+			"type": "string",
+			"defaultValue": "bronze"
+		},
+		"default_properties_blob_silver_value": {
+			"type": "string",
+			"defaultValue": "silver"
+		},
+		"default_properties_blob_gold_value": {
+			"type": "string",
+			"defaultValue": "gold"
+		},
+		"default_properties_folder_d365bc_value": {
+			"type": "string",
+			"defaultValue": "d365bc"
+		},
+		"default_properties_folder_json_value": {
+			"type": "string",
+			"defaultValue": "json"
+		},
+		"default_properties_folder_logs_value": {
+			"type": "string",
+			"defaultValue": "logs"
+		},
+		"default_properties_d365bc_vendor_rank_value": {
+			"type": "int",
+			"defaultValue": 5
+		},
+		"default_properties_Region_EU_value": {
+			"type": "string",
+			"defaultValue": "EU"
+		},
+		"default_properties_Region_US_value": {
+			"type": "string",
+			"defaultValue": "US"
+		},
+		"default_properties_d365bc_regions_value": {
+			"type": "string",
+			"defaultValue": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
+		},
+		"default_properties_ExcludeEU_value": {
+			"type": "array",
+			"defaultValue": [
+				"CA",
+				"US"
+			]
+		},
+		"AzureDataLakeStorageProd_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
+		},
+		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
+		},
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://saadfifprodeun.dfs.core.windows.net/"
-		},
-		"KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://kv-adf-if-neu.vault.azure.net/"
+			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
 		},
 		"D365bcConnector_IFA_PROD_properties_typeProperties_url": {
 			"type": "string",
@@ -53,6 +164,145 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/globalparameters",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"ServicePrincipalID": {
+					"type": "string",
+					"value": "[parameters('default_properties_ServicePrincipalID_value')]"
+				},
+				"d365bc_Instance_europe": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_Instance_europe_value')]"
+				},
+				"d365bc_instance_america": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_instance_america_value')]"
+				},
+				"d365bc_apiurl": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_apiurl_value')]"
+				},
+				"d365bc_company_europe": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_company_europe_value')]"
+				},
+				"d365bc_company_america": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_company_america_value')]"
+				},
+				"TenantID": {
+					"type": "string",
+					"value": "[parameters('default_properties_TenantID_value')]"
+				},
+				"d365bc_ds_ItemCard": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemCard_value')]"
+				},
+				"d365bc_ds_ItemCategories": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemCategories_value')]"
+				},
+				"d365bc_ds_Vendors": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_Vendors_value')]"
+				},
+				"d365bc_ds_PurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrders_value')]"
+				},
+				"d365bc_ds_PurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrderLines_value')]"
+				},
+				"d365bc_ds_VendorPostingGroups": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_VendorPostingGroups_value')]"
+				},
+				"d365bc_ds_ItemLedgerEntries": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_ItemLedgerEntries_value')]"
+				},
+				"blob_bronze": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_bronze_value')]"
+				},
+				"blob_silver": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_silver_value')]"
+				},
+				"blob_gold": {
+					"type": "string",
+					"value": "[parameters('default_properties_blob_gold_value')]"
+				},
+				"folder_d365bc": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_d365bc_value')]"
+				},
+				"folder_json": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_json_value')]"
+				},
+				"folder_logs": {
+					"type": "string",
+					"value": "[parameters('default_properties_folder_logs_value')]"
+				},
+				"d365bc_vendor_rank": {
+					"type": "int",
+					"value": "[parameters('default_properties_d365bc_vendor_rank_value')]"
+				},
+				"Region_EU": {
+					"type": "string",
+					"value": "[parameters('default_properties_Region_EU_value')]"
+				},
+				"Region_US": {
+					"type": "string",
+					"value": "[parameters('default_properties_Region_US_value')]"
+				},
+				"d365bc_regions": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_regions_value')]"
+				},
+				"ExcludeEU": {
+					"type": "array",
+					"value": "[parameters('default_properties_ExcludeEU_value')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorageProd')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorageProd_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorageProd_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultProd')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "KeyVault for Azure Data Factory Prod",
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/D365bcDataLakeProd')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -66,73 +316,11 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/KeyVaultForAzureDataFactory')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "KeyVault for Azure Data Factory",
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('KeyVaultForAzureDataFactory_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/default')]",
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Parquet_PROD')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "D365bcDataLakeProd",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"blob": {
-						"type": "string"
-					},
-					"folder": {
-						"type": "string"
-					},
-					"filename": {
-						"type": "string"
-					}
-				},
-				"annotations": [
-					"prod"
-				],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat(dataset().filename,'.parquet')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().folder",
-							"type": "Expression"
-						},
-						"fileSystem": {
-							"value": "@dataset().blob",
-							"type": "Expression"
-						}
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_Excel')]",
@@ -197,6 +385,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_Parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"blob": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"prod"
+				],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().filename,'.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().blob",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/D365bcConnector_IFA_PROD')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -216,7 +452,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-US"
@@ -224,7 +460,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -247,7 +483,7 @@
 					"servicePrincipalKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
-							"referenceName": "KeyVaultForAzureDataFactory",
+							"referenceName": "AzureKeyVaultProd",
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-DK"
@@ -255,7 +491,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/KeyVaultForAzureDataFactory')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
 			]
 		},
 		{
@@ -264,7 +500,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1698,7 +1934,7 @@
 			"properties": {
 				"description": "Sum Items that are in the purchase orders. In-order or In-Transit",
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1893,7 +2129,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -2223,7 +2459,7 @@
 			"properties": {
 				"description": "Read ever Instance and get the earliest date and save the date in silver-layer as json.",
 				"folder": {
-					"name": "1.Bronze/V2"
+					"name": "1.Bronze"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -2386,7 +2622,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "3.Gold/V2"
+					"name": "3.Gold"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -2677,7 +2913,7 @@
 			"properties": {
 				"description": "Post : \nSource : Silver\nTarget : Silver",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -2783,92 +3019,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventoryPrimo_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GetPositiveAdjustments"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "AddPrDate"
-						},
-						{
-							"name": "PrDate"
-						},
-						{
-							"name": "sortTransactions"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Item_No as string,",
-						"          EndDate as date,",
-						"          Quantity as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'InventorySumPosAdj.parquet',",
-						"     compressionCodec: 'snappy') ~> GetPositiveAdjustments",
-						"PrDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
-						"GetPositiveAdjustments filter(year(EndDate) == 2022 &&",
-						"month(EndDate)==1 && dayOfMonth(EndDate)==31) ~> PrDate",
-						"AddPrDate sort(asc(Item_No, true),",
-						"     asc(PrDate, true)) ~> sortTransactions",
-						"sortTransactions sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InitialInventory.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_InventorySumPrEntryType')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"description": "Sum on each Itemno for each transactiontype pr. EOM\n",
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -3258,396 +3415,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventorySumPrEntryType_PROD')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Sum pr. end of month pr Item",
-				"folder": {
-					"name": "2.Silver/prod"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile",
-							"description": "Import data from ItemLedgerEntries D365bcDataLakeProd"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePurch",
-							"description": "Export InventorySumPurchase pr. month"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePosAdj"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileSales"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileNegAdj"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileTransfer"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssCons"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssOut"
-						}
-					],
-					"transformations": [
-						{
-							"name": "RemoveUnwantedItems"
-						},
-						{
-							"name": "OnlyPurchase"
-						},
-						{
-							"name": "SumupQtyPurch"
-						},
-						{
-							"name": "OnlySales"
-						},
-						{
-							"name": "OnlyPosAdjmnt"
-						},
-						{
-							"name": "RemoveFields"
-						},
-						{
-							"name": "SumupPosAdj"
-						},
-						{
-							"name": "SumupSales"
-						},
-						{
-							"name": "sort1"
-						},
-						{
-							"name": "sort2"
-						},
-						{
-							"name": "sort3"
-						},
-						{
-							"name": "OnlyNegAdjmnt"
-						},
-						{
-							"name": "AddEndDate"
-						},
-						{
-							"name": "SumupNegAdj"
-						},
-						{
-							"name": "sort4"
-						},
-						{
-							"name": "OnlyTransfer"
-						},
-						{
-							"name": "SumupQtyTransfer"
-						},
-						{
-							"name": "sort5"
-						},
-						{
-							"name": "OnlyAssCons"
-						},
-						{
-							"name": "SumupAssCons"
-						},
-						{
-							"name": "sort6"
-						},
-						{
-							"name": "OnlyAssOut"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "sort7"
-						},
-						{
-							"name": "sort8"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemLedgerEntries_All.parquet',",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"AddEndDate filter(!startsWith(Item_No,\"BOX\") && !startsWith(Item_No, \"PREBOX\") && !startsWith(Item_No, \"ZIP\") && !startsWith(Item_No, \"FREIGHT\") &&",
-						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> RemoveUnwantedItems",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Purchase\")) ~> OnlyPurchase",
-						"OnlyPurchase aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyPurch",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Sale\")) ~> OnlySales",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Positive Adjmt.\")) ~> OnlyPosAdjmnt",
-						"sort8 select(mapColumn(",
-						"          Posting_Date,",
-						"          Entry_Type,",
-						"          Item_No,",
-						"          Quantity,",
-						"          Region",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveFields",
-						"OnlyPosAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupPosAdj",
-						"OnlySales aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupSales",
-						"SumupSales sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort1",
-						"SumupPosAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort2",
-						"SumupQtyPurch sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort3",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Negative Adjmt.\")) ~> OnlyNegAdjmnt",
-						"RemoveFields derive(EndDate = lastDayOfMonth(Posting_Date)) ~> AddEndDate",
-						"OnlyNegAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupNegAdj",
-						"SumupNegAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort4",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Transfer\")) ~> OnlyTransfer",
-						"OnlyTransfer aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyTransfer",
-						"SumupQtyTransfer sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort5",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Consumption\")) ~> OnlyAssCons",
-						"OnlyAssCons aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupAssCons",
-						"SumupAssCons sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort6",
-						"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Output\")) ~> OnlyAssOut",
-						"OnlyAssOut aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> aggregate1",
-						"aggregate1 sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort7",
-						"LoadFile sort(asc(Item_No, true)) ~> sort8",
-						"sort3 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumPurchase.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFilePurch",
-						"sort2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumPosAdj.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 6,",
-						"     partitionBy('hash', 1)) ~> WriteFilePosAdj",
-						"sort1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumSales.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 7,",
-						"     partitionBy('hash', 1)) ~> WriteFileSales",
-						"sort4 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumNegAdj.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 5,",
-						"     partitionBy('hash', 1)) ~> WriteFileNegAdj",
-						"sort5 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumTransfer.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 4,",
-						"     partitionBy('hash', 1)) ~> WriteFileTransfer",
-						"sort6 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumAssCons.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 3,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssCons",
-						"sort7 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
-						"     folderPath: 'd365bc',",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['InventorySumAssOut.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 2,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssOut"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemCategoriesGroup')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "2.Silver/V2"
+					"name": "2.Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
