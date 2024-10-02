@@ -16,9 +16,6 @@
 				"type": "string"
 			}
 		},
-		"folder": {
-			"name": "0.Targets"
-		},
 		"annotations": [
 			"prod"
 		],

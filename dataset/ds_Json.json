@@ -1,5 +1,5 @@
 {
-	"name": "Json",
+	"name": "ds_Json",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcDataLakeProd",
@@ -9,9 +9,6 @@
 			"Cointainer": {
 				"type": "string"
 			}
-		},
-		"folder": {
-			"name": "0.Targets"
 		},
 		"annotations": [],
 		"type": "Json",

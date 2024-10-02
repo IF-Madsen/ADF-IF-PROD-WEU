@@ -1089,7 +1089,7 @@
 			}
 		},
 		"folder": {
-			"name": "prod/Report001/ExtractData"
+			"name": "InventoryReorder/ExtractData"
 		},
 		"annotations": [],
 		"lastPublishTime": "2024-01-23T16:45:34Z"

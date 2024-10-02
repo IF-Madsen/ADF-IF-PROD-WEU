@@ -13,9 +13,6 @@
 				"type": "string"
 			}
 		},
-		"folder": {
-			"name": "0.Source/D365bc/prod"
-		},
 		"annotations": [
 			"us",
 			"prod"

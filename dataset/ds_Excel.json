@@ -1,0 +1,17 @@
+{
+	"name": "ds_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation"
+			}
+		},
+		"schema": []
+	}
+}

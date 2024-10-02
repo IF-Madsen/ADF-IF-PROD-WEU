@@ -247,7 +247,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Json",
+						"referenceName": "ds_Json",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -259,7 +259,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Json",
+						"referenceName": "ds_Json",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {

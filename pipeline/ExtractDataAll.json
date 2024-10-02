@@ -183,7 +183,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Json",
+						"referenceName": "ds_Json",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -195,7 +195,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Json",
+						"referenceName": "ds_Json",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -237,7 +237,7 @@
 			}
 		],
 		"folder": {
-			"name": "prod/Report001"
+			"name": "InventoryReorder"
 		},
 		"annotations": []
 	}
