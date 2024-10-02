@@ -37,6 +37,10 @@
 			"d365bc_ds_ItemCategories": {
 				"type": "string",
 				"value": "ADF_ItemCategories"
+			},
+			"d365bc_ds_Vendors": {
+				"type": "string",
+				"value": "ADF_Vendors"
 			}
 		}
 	},
