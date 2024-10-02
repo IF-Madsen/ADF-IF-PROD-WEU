@@ -89,6 +89,10 @@
 			"Region_EU": {
 				"type": "string",
 				"value": "EU"
+			},
+			"Region_US": {
+				"type": "string",
+				"value": "US"
 			}
 		}
 	},
