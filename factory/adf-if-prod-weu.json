@@ -1,5 +1,13 @@
 {
 	"name": "adf-if-prod-weu",
+	"properties": {
+		"globalParameters": {
+			"ServicePrincipalID": {
+				"type": "string",
+				"value": "7b1647b5-d439-422d-ad72-779b8d13fa50"
+			}
+		}
+	},
 	"location": "westeurope",
 	"identity": {
 		"type": "SystemAssigned",
