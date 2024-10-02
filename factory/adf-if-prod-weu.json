@@ -53,6 +53,10 @@
 			"d365bc_ds_VendorPostingGroups": {
 				"type": "string",
 				"value": "ADF_VendorPostingGroups"
+			},
+			"d365bc_ds_ItemLedgerEntries": {
+				"type": "string",
+				"value": "ADF_ItemLedgerEntries"
 			}
 		}
 	},
