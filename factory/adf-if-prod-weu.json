@@ -21,6 +21,10 @@
 			"d365bc_company_europe": {
 				"type": "string",
 				"value": "Company('Iron%20Fortress%20ApS')"
+			},
+			"d365bc_company_america": {
+				"type": "string",
+				"value": "Company('My%20Company')"
 			}
 		}
 	},
