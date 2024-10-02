@@ -57,6 +57,10 @@
 			"d365bc_ds_ItemLedgerEntries": {
 				"type": "string",
 				"value": "ADF_ItemLedgerEntries"
+			},
+			"blob_bronze": {
+				"type": "string",
+				"value": "bronze"
 			}
 		}
 	},
