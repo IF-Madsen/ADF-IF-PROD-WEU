@@ -93,6 +93,10 @@
 			"Region_US": {
 				"type": "string",
 				"value": "US"
+			},
+			"d365bc_regions": {
+				"type": "string",
+				"value": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
 			}
 		}
 	},
