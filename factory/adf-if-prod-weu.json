@@ -29,6 +29,10 @@
 			"TenantID": {
 				"type": "string",
 				"value": "d4894685-0807-4578-a538-77143ab48788"
+			},
+			"d365bc_ds_ItemCard": {
+				"type": "string",
+				"value": "ADF_ItemCard"
 			}
 		}
 	},
