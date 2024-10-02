@@ -77,6 +77,10 @@
 			"folder_json": {
 				"type": "string",
 				"value": "json"
+			},
+			"folder_logs": {
+				"type": "string",
+				"value": "logs"
 			}
 		}
 	},
