@@ -97,6 +97,13 @@
 			"d365bc_regions": {
 				"type": "string",
 				"value": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
+			},
+			"ExcludeEU": {
+				"type": "array",
+				"value": [
+					"CA",
+					"US"
+				]
 			}
 		}
 	},
