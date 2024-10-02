@@ -73,6 +73,10 @@
 			"folder_d365bc": {
 				"type": "string",
 				"value": "d365bc"
+			},
+			"folder_json": {
+				"type": "string",
+				"value": "json"
 			}
 		}
 	},
