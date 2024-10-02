@@ -69,6 +69,10 @@
 			"blob_gold": {
 				"type": "string",
 				"value": "gold"
+			},
+			"folder_d365bc": {
+				"type": "string",
+				"value": "d365bc"
 			}
 		}
 	},
