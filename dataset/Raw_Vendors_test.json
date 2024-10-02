@@ -1,0 +1,25 @@
+{
+	"name": "Raw_Vendors_test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "0.Targets/Test"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "vendors.parquet",
+				"folderPath": "D365bc",
+				"fileSystem": "raw"
+			},
+			"compressionCodec": "none"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

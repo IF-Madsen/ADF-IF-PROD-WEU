@@ -1,0 +1,35 @@
+{
+	"name": "D365bcConnector",
+	"properties": {
+		"description": "OData Connection to D365bc (TestDK Instance)",
+		"parameters": {
+			"ADD": {
+				"type": "string",
+				"defaultValue": "https://api.businesscentral.dynamics.com/"
+			},
+			"ServicePrincipal": {
+				"type": "string",
+				"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
+			}
+		},
+		"annotations": [],
+		"type": "OData",
+		"typeProperties": {
+			"url": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/TestDK/ODataV4/",
+			"authenticationType": "AadServicePrincipal",
+			"tenant": "d4894685-0807-4578-a538-77143ab48788",
+			"aadResourceId": "@{linkedService().ADD}",
+			"aadServicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalId": "@{linkedService().ServicePrincipal}",
+			"servicePrincipalKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KeyVaultForAzureDataFactory",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "D365bcapp"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,285 @@
+{
+	"name": "Merge_RegionInventories",
+	"properties": {
+		"folder": {
+			"name": "3.Gold/V2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUInventory"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "USInventory"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUVendorItems"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "USVendorItems"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUReorderInterval"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "USReorderInterval"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUPurchItemSum"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "USPurchItemSum"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "saveInventoryAll"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "saveVendorItemsAll"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveReorderInterval"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "savePurchSumAll"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mergeInventory"
+				},
+				{
+					"name": "mergeVendorItems"
+				},
+				{
+					"name": "joinReorderInvertal"
+				},
+				{
+					"name": "selectFields"
+				},
+				{
+					"name": "filterItems"
+				},
+				{
+					"name": "mergePurchSum"
+				},
+				{
+					"name": "EUAddRegion"
+				},
+				{
+					"name": "USAddRegion"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSourceBlob as string ('gold'),",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmTargetBlob as string ('gold'),",
+				"     parmTargetFolder as string ('d365bc'),",
+				"     parmSourceBlobSilver as string ('silver')",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('InventorySum_EU.parquet')) ~> EUInventory",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('InventorySum_US.parquet'),",
+				"     compressionCodec: 'snappy') ~> USInventory",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('VendorsItemsWithGroups_EU.parquet'),",
+				"     partitionBy('hash', 1)) ~> EUVendorItems",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('VendorsItemsWithGroups_US.parquet')) ~> USVendorItems",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ReorderInterval as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlobSilver),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('ItemReorder_EU.parquet')) ~> EUReorderInterval",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ReorderInterval as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlobSilver),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('ItemReorder_US.parquet')) ~> USReorderInterval",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('PurchItemSum_EU.parquet')) ~> EUPurchItemSum",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('PurchItemSum_US.parquet')) ~> USPurchItemSum",
+				"EUInventory, USInventory union(byName: true)~> mergeInventory",
+				"EUVendorItems, USVendorItems union(byName: true)~> mergeVendorItems",
+				"EUReorderInterval, USReorderInterval join(EUReorderInterval@ItemNo == USReorderInterval@ItemNo,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinReorderInvertal",
+				"joinReorderInvertal select(mapColumn(",
+				"          ItemNo = EUReorderInterval@ItemNo,",
+				"          ReorderInterval_EU = EUReorderInterval@ReorderInterval,",
+				"          ReorderInterval_US = USReorderInterval@ReorderInterval",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectFields",
+				"selectFields filter(!isNull(ItemNo) && (ReorderInterval_US>0 || ReorderInterval_EU>0)) ~> filterItems",
+				"EUAddRegion, USAddRegion union(byName: true)~> mergePurchSum",
+				"EUPurchItemSum derive(ItemNo = ItemNo,",
+				"          SumQty = SumQty,",
+				"          Region = 'EU') ~> EUAddRegion",
+				"USPurchItemSum derive(ItemNo = ItemNo,",
+				"          SumQty = SumQty,",
+				"          Region = 'US') ~> USAddRegion",
+				"mergeInventory sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[('InventorySumAll.parquet')],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> saveInventoryAll",
+				"mergeVendorItems sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[('VendorsItemsWithGroupsAll.parquet')],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     partitionBy('hash', 1)) ~> saveVendorItemsAll",
+				"filterItems sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     partitionFileNames:[('ItemReorderAll.parquet')],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 3,",
+				"     partitionBy('hash', 1)) ~> SaveReorderInterval",
+				"mergePurchSum sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     partitionFileNames:[('PurchItemSumAll.parquet')],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 4,",
+				"     partitionBy('hash', 1)) ~> savePurchSumAll"
+			]
+		}
+	}
+}

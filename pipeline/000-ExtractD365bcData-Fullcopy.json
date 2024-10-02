@@ -1,0 +1,527 @@
+{
+	"name": "000-ExtractD365bcData-Fullcopy",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Items",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'Company(''Iron%20Fortress%20ApS'')/AzureDataFactory_ItemCard_Test'}"
+					},
+					{
+						"name": "Destination",
+						"value": "raw/D365bc/items.parquet"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_Items_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_ItemCard_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_Items_test",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy ItemCategories",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'Company(''Iron%20Fortress%20ApS'')/AzureDataFactory_ItemCategories_Test'}"
+					},
+					{
+						"name": "Destination",
+						"value": "raw/D365bc/itemcategories.parquet"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_ItemsCategories_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_ItemCategories_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_ItemCategories_test",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy ItemLedgerEntries",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'Company(''Iron%20Fortress%20ApS'')/AzureDataFactory_ItemLedgerEntries_Test'}"
+					},
+					{
+						"name": "Destination",
+						"value": "raw/D365bc/itemledgerentries.parquet"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_ItemsLedgerEntries_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_ItemLedgerEntries_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_ItemLedgerEntries_test",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy Vendors",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'Company(''Iron%20Fortress%20ApS'')/AzureDataFactory_Vendors_Test'}"
+					},
+					{
+						"name": "Destination",
+						"value": "raw/D365bc/vendors.parquet"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_Vendors_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_Vendors_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_Vendors_test",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Build Periods",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy ItemLedgerEntries",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "BuildLedgerPeriods",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"runConcurrently": true
+				}
+			},
+			{
+				"name": "Build Top5 Vendors",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "BuildTop5Vendors",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"runConcurrently": true
+				}
+			},
+			{
+				"name": "Build Sum pr Entrytype",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Build Periods",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "InventorySumPrEntryType",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"runConcurrently": true
+				}
+			},
+			{
+				"name": "Copy PurchOrders",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'Company(''Iron%20Fortress%20ApS'')/AzureDataFactory_PurchaseOrders_Test'}"
+					},
+					{
+						"name": "Destination",
+						"value": "raw/D365bc/PurchOrders.parquet"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_PurchaseOrders_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_PurchaseOrders_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_PurchOrders_test",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy PurchLines",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy",
+							"metadata": [
+								{
+									"name": "Application",
+									"value": "D365bc"
+								},
+								{
+									"name": "Location",
+									"value": "DK"
+								},
+								{
+									"name": "PipelineRunId",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_PurchaseLines_Test",
+						"type": "DatasetReference",
+						"parameters": {
+							"Path": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_PurchaseLines_Test"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Raw_PurchLines_test",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"concurrency": 5,
+		"folder": {
+			"name": "test"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-02-03T08:52:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,1098 @@
+{
+	"name": "ExtractDataEU",
+	"properties": {
+		"activities": [
+			{
+				"name": "Items",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_ItemCard",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Vendors",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": {
+								"value": "@pipeline().globalParameters.d365bc_company_europe",
+								"type": "Expression"
+							},
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_Vendors",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "ItemLedgerEntries",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ItemCategories",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Entry_No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Entry_No",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Posting_Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Posting_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Entry_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Entry_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_Line_No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Document_Line_No",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Item_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Item_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Variant_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Variant_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Return_Reason_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Return_Reason_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global_Dimension_1_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global_Dimension_1_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global_Dimension_2_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global_Dimension_2_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Expiration_Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Expiration_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Serial_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Serial_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Lot_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Lot_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Package_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Package_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Location_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Location_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Quantity",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Quantity",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "RunningBalance",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "RunningBalance",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "RunningBalanceLoc",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "RunningBalanceLoc",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Invoiced_Quantity",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Invoiced_Quantity",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Remaining_Quantity",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Remaining_Quantity",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Shipped_Qty_Not_Returned",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Shipped_Qty_Not_Returned",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Reserved_Quantity",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Reserved_Quantity",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Qty_per_Unit_of_Measure",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Qty_per_Unit_of_Measure",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Unit_of_Measure_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Unit_of_Measure_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales_Amount_Expected",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Sales_Amount_Expected",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales_Amount_Actual",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Sales_Amount_Actual",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Expected",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Expected",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Actual",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Actual",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Non_Invtbl",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Non_Invtbl",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Expected_ACY",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Expected_ACY",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Actual_ACY",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Actual_ACY",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost_Amount_Non_Invtbl_ACY",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Cost_Amount_Non_Invtbl_ACY",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Completely_Invoiced",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Completely_Invoiced",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "Drop_Shipment",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Drop_Shipment",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "Assemble_to_Order",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Assemble_to_Order",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "Applied_Entry_to_Adjust",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Applied_Entry_to_Adjust",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "Order_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Order_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Order_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order_Line_No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Order_Line_No",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Prod_Order_Comp_Line_No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Prod_Order_Comp_Line_No",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Job_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Job_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Job_Task_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Job_Task_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Dimension_Set_ID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Dimension_Set_ID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_3_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_3_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_4_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_4_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_5_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_5_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_6_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_6_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_7_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_7_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shortcut_Dimension_8_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Shortcut_Dimension_8_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Source_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Source_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Source_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Source_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Loaded",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Loaded",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_ItemLedgerEntries",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "ItemCategories",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Items",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_ItemCategories",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "PurchaseLines",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "PurchaseOrders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "PurchaseOrders",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OData_EU_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrders",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"parmRegion": {
+				"type": "string"
+			},
+			"parmLoaded": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "prod/Report001/ExtractData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-01-23T16:45:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,146 @@
+{
+	"name": "Vendor2Bronze",
+	"properties": {
+		"folder": {
+			"name": "1.Bronze/Test"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ADFDataLakeStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "LoadVendors"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ADFDataLakeStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveVendorLocations"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ADFDataLakeStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveVendorDims"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectVendorNameDim"
+				},
+				{
+					"name": "AllowOnlyActive"
+				},
+				{
+					"name": "SelelectVendorLocation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          No as string,",
+				"          Name as string,",
+				"          Name_2 as string,",
+				"          Responsibility_Center as string,",
+				"          Location_Code as string,",
+				"          Post_Code as string,",
+				"          Country_Region_Code as string,",
+				"          Phone_No as string,",
+				"          Fax_No as string,",
+				"          IC_Partner_Code as string,",
+				"          Contact as string,",
+				"          Purchaser_Code as string,",
+				"          Vendor_Posting_Group as string,",
+				"          Allow_Multiple_Posting_Groups as boolean,",
+				"          Gen_Bus_Posting_Group as string,",
+				"          VAT_Bus_Posting_Group as string,",
+				"          Payment_Terms_Code as string,",
+				"          Fin_Charge_Terms_Code as string,",
+				"          Currency_Code as string,",
+				"          Language_Code as string,",
+				"          Search_Name as string,",
+				"          Blocked as string,",
+				"          Privacy_Blocked as boolean,",
+				"          Last_Date_Modified as timestamp,",
+				"          Application_Method as string,",
+				"          Shipment_Method_Code as string,",
+				"          Lead_Time_Calculation as string,",
+				"          Base_Calendar_Code as string,",
+				"          Balance_LCY as decimal(38,18),",
+				"          Balance_Due_LCY as decimal(38,18),",
+				"          Payments_LCY as decimal(38,18),",
+				"          Coupled_to_CRM as boolean,",
+				"          Coupled_to_Dataverse as boolean,",
+				"          CDOOutputProfile as string,",
+				"          Global_Dimension_1_Filter as string,",
+				"          Global_Dimension_2_Filter as string,",
+				"          Currency_Filter as string,",
+				"          Date_Filter as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'raw',",
+				"     folderPath: 'D365bc',",
+				"     fileName: 'vendors.parquet',",
+				"     compressionCodec: 'snappy') ~> LoadVendors",
+				"AllowOnlyActive select(mapColumn(",
+				"          No,",
+				"          Name,",
+				"          Name_2,",
+				"          Search_Name,",
+				"          Global_Dimension_1_Filter,",
+				"          Global_Dimension_2_Filter",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectVendorNameDim",
+				"LoadVendors filter(Blocked!='Yes') ~> AllowOnlyActive",
+				"AllowOnlyActive select(mapColumn(",
+				"          No,",
+				"          Name,",
+				"          Name_2,",
+				"          Location_Code,",
+				"          Post_Code,",
+				"          Country_Region_Code,",
+				"          Currency_Code,",
+				"          Language_Code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelelectVendorLocation",
+				"SelelectVendorLocation sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'parquet',",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['VendorLocation'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SaveVendorLocations",
+				"SelectVendorNameDim sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'parquet',",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['VendorNameDim'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SaveVendorDims"
+			]
+		}
+	}
+}

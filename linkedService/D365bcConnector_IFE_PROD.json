@@ -1,0 +1,26 @@
+{
+	"name": "D365bcConnector_IFE_PROD",
+	"properties": {
+		"description": "OData Connector to D365 BC IFE PROD\n(West-Europe)",
+		"annotations": [
+			"eu"
+		],
+		"type": "OData",
+		"typeProperties": {
+			"url": "https://api.businesscentral.dynamics.com/v2.0/d4894685-0807-4578-a538-77143ab48788/ProductionDK/ODataV4/",
+			"authenticationType": "AadServicePrincipal",
+			"tenant": "d4894685-0807-4578-a538-77143ab48788",
+			"aadResourceId": "https://api.businesscentral.dynamics.com/",
+			"aadServicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalId": "98c52d81-2480-4351-9e23-51ae9dae9755",
+			"servicePrincipalKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KeyVaultForAzureDataFactory",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ar-D365BC-prod-DK"
+			}
+		}
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"name": "Parquet_Top5Vendors",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1.Bronze/Test"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Vendors.parquet",
+				"folderPath": "parquet",
+				"fileSystem": "bronze"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

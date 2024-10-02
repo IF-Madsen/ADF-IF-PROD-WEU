@@ -1,0 +1,751 @@
+{
+	"name": "TransformDataAll",
+	"properties": {
+		"activities": [
+			{
+				"name": "Region",
+				"description": "loop over each region that exist",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set folder Json",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Create Reorder Interval",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Filtered Items",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemReorderInterval",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemReorder_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Ledger Periods",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Items Ledger Entry Types",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_LedgerPeriod",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('LedgerPeriod_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Filtered Items",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Top Rank Vendors",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemsFiltered",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('Items_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Top Rank Vendors",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_TopRankVendor",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderJson')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmVendorRank": {
+											"value": "@pipeline().globalParameters.d365bc_vendor_rank",
+											"type": "Expression"
+										},
+										"parmSourceFileItems": "concat('Items_',$parmRegion,'.parquet')",
+										"parmSourceFileVendors": "concat('Vendors_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Purchaseorder files",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Filtered Items",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_PurchaseOrderFiles",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"ParmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('PurchaseOrders_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('PurchOrders_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Purchline files",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Purchaseorder files",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_PurchLineFile",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceFilename": "concat('PurchaseLines_',$parmRegion,'.parquet')",
+										"parmTargetFilename": "concat('PurchOrderLines_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Item Categories",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Filtered Items",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemCategoriesGroup",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmJsonFolder": {
+											"value": "'@{variables('folderJson')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('ItemsCategories_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Item Groups",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Item Categories",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemsWithGroups",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceJsonFolder": {
+											"value": "'@{variables('folderJson')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemsWithGroups_',$parmRegion,'.parquet')",
+										"parmSourceItemGrpFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')",
+										"parmSourceTopVendFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Items Ledger Entry Types",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Item Categories",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_InventorySumPrEntryType",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+										"parmAssOutFile": "concat('InventorySumAssOut_',$parmRegion,'.parquet')",
+										"parmAssConsFile": "concat('InventorySumAssCons_',$parmRegion,'.parquet')",
+										"parmTransferFile": "concat('InventorySumTransfer_',$parmRegion,'.parquet')",
+										"parmNegAdjFile": "concat('InventorySumNegAdj_',$parmRegion,'.parquet')",
+										"parmPosAdjFile": "concat('InventorySumPosAdj_',$parmRegion,'.parquet')",
+										"parmSalesFile": "concat('InventorySumSales_',$parmRegion,'.parquet')",
+										"parmPurchFile": "concat('InventorySumPurchase_',$parmRegion,'.parquet')",
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create Primo",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Items Ledger Entry Types",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_InventoryPrimo",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('InventorySumPosAdj_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('InitialInventory_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create ItemPrices",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Reorder Interval",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemPrices",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{pipeline().globalParameters.Region_EU}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set Layer Bronze",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobBronze",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_bronze",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Layer Silver",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Layer Bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobSilver",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_silver",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set folder d365bc",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Layer Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "folderD365bc",
+					"value": {
+						"value": "@pipeline().globalParameters.folder_d365bc",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set folder Json",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set folder d365bc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "folderJson",
+					"value": {
+						"value": "@pipeline().globalParameters.folder_json",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"blobBronze": {
+				"type": "String"
+			},
+			"blobSilver": {
+				"type": "String"
+			},
+			"folderD365bc": {
+				"type": "String"
+			},
+			"folderJson": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "prod/Report001"
+		},
+		"annotations": []
+	}
+}

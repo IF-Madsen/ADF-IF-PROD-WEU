@@ -1,0 +1,34 @@
+{
+	"name": "OData_PurchaseLines_Test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcConnector",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ADD": "https://api.businesscentral.dynamics.com/",
+				"ServicePrincipal": "7b1647b5-d439-422d-ad72-779b8d13fa50"
+			}
+		},
+		"parameters": {
+			"Path": {
+				"type": "string",
+				"defaultValue": "Company('Iron%20Fortress%20ApS')/AzureDataFactory_PurchaseLines_Test"
+			}
+		},
+		"folder": {
+			"name": "0.Source/D365bc/test"
+		},
+		"annotations": [
+			"test"
+		],
+		"type": "ODataResource",
+		"schema": [],
+		"typeProperties": {
+			"path": {
+				"value": "@dataset().Path",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

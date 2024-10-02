@@ -1,0 +1,74 @@
+{
+	"name": "Transform_InventoryPrimo_PROD",
+	"properties": {
+		"folder": {
+			"name": "2.Silver/prod"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "GetPositiveAdjustments"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AddPrDate"
+				},
+				{
+					"name": "PrDate"
+				},
+				{
+					"name": "sortTransactions"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_No as string,",
+				"          EndDate as date,",
+				"          Quantity as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'InventorySumPosAdj.parquet',",
+				"     compressionCodec: 'snappy') ~> GetPositiveAdjustments",
+				"PrDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
+				"GetPositiveAdjustments filter(year(EndDate) == 2022 &&",
+				"month(EndDate)==1 && dayOfMonth(EndDate)==31) ~> PrDate",
+				"AddPrDate sort(asc(Item_No, true),",
+				"     asc(PrDate, true)) ~> sortTransactions",
+				"sortTransactions sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'd365bc',",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['InitialInventory.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> SaveFile"
+			]
+		}
+	}
+}

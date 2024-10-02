@@ -1,0 +1,12 @@
+{
+	"name": "KeyVaultForAzureDataFactory",
+	"properties": {
+		"description": "KeyVault for Azure Data Factory",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-adf-if-neu.vault.azure.net/"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,25 @@
+{
+	"name": "Raw_PurchOrders_test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "0.Targets/Test"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "PurchOrders.parquet",
+				"folderPath": "D365bc",
+				"fileSystem": "raw"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

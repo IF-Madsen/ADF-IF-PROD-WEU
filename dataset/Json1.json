@@ -1,0 +1,32 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"blob": {
+				"type": "string"
+			},
+			"folder": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "0.Targets"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "*.json",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}

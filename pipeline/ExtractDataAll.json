@@ -1,0 +1,244 @@
+{
+	"name": "ExtractDataAll",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute EU",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "DeleteParquetFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "company",
+						"value": "IFE"
+					},
+					{
+						"name": "application",
+						"value": "D365bc"
+					}
+				],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractDataEU",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"parmRegion": {
+							"value": "@pipeline().globalParameters.Region_EU",
+							"type": "Expression"
+						},
+						"parmLoaded": {
+							"value": "@utcNow()",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Execute US",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "DeleteParquetFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "company",
+						"value": "IFA"
+					},
+					{
+						"name": "application",
+						"value": "D365bc"
+					}
+				],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractDataUS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"parmRegion": {
+							"value": "@pipeline().globalParameters.Region_US",
+							"type": "Expression"
+						},
+						"parmLoaded": {
+							"value": "@utcNow()",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "DeleteParquetFiles",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Parquet_PROD",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": "*"
+						}
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "D365bcDataLakeProd",
+							"type": "LinkedServiceReference"
+						},
+						"path": {
+							"value": "@concat(pipeline().globalParameters.blob_bronze,'/',pipeline().globalParameters.folder_logs)",
+							"type": "Expression"
+						}
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.parquet",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "CopyJsonfile",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DeleteParquetFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@pipeline().globalParameters.folder_json",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Json",
+						"type": "DatasetReference",
+						"parameters": {
+							"Cointainer": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Json",
+						"type": "DatasetReference",
+						"parameters": {
+							"Cointainer": {
+								"value": "@concat(pipeline().globalParameters.blob_silver,'/',pipeline().globalParameters.folder_json)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Create Primo",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute EU",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Execute US",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractPrimoAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "prod/Report001"
+		},
+		"annotations": []
+	}
+}

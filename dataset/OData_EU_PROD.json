@@ -1,0 +1,32 @@
+{
+	"name": "OData_EU_PROD",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcConnector_IFE_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"company": {
+				"type": "string"
+			},
+			"apipath": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "0.Source/D365bc/prod"
+		},
+		"annotations": [
+			"eu",
+			"prod"
+		],
+		"type": "ODataResource",
+		"schema": [],
+		"typeProperties": {
+			"path": {
+				"value": "@concat(dataset().company,'/',dataset().apipath)",
+				"type": "Expression"
+			}
+		}
+	}
+}

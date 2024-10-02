@@ -1,0 +1,74 @@
+{
+	"name": "ExtractPrimoAll",
+	"properties": {
+		"activities": [
+			{
+				"name": "Region",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Find Primo Date",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Extract_PrimoDate",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{pipeline().globalParameters.blob_bronze}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmSourceFilename": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+										"parmTargetBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{pipeline().globalParameters.folder_json}'",
+											"type": "Expression"
+										},
+										"parmTargetFilename": "concat('primodate_',$parmRegion,'.json')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "prod/Report001"
+		},
+		"annotations": []
+	}
+}

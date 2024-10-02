@@ -1,0 +1,653 @@
+{
+	"name": "test_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute TransformAll",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "TransformDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run ItemCategories",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Run TopRankVendor",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_ItemCategoriesGroup",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_bronze}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmJsonFolder": {
+								"value": "'@{pipeline().globalParameters.folder_json}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_EU}'",
+								"type": "Expression"
+							},
+							"parmSourceFile": "concat('ItemsCategories_',$parmRegion,'.parquet')",
+							"parmTargetFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "ForEachRegion",
+				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Data flow2",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_ItemsFiltered",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{pipeline().globalParameters.blob_bronze}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "'Items_'+$parmRegion+'.parquet'",
+										"parmTargetFile": "'Items_'+$parmRegion+'.parquet'",
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Data flow3",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Data flow2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_TopRankVendor",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmVendorRank": {
+											"value": "@pipeline().globalParameters.d365bc_vendor_rank",
+											"type": "Expression"
+										},
+										"parmSourceFileItems": "concat('Items_',$parmRegion,'.parquet')",
+										"parmSourceFileVendors": "concat('Vendors_',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Copy Json file",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@pipeline().globalParameters.folder_json",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Json",
+						"type": "DatasetReference",
+						"parameters": {
+							"Cointainer": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Json",
+						"type": "DatasetReference",
+						"parameters": {
+							"Cointainer": {
+								"value": "@concat(pipeline().globalParameters.blob_silver,'/',pipeline().globalParameters.folder_json)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Run ItemNGroups",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Run ItemCategories",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_ItemsWithGroups",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmSourceJsonFolder": {
+								"value": "'@{pipeline().globalParameters.folder_json}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_EU}'",
+								"type": "Expression"
+							},
+							"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
+							"parmTargetFile": "concat('ItemsWithGroups_',$parmRegion,'.parquet')",
+							"parmSourceItemGrpFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')",
+							"parmSourceTopVendFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Run TopRankVendor",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_TopRankVendor",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_bronze}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_json}'",
+								"type": "Expression"
+							},
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_EU}'",
+								"type": "Expression"
+							},
+							"parmVendorRank": {
+								"value": "@pipeline().globalParameters.d365bc_vendor_rank",
+								"type": "Expression"
+							},
+							"parmSourceFileItems": "concat('Items_',$parmRegion,'.parquet')",
+							"parmSourceFileVendors": "concat('Vendors_',$parmRegion,'.parquet')",
+							"parmTargetFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Run ItemPrices",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_ItemPrices",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_EU}'",
+								"type": "Expression"
+							},
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_bronze}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_gold}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmSourceFile": {
+								"value": "'@{concat('Items_',pipeline().globalParameters.Region_EU,'.parquet')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 32,
+						"computeType": "MemoryOptimized"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Run LedgerPeriod US",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_LedgerPeriod",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_bronze}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_US}'",
+								"type": "Expression"
+							},
+							"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+							"parmTargetFile": "concat('LedgerPeriod_',$parmRegion,'.parquet')"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Run US Inventory Sum",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Calc_InventorySum",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_US}'",
+								"type": "Expression"
+							},
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmSourceFolderJson": {
+								"value": "'@{pipeline().globalParameters.folder_json}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Run Merge",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Merge_RegionInventories",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": "'gold'",
+							"parmSourceFolder": "'d365bc'",
+							"parmTargetBlob": "'gold'",
+							"parmTargetFolder": "'d365bc'",
+							"parmSourceBlobSilver": "'silver'"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Execute CalcData",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CalculateDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Run ItemLedgerEntries",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Transform_InventorySumPrEntryType",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmRegion": {
+								"value": "'@{pipeline().globalParameters.Region_EU}'",
+								"type": "Expression"
+							},
+							"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+							"parmAssOutFile": "concat('InventorySumAssOut_',$parmRegion,'.parquet')",
+							"parmAssConsFile": "concat('InventorySumAssCons_',$parmRegion,'.parquet')",
+							"parmTransferFile": "concat('InventorySumTransfer_',$parmRegion,'.parquet')",
+							"parmNegAdjFile": "concat('InventorySumNegAdj_',$parmRegion,'.parquet')",
+							"parmPosAdjFile": "concat('InventorySumPosAdj_',$parmRegion,'.parquet')",
+							"parmSalesFile": "concat('InventorySumSales_',$parmRegion,'.parquet')",
+							"parmPurchFile": "concat('InventorySumPurchase_',$parmRegion,'.parquet')",
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_bronze}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

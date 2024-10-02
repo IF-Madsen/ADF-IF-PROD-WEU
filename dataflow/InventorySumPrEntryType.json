@@ -1,0 +1,328 @@
+{
+	"name": "InventorySumPrEntryType",
+	"properties": {
+		"description": "Sum pr. end of month pr Item",
+		"folder": {
+			"name": "1.Bronze/Test"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Raw_ItemLedgerEntries_test",
+						"type": "DatasetReference"
+					},
+					"name": "ItemLedgerEntries"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFilePurch",
+					"description": "Export InventorySumPurchase pr. month"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFilePosAdj"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileSales"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileNegAdj"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileTransfer"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileAssCons"
+				},
+				{
+					"dataset": {
+						"referenceName": "SilverParquet_Test",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileAssOut"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RemoveUnwantedItems"
+				},
+				{
+					"name": "OnlyPurchase"
+				},
+				{
+					"name": "SumupQtyPurch"
+				},
+				{
+					"name": "OnlySales"
+				},
+				{
+					"name": "OnlyPosAdjmnt"
+				},
+				{
+					"name": "RemoveFields"
+				},
+				{
+					"name": "SumupPosAdj"
+				},
+				{
+					"name": "SumupSales"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "sort2"
+				},
+				{
+					"name": "sort3"
+				},
+				{
+					"name": "OnlyNegAdjmnt"
+				},
+				{
+					"name": "AddEndDate"
+				},
+				{
+					"name": "SumupNegAdj"
+				},
+				{
+					"name": "sort4"
+				},
+				{
+					"name": "OnlyTransfer"
+				},
+				{
+					"name": "SumupQtyTransfer"
+				},
+				{
+					"name": "sort5"
+				},
+				{
+					"name": "OnlyAssCons"
+				},
+				{
+					"name": "SumupAssCons"
+				},
+				{
+					"name": "sort6"
+				},
+				{
+					"name": "OnlyAssOut"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "sort7"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Entry_No as integer,",
+				"          Posting_Date as date,",
+				"          Entry_Type as string,",
+				"          Document_Type as string,",
+				"          Document_No as string,",
+				"          Document_Line_No as integer,",
+				"          Item_No as string,",
+				"          Variant_Code as string,",
+				"          Description as string,",
+				"          Return_Reason_Code as string,",
+				"          Global_Dimension_1_Code as string,",
+				"          Global_Dimension_2_Code as string,",
+				"          Expiration_Date as timestamp,",
+				"          Serial_No as string,",
+				"          Lot_No as string,",
+				"          Package_No as string,",
+				"          Location_Code as string,",
+				"          Quantity as double,",
+				"          Invoiced_Quantity as decimal(38,18),",
+				"          Remaining_Quantity as decimal(38,18),",
+				"          Shipped_Qty_Not_Returned as decimal(38,18),",
+				"          Reserved_Quantity as decimal(38,18),",
+				"          Qty_per_Unit_of_Measure as decimal(38,18),",
+				"          Unit_of_Measure_Code as string,",
+				"          Sales_Amount_Expected as decimal(38,18),",
+				"          Sales_Amount_Actual as decimal(38,18),",
+				"          Cost_Amount_Expected as decimal(38,18),",
+				"          Cost_Amount_Actual as decimal(38,18),",
+				"          Cost_Amount_Non_Invtbl as decimal(38,18),",
+				"          Cost_Amount_Expected_ACY as decimal(38,18),",
+				"          Cost_Amount_Actual_ACY as decimal(38,18),",
+				"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
+				"          Completely_Invoiced as boolean,",
+				"          Open as boolean,",
+				"          Drop_Shipment as boolean,",
+				"          Assemble_to_Order as boolean,",
+				"          Applied_Entry_to_Adjust as boolean,",
+				"          Order_Type as string,",
+				"          Order_No as string,",
+				"          Order_Line_No as integer,",
+				"          Prod_Order_Comp_Line_No as integer,",
+				"          Job_No as string,",
+				"          Job_Task_No as string,",
+				"          Dimension_Set_ID as integer,",
+				"          Shortcut_Dimension_3_Code as string,",
+				"          Shortcut_Dimension_4_Code as string,",
+				"          Shortcut_Dimension_5_Code as string,",
+				"          Shortcut_Dimension_6_Code as string,",
+				"          Shortcut_Dimension_7_Code as string,",
+				"          Shortcut_Dimension_8_Code as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> ItemLedgerEntries",
+				"AddEndDate filter(!startsWith(Item_No,\"BOX\") && !startsWith(Item_No, \"PREBOX\") && !startsWith(Item_No, \"ZIP\") && !startsWith(Item_No, \"FREIGHT\") &&",
+				"!startsWith(Item_No, \"LSGIFTCARD\")) ~> RemoveUnwantedItems",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Purchase\")) ~> OnlyPurchase",
+				"OnlyPurchase aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupQtyPurch",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Sale\")) ~> OnlySales",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Positive Adjmt.\")) ~> OnlyPosAdjmnt",
+				"ItemLedgerEntries select(mapColumn(",
+				"          Posting_Date,",
+				"          Entry_Type,",
+				"          Item_No,",
+				"          Quantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveFields",
+				"OnlyPosAdjmnt aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupPosAdj",
+				"OnlySales aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupSales",
+				"SumupSales sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort1",
+				"SumupPosAdj sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort2",
+				"SumupQtyPurch sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort3",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Negative Adjmt.\")) ~> OnlyNegAdjmnt",
+				"RemoveFields derive(EndDate = lastDayOfMonth(Posting_Date)) ~> AddEndDate",
+				"OnlyNegAdjmnt aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupNegAdj",
+				"SumupNegAdj sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort4",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Transfer\")) ~> OnlyTransfer",
+				"OnlyTransfer aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupQtyTransfer",
+				"SumupQtyTransfer sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort5",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Consumption\")) ~> OnlyAssCons",
+				"OnlyAssCons aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> SumupAssCons",
+				"SumupAssCons sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort6",
+				"RemoveUnwantedItems filter(startsWith(Entry_Type,\"Assembly Output\")) ~> OnlyAssOut",
+				"OnlyAssOut aggregate(groupBy(Item_No,",
+				"          EndDate),",
+				"     Quantity = sum(Quantity)) ~> aggregate1",
+				"aggregate1 sort(asc(Item_No, true),",
+				"     asc(EndDate, true)) ~> sort7",
+				"sort3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumPurchase.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFilePurch",
+				"sort2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumPosAdj.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFilePosAdj",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumSales.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFileSales",
+				"sort4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumNegAdj.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFileNegAdj",
+				"sort5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumTransfer.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFileTransfer",
+				"sort6 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumAssCons.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFileAssCons",
+				"sort7 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['InventorySumAssOut.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteFileAssOut"
+			]
+		}
+	}
+}

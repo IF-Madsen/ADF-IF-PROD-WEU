@@ -1,0 +1,118 @@
+{
+	"name": "Transform_ItemCategoriesGroup",
+	"properties": {
+		"folder": {
+			"name": "2.Silver/V2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "ItemCategories"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "ItemCategoriesGroup"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "WriteFileJson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConvertCodeToInt"
+				},
+				{
+					"name": "JoinCategoryGroups"
+				},
+				{
+					"name": "ItemCodesAndGroups"
+				},
+				{
+					"name": "ConvertCodeToStr"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSourceBlob as string,",
+				"     parmSourceFolder as string,",
+				"     parmJsonFolder as string,",
+				"     parmTargetBlob as string,",
+				"     parmRegion as string,",
+				"     parmSourceFile as string (concat('ItemsCategories_',$parmRegion,'.parquet')),",
+				"     parmTargetFile as string (concat('ItemCategoriesAndGroups_',$parmRegion,'.json'))",
+				"}",
+				"source(output(",
+				"          Code as string,",
+				"          Description as string,",
+				"          Not_Webshipper as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSourceFile)) ~> ItemCategories",
+				"source(output(",
+				"          Description as string,",
+				"          FromICC as short,",
+				"          ItemCategoryGroup as integer,",
+				"          ToICC as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'json',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmJsonFolder),",
+				"     fileName: 'ItemCategoryGroupsFromTo.json',",
+				"     documentForm: 'arrayOfDocuments') ~> ItemCategoriesGroup",
+				"ItemCategories derive(CodeInt = toInteger(Code),",
+				"          Description = Description) ~> ConvertCodeToInt",
+				"ConvertCodeToInt, ItemCategoriesGroup join(CodeInt >= FromICC",
+				"     && CodeInt <= ToICC,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'both')~> JoinCategoryGroups",
+				"JoinCategoryGroups derive(CodeInt = CodeInt,",
+				"          ItemCategoryGroup = ItemCategoryGroup,",
+				"          Description = ItemCategoriesGroup@Description) ~> ItemCodesAndGroups",
+				"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
+				"ConvertCodeToStr sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'json',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmJsonFolder),",
+				"     partitionFileNames:[(concat('ItemCategoriesAndGroups_',$parmRegion,'.json'))],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          Code,",
+				"          ItemCategoryGroup,",
+				"          GroupDescription = Description",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> WriteFileJson"
+			]
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"name": "Json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Cointainer": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "0.Targets"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": {
+					"value": "@dataset().Cointainer",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}

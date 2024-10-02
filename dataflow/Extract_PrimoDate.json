@@ -1,0 +1,159 @@
+{
+	"name": "Extract_PrimoDate",
+	"properties": {
+		"description": "Read ever Instance and get the earliest date and save the date in silver-layer as json.",
+		"folder": {
+			"name": "1.Bronze/V2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "loadfile"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "saveJson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectfield"
+				},
+				{
+					"name": "GroupByDate"
+				},
+				{
+					"name": "sortTransactions"
+				},
+				{
+					"name": "RankResult"
+				},
+				{
+					"name": "selectPrimoDate"
+				},
+				{
+					"name": "filterRank"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmRegion as string,",
+				"     parmSourceBlob as string ('bronze'),",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmSourceFilename as string (concat('ItemsLedgerEntries_',$parmRegion,'.parquet')),",
+				"     parmTargetBlob as string ('silver'),",
+				"     parmTargetFolder as string ('json'),",
+				"     parmTargetFilename as string (concat('primodate_',$parmRegion,'.json'))",
+				"}",
+				"source(output(",
+				"          Entry_No as integer,",
+				"          Posting_Date as date,",
+				"          Entry_Type as string,",
+				"          Document_Type as string,",
+				"          Document_No as string,",
+				"          Document_Line_No as integer,",
+				"          Item_No as string,",
+				"          Variant_Code as string,",
+				"          Description as string,",
+				"          Return_Reason_Code as string,",
+				"          Global_Dimension_1_Code as string,",
+				"          Global_Dimension_2_Code as string,",
+				"          Expiration_Date as string,",
+				"          Serial_No as string,",
+				"          Lot_No as string,",
+				"          Package_No as string,",
+				"          Location_Code as string,",
+				"          Quantity as decimal(38,18),",
+				"          RunningBalance as decimal(38,18),",
+				"          RunningBalanceLoc as decimal(38,18),",
+				"          Invoiced_Quantity as decimal(38,18),",
+				"          Remaining_Quantity as decimal(38,18),",
+				"          Shipped_Qty_Not_Returned as decimal(38,18),",
+				"          Reserved_Quantity as decimal(38,18),",
+				"          Qty_per_Unit_of_Measure as decimal(38,18),",
+				"          Unit_of_Measure_Code as string,",
+				"          Sales_Amount_Expected as decimal(38,18),",
+				"          Sales_Amount_Actual as decimal(38,18),",
+				"          Cost_Amount_Expected as decimal(38,18),",
+				"          Cost_Amount_Actual as decimal(38,18),",
+				"          Cost_Amount_Non_Invtbl as decimal(38,18),",
+				"          Cost_Amount_Expected_ACY as decimal(38,18),",
+				"          Cost_Amount_Actual_ACY as decimal(38,18),",
+				"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
+				"          Completely_Invoiced as boolean,",
+				"          Open as boolean,",
+				"          Drop_Shipment as boolean,",
+				"          Assemble_to_Order as boolean,",
+				"          Applied_Entry_to_Adjust as boolean,",
+				"          Order_Type as string,",
+				"          Order_No as string,",
+				"          Order_Line_No as integer,",
+				"          Prod_Order_Comp_Line_No as integer,",
+				"          Job_No as string,",
+				"          Job_Task_No as string,",
+				"          Dimension_Set_ID as integer,",
+				"          Shortcut_Dimension_3_Code as string,",
+				"          Shortcut_Dimension_4_Code as string,",
+				"          Shortcut_Dimension_5_Code as string,",
+				"          Shortcut_Dimension_6_Code as string,",
+				"          Shortcut_Dimension_7_Code as string,",
+				"          Shortcut_Dimension_8_Code as string,",
+				"          Source_Type as string,",
+				"          Source_No as string,",
+				"          Region as string,",
+				"          Loaded as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSourceFilename)) ~> loadfile",
+				"sortTransactions select(mapColumn(",
+				"          PostingDate = Posting_Date,",
+				"          Entry_Type",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectfield",
+				"selectfield aggregate(groupBy(PostingDate),",
+				"     Counter = count()) ~> GroupByDate",
+				"loadfile sort(asc(Posting_Date, true)) ~> sortTransactions",
+				"GroupByDate rank(asc(PostingDate, true),",
+				"     output(Rank as long)) ~> RankResult",
+				"filterRank select(mapColumn(",
+				"          PrimoDate = PostingDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPrimoDate",
+				"RankResult filter(Rank==1) ~> filterRank",
+				"selectPrimoDate derive(PrimoDate = lastDayOfMonth(PrimoDate)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'json',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     partitionFileNames:[($parmTargetFilename)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> saveJson"
+			]
+		}
+	}
+}

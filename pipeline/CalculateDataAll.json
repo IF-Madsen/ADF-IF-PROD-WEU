@@ -1,0 +1,293 @@
+{
+	"name": "CalculateDataAll",
+	"properties": {
+		"activities": [
+			{
+				"name": "Region",
+				"description": "",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set folder Json",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set folder d365bc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set blob Gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set blob Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Calculate Inventory Sum",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Calc_InventorySum",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobGold')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolderJson": {
+											"value": "'@{variables('folderJson')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Calculate Vendor Items",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Calculate Inventory Sum",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Calc_VendorsItemsFiltered",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobGold')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceJsonFolder": {
+											"value": "'@{variables('folderJson')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Calculate Purchase Orders",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Calculate Vendor Items",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Calc_PurchItemsSum",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobGold')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set blob Silver",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobSilver",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_silver",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set folder d365bc",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "folderD365bc",
+					"value": {
+						"value": "@pipeline().globalParameters.folder_d365bc",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set blob Gold",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobGold",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_gold",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set folder Json",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "folderJson",
+					"value": {
+						"value": "@pipeline().globalParameters.folder_json",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"blobSilver": {
+				"type": "String"
+			},
+			"blobGold": {
+				"type": "String"
+			},
+			"folderD365bc": {
+				"type": "String"
+			},
+			"folderJson": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "prod/Report001"
+		},
+		"annotations": []
+	}
+}

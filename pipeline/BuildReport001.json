@@ -1,0 +1,75 @@
+{
+	"name": "BuildReport001",
+	"properties": {
+		"activities": [
+			{
+				"name": "Extract Data",
+				"description": "Import data from sources to Bronze Layer",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Calculate Data",
+				"description": "Calculate the data and save to Gold Layer",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Transform Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CalculateDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Transform Data",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Extract Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "TransformDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "prod/Report001"
+		},
+		"annotations": []
+	}
+}

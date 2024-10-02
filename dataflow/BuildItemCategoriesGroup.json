@@ -1,0 +1,101 @@
+{
+	"name": "BuildItemCategoriesGroup",
+	"properties": {
+		"folder": {
+			"name": "1.Bronze/Test"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Raw_ItemCategories_test",
+						"type": "DatasetReference"
+					},
+					"name": "ItemCategories"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ADFDataLakeStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "ItemCategoriesGroups"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "JSON_ItemCategoriesGroups",
+						"type": "DatasetReference"
+					},
+					"name": "WriteFileJson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConvertCodeToInt"
+				},
+				{
+					"name": "JoinCategoryGroups"
+				},
+				{
+					"name": "ItemCodesAndGroups"
+				},
+				{
+					"name": "ConvertCodeToStr"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Code as string,",
+				"          Description as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> ItemCategories",
+				"source(output(",
+				"          Description as string,",
+				"          FromICC as short,",
+				"          ItemCategoryGroup as integer,",
+				"          ToICC as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'json',",
+				"     fileSystem: 'raw',",
+				"     folderPath: 'JSON',",
+				"     fileName: 'ItemCategoryGroupsFromTo.json',",
+				"     documentForm: 'arrayOfDocuments') ~> ItemCategoriesGroups",
+				"ItemCategories derive(CodeInt = toInteger(Code),",
+				"          Description = Description) ~> ConvertCodeToInt",
+				"ConvertCodeToInt, ItemCategoriesGroups join(CodeInt >= FromICC",
+				"     && CodeInt <= ToICC,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'both')~> JoinCategoryGroups",
+				"JoinCategoryGroups derive(CodeInt = CodeInt,",
+				"          ItemCategoryGroup = ItemCategoryGroup,",
+				"          Description = ItemCategoriesGroups@Description) ~> ItemCodesAndGroups",
+				"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
+				"ConvertCodeToStr sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ItemCategoriesAndGroups.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Code,",
+				"          ItemCategoryGroup,",
+				"          GroupDescription = Description",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> WriteFileJson"
+			]
+		}
+	}
+}

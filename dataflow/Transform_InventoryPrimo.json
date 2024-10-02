@@ -1,0 +1,107 @@
+{
+	"name": "Transform_InventoryPrimo",
+	"properties": {
+		"description": "Post : \nSource : Silver\nTarget : Silver",
+		"folder": {
+			"name": "2.Silver/V2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "GetPositiveAdjustments"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "GetPrimoDate"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AddPrDate"
+				},
+				{
+					"name": "sortTransactions"
+				},
+				{
+					"name": "joinPrimeDate"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSourceBlob as string ('silver'),",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmTargetBlob as string ('silver'),",
+				"     parmTargetFolder as string ('d365bc'),",
+				"     parmRegion as string,",
+				"     parmSourceFile as string (concat('InventorySumPosAdj_',$parmRegion,'.parquet')),",
+				"     parmTargetFile as string (concat('InitialInventory_',$parmRegion,'.parquet')),",
+				"     parmSourceFolderJson as string ('json')",
+				"}",
+				"source(output(",
+				"          Item_No as string,",
+				"          EndDate as date,",
+				"          Quantity as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSourceFile),",
+				"     compressionCodec: 'snappy') ~> GetPositiveAdjustments",
+				"source(output(",
+				"          PrimoDate as date",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'json',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolderJson),",
+				"     fileName: (concat('primodate_',$parmRegion,'.json')),",
+				"     documentForm: 'documentPerLine') ~> GetPrimoDate",
+				"joinPrimeDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
+				"AddPrDate sort(asc(Item_No, true),",
+				"     asc(PrimoDate, true)) ~> sortTransactions",
+				"GetPositiveAdjustments, GetPrimoDate join(EndDate == PrimoDate,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinPrimeDate",
+				"sortTransactions sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[($parmTargetFile)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> SaveFile"
+			]
+		}
+	}
+}
