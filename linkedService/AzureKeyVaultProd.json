@@ -1,0 +1,11 @@
+{
+	"name": "AzureKeyVaultProd",
+	"properties": {
+		"description": "KeyVault for Azure Data Factory Prod",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-adf-if-weu.vault.azure.net/"
+		}
+	}
+}
