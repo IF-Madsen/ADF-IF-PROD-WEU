@@ -9,6 +9,10 @@
 			"d365bc_Instance_europe": {
 				"type": "string",
 				"value": "ProductionDK"
+			},
+			"d365bc_instance_america": {
+				"type": "string",
+				"value": "ProductionUS"
 			}
 		}
 	},
