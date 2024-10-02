@@ -17,10 +17,6 @@
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "SilverParquet_Test",
-						"type": "DatasetReference"
-					},
 					"name": "WriteFile2Silver"
 				}
 			],
@@ -56,11 +52,7 @@
 				"     asc(PrDate, true)) ~> sortTransactions",
 				"sortTransactions sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     partitionFileNames:['InitialInventory.parquet'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
@@ -68,7 +60,10 @@
 				"          PrDate,",
 				"          Quantity",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> WriteFile2Silver"
+				"     partitionBy('hash', 1),",
+				"     format: 'parquet',",
+				"     preCommands: [],",
+				"     postCommands: []) ~> WriteFile2Silver"
 			]
 		}
 	}

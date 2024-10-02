@@ -8,10 +8,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "Raw_ItemCategories_test",
-						"type": "DatasetReference"
-					},
 					"name": "ItemCategories"
 				},
 				{
@@ -24,10 +20,6 @@
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "JSON_ItemCategoriesGroups",
-						"type": "DatasetReference"
-					},
 					"name": "WriteFileJson"
 				}
 			],
@@ -51,9 +43,7 @@
 				"          Description as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> ItemCategories",
+				"     validateSchema: false) ~> ItemCategories",
 				"source(output(",
 				"          Description as string,",
 				"          FromICC as short,",
@@ -84,9 +74,6 @@
 				"ConvertCodeToStr sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['ItemCategoriesAndGroups.json'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
@@ -94,7 +81,9 @@
 				"          ItemCategoryGroup,",
 				"          GroupDescription = Description",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> WriteFileJson"
+				"     partitionBy('hash', 1),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> WriteFileJson"
 			]
 		}
 	}

@@ -8,26 +8,14 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "Raw_Items_test",
-						"type": "DatasetReference"
-					},
 					"name": "Items"
 				},
 				{
-					"dataset": {
-						"referenceName": "Raw_Vendors_test",
-						"type": "DatasetReference"
-					},
 					"name": "Vendors"
 				}
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "JSON_Top5Vendors",
-						"type": "DatasetReference"
-					},
 					"name": "WriteFileJson"
 				}
 			],
@@ -186,9 +174,7 @@
 				"          Date_Filter as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Items",
+				"     validateSchema: false) ~> Items",
 				"source(output(",
 				"          No as string,",
 				"          Name as string,",
@@ -227,9 +213,7 @@
 				"          Date_Filter as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> Vendors",
+				"     validateSchema: false) ~> Vendors",
 				"Items aggregate(groupBy(Vendor_No),",
 				"     ItemsRelated = count(Vendor_No)) ~> GroupByVendorNo",
 				"GroupByVendorNo sort(desc(ItemsRelated, false)) ~> SortByItemsReleated",
@@ -245,9 +229,6 @@
 				"join1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Top5Vendors.json'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
@@ -262,7 +243,9 @@
 				"          Currency_Code,",
 				"          Language_Code",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> WriteFileJson"
+				"     partitionBy('hash', 1),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> WriteFileJson"
 			]
 		}
 	}
