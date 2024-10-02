@@ -41,6 +41,10 @@
 			"d365bc_ds_Vendors": {
 				"type": "string",
 				"value": "ADF_Vendors"
+			},
+			"d365bc_ds_PurchaseOrders": {
+				"type": "string",
+				"value": "ADF_PurchaseOrders"
 			}
 		}
 	},
