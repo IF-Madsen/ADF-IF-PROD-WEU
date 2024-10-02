@@ -17,6 +17,10 @@
 			"d365bc_apiurl": {
 				"type": "string",
 				"value": "https://api.businesscentral.dynamics.com/"
+			},
+			"d365bc_company_europe": {
+				"type": "string",
+				"value": "Company('Iron%20Fortress%20ApS')"
 			}
 		}
 	},
