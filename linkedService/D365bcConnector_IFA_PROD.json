@@ -16,7 +16,7 @@
 			"servicePrincipalKey": {
 				"type": "AzureKeyVaultSecret",
 				"store": {
-					"referenceName": "KeyVaultForAzureDataFactory",
+					"referenceName": "AzureKeyVaultProd",
 					"type": "LinkedServiceReference"
 				},
 				"secretName": "ar-D365BC-prod-US"
