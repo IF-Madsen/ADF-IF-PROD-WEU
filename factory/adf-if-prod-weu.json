@@ -81,6 +81,10 @@
 			"folder_logs": {
 				"type": "string",
 				"value": "logs"
+			},
+			"d365bc_vendor_rank": {
+				"type": "int",
+				"value": 5
 			}
 		}
 	},
