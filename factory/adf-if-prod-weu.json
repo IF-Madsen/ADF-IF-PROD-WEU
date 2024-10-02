@@ -13,6 +13,10 @@
 			"d365bc_instance_america": {
 				"type": "string",
 				"value": "ProductionUS"
+			},
+			"d365bc_apiurl": {
+				"type": "string",
+				"value": "https://api.businesscentral.dynamics.com/"
 			}
 		}
 	},
