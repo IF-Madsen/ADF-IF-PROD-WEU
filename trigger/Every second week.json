@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "BuildReport001",
+					"referenceName": "BuildReport000",
 					"type": "PipelineReference"
 				}
 			}
