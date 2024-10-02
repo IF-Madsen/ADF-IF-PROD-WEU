@@ -56,7 +56,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -69,7 +69,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -135,7 +135,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": {
@@ -151,7 +151,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -789,7 +789,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -802,7 +802,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -875,7 +875,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -888,7 +888,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -961,7 +961,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -974,7 +974,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -1047,7 +1047,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "OData_EU_PROD",
+						"referenceName": "ds_OData_EU",
 						"type": "DatasetReference",
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
@@ -1060,7 +1060,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {

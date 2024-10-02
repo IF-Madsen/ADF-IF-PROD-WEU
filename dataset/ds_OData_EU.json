@@ -1,5 +1,5 @@
 {
-	"name": "OData_EU_PROD",
+	"name": "ds_OData_EU",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcConnector_IFE_PROD",

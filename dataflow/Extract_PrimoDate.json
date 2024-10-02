@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Read ever Instance and get the earliest date and save the date in silver-layer as json.",
 		"folder": {
-			"name": "1.Bronze/V2"
+			"name": "1.Bronze"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

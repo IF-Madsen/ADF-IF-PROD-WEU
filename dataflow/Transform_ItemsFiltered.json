@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "source : bronze\ntarget : silver",
 		"folder": {
-			"name": "2.Silver/V2"
+			"name": "2.Silver"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -201,7 +201,7 @@
 				"&& !startsWith(No, \"PREBOX\") \r",
 				"&& !startsWith(No, \"ZIP\") \r",
 				"&& !startsWith(No, \"FREIGHT\") \r",
-				"&& !startsWith(No, \"SQ\") ) ~> RemoveTypesBlocked",
+				"&& !startsWith(No, \"SQ\")) ~> RemoveTypesBlocked",
 				"RemoveTypesBlocked sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",

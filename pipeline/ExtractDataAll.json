@@ -100,7 +100,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "Parquet_PROD",
+						"referenceName": "ds_Parquet",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {

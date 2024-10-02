@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Post : \nSource : Silver\nTarget : Silver",
 		"folder": {
-			"name": "2.Silver/V2"
+			"name": "2.Silver"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

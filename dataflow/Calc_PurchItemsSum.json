@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Sum Items that are in the purchase orders. In-order or In-Transit",
 		"folder": {
-			"name": "3.Gold/V2"
+			"name": "3.Gold"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

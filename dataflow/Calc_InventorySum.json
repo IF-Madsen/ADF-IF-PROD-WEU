@@ -2,7 +2,7 @@
 	"name": "Calc_InventorySum",
 	"properties": {
 		"folder": {
-			"name": "3.Gold/V2"
+			"name": "3.Gold"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

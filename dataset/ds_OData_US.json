@@ -1,5 +1,5 @@
 {
-	"name": "OData_US_PROD",
+	"name": "ds_OData_US",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcConnector_IFA_PROD",
