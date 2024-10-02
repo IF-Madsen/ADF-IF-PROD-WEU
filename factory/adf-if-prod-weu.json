@@ -49,6 +49,10 @@
 			"d365bc_ds_PurchaseOrderLines": {
 				"type": "string",
 				"value": "ADF_PurchaseOrderLines"
+			},
+			"d365bc_ds_VendorPostingGroups": {
+				"type": "string",
+				"value": "ADF_VendorPostingGroups"
 			}
 		}
 	},
