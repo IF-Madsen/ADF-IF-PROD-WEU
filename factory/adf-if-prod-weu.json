@@ -33,6 +33,10 @@
 			"d365bc_ds_ItemCard": {
 				"type": "string",
 				"value": "ADF_ItemCard"
+			},
+			"d365bc_ds_ItemCategories": {
+				"type": "string",
+				"value": "ADF_ItemCategories"
 			}
 		}
 	},
