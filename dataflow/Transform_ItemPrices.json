@@ -35,7 +35,7 @@
 				"     parmRegion as string ('EU'),",
 				"     parmSourceBlob as string ('bronze'),",
 				"     parmSourceFolder as string ('d365bc'),",
-				"     parmTargetBlob as string ('silver'),",
+				"     parmTargetBlob as string ('gold'),",
 				"     parmTargetFolder as string ('d365bc'),",
 				"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet'))",
 				"}",
