@@ -57,7 +57,7 @@
 				"     parmTargetBlob as string,",
 				"     parmTargetFolder as string ('json'),",
 				"     parmRegion as string,",
-				"     parmVendorRank as integer,",
+				"     parmVendorRank as integer (50),",
 				"     parmSourceFileItems as string (concat('Items_',$parmRegion,'.parquet')),",
 				"     parmSourceFileVendors as string (concat('Vendors_',$parmRegion,'.parquet')),",
 				"     parmTargetFile as string (concat('TopRankVendors_',$parmRegion,'.json'))",
