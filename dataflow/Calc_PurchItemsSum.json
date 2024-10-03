@@ -61,7 +61,7 @@
 				"          Return_Reason_Code as string,",
 				"          Location_Code as string,",
 				"          Bin_Code as string,",
-				"          Quantity as decimal(38,18),",
+				"          Quantity as double,",
 				"          Reserved_Quantity as decimal(38,18),",
 				"          Job_Remaining_Qty as decimal(38,18),",
 				"          Unit_of_Measure_Code as string,",
