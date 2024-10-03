@@ -215,6 +215,14 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ItemNo,",
+				"          ItemNoAlt,",
+				"          Description,",
+				"          UnitPrice,",
+				"          StandardCost,",
+				"          Unit_Cost",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> saveItemPrices"
 			]
 		}
