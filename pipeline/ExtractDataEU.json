@@ -1091,7 +1091,7 @@
 			}
 		},
 		"folder": {
-			"name": "InventoryReorder/ExtractData"
+			"name": "InventoryForecast/ExtractData"
 		},
 		"annotations": [],
 		"lastPublishTime": "2024-01-23T16:45:34Z"
