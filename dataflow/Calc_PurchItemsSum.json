@@ -28,6 +28,9 @@
 			"transformations": [
 				{
 					"name": "SumItemsQty"
+				},
+				{
+					"name": "removeBlanks"
 				}
 			],
 			"scriptLines": [
@@ -168,7 +171,8 @@
 				"     fileName: (concat('PurchaseLines_',$parmRegion,'.parquet'))) ~> PurchLines",
 				"PurchLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumItemsQty",
-				"SumItemsQty sink(allowSchemaDrift: true,",
+				"SumItemsQty filter(No>'') ~> removeBlanks",
+				"removeBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
