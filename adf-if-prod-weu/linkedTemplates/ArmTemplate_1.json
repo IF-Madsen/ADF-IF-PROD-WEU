@@ -2030,7 +2030,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryReorder"
+					"name": "InventoryForecast"
 				},
 				"annotations": []
 			},
@@ -2115,7 +2115,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryReorder"
+					"name": "InventoryForecast"
 				},
 				"annotations": []
 			},
@@ -2973,7 +2973,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryReorder"
+					"name": "InventoryForecast"
 				},
 				"annotations": []
 			},
@@ -4148,7 +4148,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryReorder/ExtractData"
+					"name": "InventoryForecast/ExtractData"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -4691,7 +4691,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryReorder/ExtractData"
+					"name": "InventoryForecast/ExtractData"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -5693,7 +5693,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryReorder"
+					"name": "InventoryForecast"
 				},
 				"annotations": []
 			},
@@ -5781,7 +5781,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryReorder"
+					"name": "InventoryForecast"
 				},
 				"annotations": []
 			},
