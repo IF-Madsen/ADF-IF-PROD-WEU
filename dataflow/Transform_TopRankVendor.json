@@ -48,6 +48,12 @@
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "SkipBlank"
+				},
+				{
+					"name": "sortRank"
 				}
 			],
 			"scriptLines": [
@@ -277,7 +283,9 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 sink(allowSchemaDrift: true,",
+				"join1 filter(Vendor_No>'') ~> SkipBlank",
+				"SkipBlank sort(asc(Rank, true)) ~> sortRank",
+				"sortRank sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
 				"     fileSystem: ($parmTargetBlob),",
