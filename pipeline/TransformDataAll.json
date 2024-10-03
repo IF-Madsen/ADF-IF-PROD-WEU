@@ -55,7 +55,7 @@
 											"type": "Expression"
 										},
 										"parmTargetBlob": {
-											"value": "'@{variables('blobSilver')}'",
+											"value": "'@{variables('blobGold')}'",
 											"type": "Expression"
 										},
 										"parmTargetFolder": {
@@ -619,7 +619,7 @@
 											"type": "Expression"
 										},
 										"parmTargetBlob": {
-											"value": "'@{variables('blobSilver')}'",
+											"value": "'@{variables('blobGold')}'",
 											"type": "Expression"
 										},
 										"parmTargetFolder": {
