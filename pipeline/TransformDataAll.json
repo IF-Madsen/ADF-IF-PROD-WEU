@@ -685,7 +685,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Silver",
+						"activity": "Set Gold layer",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -727,20 +727,52 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Set Gold layer",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Layer Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobGold",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_gold",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"blobBronze": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'bronze'"
 			},
 			"blobSilver": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'silver'"
 			},
 			"folderD365bc": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'d365bc'"
 			},
 			"folderJson": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'json'"
+			},
+			"blobGold": {
+				"type": "String",
+				"defaultValue": "'gold'"
 			}
 		},
 		"folder": {
