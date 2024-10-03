@@ -1082,10 +1082,12 @@
 		],
 		"parameters": {
 			"parmRegion": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "EU"
 			},
 			"parmLoaded": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "@utcNow()"
 			}
 		},
 		"folder": {
