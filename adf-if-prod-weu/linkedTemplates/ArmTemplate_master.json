@@ -137,7 +137,7 @@
 		},
 		"default_properties_d365bc_vendor_rank_value": {
 			"type": "int",
-			"defaultValue": 5
+			"defaultValue": 15
 		},
 		"default_properties_Region_EU_value": {
 			"type": "string",
@@ -318,26 +318,6 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_0')]"
-			]
-		},
-		{
-			"name": "adf-if-prod-weu_ArmTemplate_2",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2024-03-01",
-			"properties": {
-				"mode": "incremental",
-				"templateLink": {
-					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"factoryName": {
-						"value": "[parameters('factoryName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_1')]"
 			]
 		}
 	]

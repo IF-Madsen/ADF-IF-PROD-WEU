@@ -13,459 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemPrices')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Extract Of ItemNo, Description and Prices",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadItem"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveItemPrices"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectPriceFields"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmRegion as string ('EU'),",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('silver'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as string,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as string,",
-						"          Last_Counting_Period_Update as string,",
-						"          Next_Counting_Start_Date as string,",
-						"          Next_Counting_End_Date as string,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> LoadItem",
-						"LoadItem select(mapColumn(",
-						"          ItemNo = No,",
-						"          ItemNoAlt = No_270842,",
-						"          Description,",
-						"          UnitPrice = Unit_Price,",
-						"          StandardCost = Standard_Cost,",
-						"          Unit_Cost",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
-						"selectPriceFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('ItemPrices.parquet'))],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> saveItemPrices"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemReorderInterval')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Builds list of Items with each instance of the vaule from the reorder interval.",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadItemFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveParquetFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectFields"
-						},
-						{
-							"name": "filterResult"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string,",
-						"     parmSourceFolder as string,",
-						"     parmTargetBlob as string,",
-						"     parmTargetFolder as string,",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('ItemReorder_',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Ava_AFC_Transaction_Type as integer,",
-						"          Ava_AFC_Service_Type as integer,",
-						"          Ava_AFC_Sales_Type as string,",
-						"          Ava_VAT_isGoodsSecondHand as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          SAT_Item_Classification as string,",
-						"          SAT_Hazardous_Material as string,",
-						"          SAT_Packaging_Type as string,",
-						"          SAT_Material_Type as string,",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as timestamp,",
-						"          Last_Counting_Period_Update as timestamp,",
-						"          Next_Counting_Start_Date as timestamp,",
-						"          Next_Counting_End_Date as timestamp,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile)) ~> loadItemFile",
-						"loadItemFile select(mapColumn(",
-						"          ItemNo = No,",
-						"          ReorderInterval = Reorder_Interval_58501",
-						"     ),",
-						"     partitionBy('hash', 1),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectFields",
-						"selectFields filter(!isNull(ItemNo) && ReorderInterval>0) ~> filterResult",
-						"filterResult sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[($parmTargetFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> saveParquetFile"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_ItemsFiltered')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1708,6 +1255,12 @@
 						},
 						{
 							"name": "join1"
+						},
+						{
+							"name": "SkipBlank"
+						},
+						{
+							"name": "sortRank"
 						}
 					],
 					"scriptLines": [
@@ -1717,7 +1270,7 @@
 						"     parmTargetBlob as string,",
 						"     parmTargetFolder as string ('json'),",
 						"     parmRegion as string,",
-						"     parmVendorRank as integer,",
+						"     parmVendorRank as integer (50),",
 						"     parmSourceFileItems as string (concat('Items_',$parmRegion,'.parquet')),",
 						"     parmSourceFileVendors as string (concat('Vendors_',$parmRegion,'.parquet')),",
 						"     parmTargetFile as string (concat('TopRankVendors_',$parmRegion,'.json'))",
@@ -1937,7 +1490,9 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"join1 sink(allowSchemaDrift: true,",
+						"join1 filter(Vendor_No>'') ~> SkipBlank",
+						"SkipBlank sort(asc(Rank, true)) ~> sortRank",
+						"sortRank sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'json',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -2625,7 +2180,7 @@
 													"type": "Expression"
 												},
 												"parmTargetBlob": {
-													"value": "'@{variables('blobSilver')}'",
+													"value": "'@{variables('blobGold')}'",
 													"type": "Expression"
 												},
 												"parmTargetFolder": {
@@ -2642,7 +2197,8 @@
 											"datasetParameters": {
 												"loadItemFile": {},
 												"saveParquetFile": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -3251,7 +2807,7 @@
 													"type": "Expression"
 												},
 												"parmTargetBlob": {
-													"value": "'@{variables('blobSilver')}'",
+													"value": "'@{variables('blobGold')}'",
 													"type": "Expression"
 												},
 												"parmTargetFolder": {
@@ -3263,7 +2819,8 @@
 											"datasetParameters": {
 												"LoadItem": {},
 												"saveItemPrices": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -3322,7 +2879,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Layer Silver",
+								"activity": "Set Gold layer",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3364,6 +2921,30 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Set Gold layer",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set Layer Silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "blobGold",
+							"value": {
+								"value": "@pipeline().globalParameters.blob_gold",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -3371,16 +2952,24 @@
 				},
 				"variables": {
 					"blobBronze": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'bronze'"
 					},
 					"blobSilver": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'silver'"
 					},
 					"folderD365bc": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'d365bc'"
 					},
 					"folderJson": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'json'"
+					},
+					"blobGold": {
+						"type": "String",
+						"defaultValue": "'gold'"
 					}
 				},
 				"folder": {
@@ -3389,14 +2978,12 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemReorderInterval')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_LedgerPeriod')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsFiltered')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_TopRankVendor')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_PurchaseOrderFiles')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_PurchLineFile')]",
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]",
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemPrices')]"
+				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]"
 			]
 		},
 		{
@@ -4552,10 +4139,12 @@
 				},
 				"parameters": {
 					"parmRegion": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "EU"
 					},
 					"parmLoaded": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "@utcNow()"
 					}
 				},
 				"folder": {
@@ -5854,7 +5443,6 @@
 				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_TopRankVendor')]",
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemPrices')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_LedgerPeriod')]",
 				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsFiltered')]"
@@ -6113,6 +5701,129 @@
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataEU')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataUS')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractPrimoAll')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BuildReport000')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Extract Data",
+						"description": "Import data from sources to Bronze Layer",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "ExtractDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Calculate Data",
+						"description": "Calculate the data and save to Gold Layer",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Transform Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CalculateDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Transform Data",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Extract Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "TransformDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "InventoryReorder"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Every second week')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "BuildReport000",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 2,
+						"startTime": "2024-09-05T04:40:00",
+						"timeZone": "Romance Standard Time",
+						"schedule": {
+							"weekDays": [
+								"Saturday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/BuildReport000')]"
 			]
 		}
 	]
