@@ -5,7 +5,14 @@
 			{
 				"name": "Run Merge to Global All",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set Folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -19,11 +26,22 @@
 						"referenceName": "Merge_RegionInventories",
 						"type": "DataFlowReference",
 						"parameters": {
-							"parmSourceBlob": "'gold'",
-							"parmSourceFolder": "'d365bc'",
-							"parmTargetBlob": "'gold'",
-							"parmTargetFolder": "'d365bc'",
-							"parmSourceBlobSilver": "'silver'"
+							"parmSourceBlob": {
+								"value": "'@{variables('blobGold')}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{variables('folderD365bc')}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{variables('blobGold')}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{variables('folderD365bc')}'",
+								"type": "Expression"
+							}
 						}
 					},
 					"compute": {
@@ -32,8 +50,59 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Set Blob",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "blobGold",
+					"value": {
+						"value": "@pipeline().globalParameters.blob_gold",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Folder",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Blob",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "folderD365bc",
+					"value": {
+						"value": "@pipeline().globalParameters.folder_d365bc",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"blobGold": {
+				"type": "String",
+				"defaultValue": "'gold'"
+			},
+			"folderD365bc": {
+				"type": "String",
+				"defaultValue": "'d365bc'"
+			}
+		},
 		"folder": {
 			"name": "InventoryForecast"
 		},
