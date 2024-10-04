@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "BuildReport000",
+					"referenceName": "RunBuildData",
 					"type": "PipelineReference"
 				}
 			}
