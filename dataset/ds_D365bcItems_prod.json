@@ -1,5 +1,5 @@
 {
-	"name": "ds_D365bcItems",
+	"name": "ds_D365bcItems_prod",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Dynamics365BusinessCentral",
@@ -25,7 +25,10 @@
 				"defaultValue": "'7b1647b5-d439-422d-ad72-779b8d13fa50'"
 			}
 		},
-		"annotations": [],
+		"annotations": [
+			"prod",
+			"item card"
+		],
 		"type": "DynamicsEntity",
 		"schema": [],
 		"typeProperties": {
