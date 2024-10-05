@@ -136,7 +136,7 @@
 			},
 			"SourceFileDirectory": {
 				"type": "string",
-				"defaultValue": "/"
+				"defaultValue": "/bronze"
 			},
 			"DestinationFileFolder": {
 				"type": "string",
