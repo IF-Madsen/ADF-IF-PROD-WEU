@@ -25,7 +25,7 @@
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
 							},
-							"wildcardFileName": "*.*",
+							"wildcardFileName": "*.parquet",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -64,8 +64,7 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
-							},
-							"filename": "*"
+							}
 						}
 					}
 				],
@@ -81,8 +80,7 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
-							},
-							"filename": "*"
+							}
 						}
 					}
 				]
