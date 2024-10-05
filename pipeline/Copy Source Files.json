@@ -70,7 +70,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
-								"value": "@pipeline().globalParameters.blob_bronze",
+								"value": "@concat(pipeline().globalParameters.blob_bronze,'/',pipeline().globalParameters.folder_d365bc)",
 								"type": "Expression"
 							}
 						}
