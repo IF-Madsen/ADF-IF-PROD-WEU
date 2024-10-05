@@ -100,7 +100,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -183,7 +183,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_Json",
+						"referenceName": "ds_Json_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -195,7 +195,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Json",
+						"referenceName": "ds_Json_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
