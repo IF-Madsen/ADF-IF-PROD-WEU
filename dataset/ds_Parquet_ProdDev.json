@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"blob": {
+			"container": {
 				"type": "string",
 				"defaultValue": "'bronze'"
 			}
