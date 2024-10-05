@@ -77,12 +77,7 @@
 							"blob": {
 								"value": "@pipeline().globalParameters.blob_bronze",
 								"type": "Expression"
-							},
-							"folder": {
-								"value": "@pipeline().globalParameters.folder_d365bc",
-								"type": "Expression"
-							},
-							"filename": "*"
+							}
 						}
 					}
 				]
