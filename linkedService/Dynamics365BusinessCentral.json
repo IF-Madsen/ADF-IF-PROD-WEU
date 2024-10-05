@@ -4,7 +4,8 @@
 		"description": "Direct access to D365bc",
 		"parameters": {
 			"ServiceURL": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
 			},
 			"ServicePrincipalID": {
 				"type": "String",
