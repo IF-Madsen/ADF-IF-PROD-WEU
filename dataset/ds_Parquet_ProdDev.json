@@ -19,7 +19,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileSystem": {
-					"value": "@dataset().blob",
+					"value": "@dataset().container",
 					"type": "Expression"
 				}
 			},
