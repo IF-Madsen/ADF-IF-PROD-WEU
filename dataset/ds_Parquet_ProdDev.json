@@ -1,5 +1,5 @@
 {
-	"name": "ds_Parquet_Prod2",
+	"name": "ds_Parquet_ProdDev",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcDataLakeProd",
