@@ -21,11 +21,6 @@
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
 							"recursive": true,
-							"wildcardFolderPath": {
-								"value": "@pipeline().globalParameters.folder_d365bc",
-								"type": "Expression"
-							},
-							"wildcardFileName": "*.parquet",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -54,18 +49,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_Parquet_Prod",
+						"referenceName": "ds_Parquet_ProdDev",
 						"type": "DatasetReference",
 						"parameters": {
-							"blob": {
+							"container": {
 								"value": "@pipeline().globalParameters.blob_bronze",
 								"type": "Expression"
-							},
-							"folder": {
-								"value": "@pipeline().globalParameters.folder_d365bc",
-								"type": "Expression"
-							},
-							"filename": "*"
+							}
 						}
 					}
 				],
