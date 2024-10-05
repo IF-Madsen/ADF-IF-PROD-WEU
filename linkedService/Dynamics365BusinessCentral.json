@@ -1,0 +1,31 @@
+{
+	"name": "Dynamics365BusinessCentral",
+	"properties": {
+		"description": "Direct access to D365bc",
+		"parameters": {
+			"ServiceURL": {
+				"type": "String"
+			},
+			"ServicePrincipalID": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "Dynamics",
+		"typeProperties": {
+			"deploymentType": "Online",
+			"serviceUri": "@{linkedService().ServiceURL}",
+			"authenticationType": "AADServicePrincipal",
+			"servicePrincipalId": "@{linkedService().ServicePrincipalID}",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultProd",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ar-D365bc"
+			},
+			"servicePrincipalCredentialType": "ServicePrincipalKey"
+		}
+	}
+}
