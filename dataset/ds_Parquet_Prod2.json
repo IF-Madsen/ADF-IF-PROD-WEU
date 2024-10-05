@@ -1,0 +1,39 @@
+{
+	"name": "ds_Parquet_Prod2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"blob": {
+				"type": "string",
+				"defaultValue": "'bronze'"
+			}
+		},
+		"annotations": [
+			"prod"
+		],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat(dataset().filename,'.parquet')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().blob",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
