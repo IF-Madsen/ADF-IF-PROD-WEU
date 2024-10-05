@@ -59,14 +59,26 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
-							}
+							},
+							"filename": "'*.parquet'"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet_Prod",
-						"type": "DatasetReference"
+						"referenceName": "ds_Parquet_Dev",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": "'*.parquet'"
+						}
 					}
 				]
 			}
