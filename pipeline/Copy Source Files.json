@@ -64,7 +64,8 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
-							}
+							},
+							"filename": "*"
 						}
 					}
 				],
@@ -80,7 +81,8 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
-							}
+							},
+							"filename": "*"
 						}
 					}
 				]
