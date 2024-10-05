@@ -1,5 +1,5 @@
 {
-	"name": "D365bcItems",
+	"name": "ds_D365bcItems",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Dynamics365BusinessCentral",
