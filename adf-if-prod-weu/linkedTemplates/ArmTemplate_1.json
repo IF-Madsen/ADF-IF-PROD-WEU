@@ -234,7 +234,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('Items_',$parmRegion,'.parquet'))) ~> LoadItems",
+						"     fileName: (concat('Items',$parmRegion,'.parquet'))) ~> LoadItems",
 						"source(output(",
 						"          Code as short,",
 						"          GroupDescription as string,",
@@ -247,7 +247,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('ItemCategoriesAndGroups_',$parmRegion,'.json')),",
+						"     fileName: (concat('ItemCategoriesAndGroups',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine') ~> ItemCategoriesGroups",
 						"source(output(",
 						"          Allow_Multiple_Posting_Groups as boolean,",
@@ -300,7 +300,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('TopRankVendors_',$parmRegion,'.json')),",
+						"     fileName: (concat('TopRankVendors',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine') ~> TopRankVendors",
 						"LoadItems select(mapColumn(",
 						"          ItemNo = No,",
@@ -578,6 +578,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
 						"     partitionBy('hash', 1)) ~> saveJson"
 					]
 				}
@@ -2715,8 +2716,8 @@
 						"     parmSourceFolder as string,",
 						"     parmTargetBlob as string,",
 						"     parmTargetFolder as string,",
-						"     parmSourceFilename as string (concat('PurchaseLines_',$parmRegion,'.parquet')),",
-						"     parmTargetFilename as string (concat('PurchaseLines_',$parmRegion,'.parquet'))",
+						"     parmSourceFilename as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
+						"     parmTargetFilename as string (concat('PurchaseLines',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
@@ -4115,16 +4116,20 @@
 				},
 				"variables": {
 					"blobSilver": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'silver'"
 					},
 					"blobGold": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'gold'"
 					},
 					"folderD365bc": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'d365bc'"
 					},
 					"folderJson": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'json'"
 					}
 				},
 				"folder": {

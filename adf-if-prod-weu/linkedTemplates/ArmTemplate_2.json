@@ -59,7 +59,7 @@
 													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 													"type": "Expression"
 												},
-												"parmSourceFilename": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+												"parmSourceFilename": "concat('ItemsLedgerEntries',$parmRegion,'.parquet')",
 												"parmTargetBlob": {
 													"value": "'@{pipeline().globalParameters.blob_silver}'",
 													"type": "Expression"
@@ -68,12 +68,13 @@
 													"value": "'@{pipeline().globalParameters.folder_json}'",
 													"type": "Expression"
 												},
-												"parmTargetFilename": "concat('primodate_',$parmRegion,'.json')"
+												"parmTargetFilename": "concat('primodate',$parmRegion,'.json')"
 											},
 											"datasetParameters": {
 												"loadfile": {},
 												"saveJson": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -1329,7 +1330,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Items',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -1411,7 +1412,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2062,7 +2063,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2148,7 +2149,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2234,7 +2235,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2320,7 +2321,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2439,7 +2440,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Items',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2521,7 +2522,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2607,7 +2608,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2693,7 +2694,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2779,7 +2780,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2865,7 +2866,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}

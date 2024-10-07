@@ -476,16 +476,20 @@
 				},
 				"variables": {
 					"blobSilver": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'silver'"
 					},
 					"blobGold": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'gold'"
 					},
 					"folderD365bc": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'d365bc'"
 					},
 					"folderJson": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "'json'"
 					}
 				},
 				"folder": {
@@ -1107,7 +1111,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Items',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -1189,7 +1193,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -1840,7 +1844,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -1926,7 +1930,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2012,7 +2016,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2098,7 +2102,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2218,7 +2222,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Items',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2300,7 +2304,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+										"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2386,7 +2390,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2472,7 +2476,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+										"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2558,7 +2562,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2644,7 +2648,7 @@
 										"type": "Expression"
 									},
 									"filename": {
-										"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -2721,7 +2725,7 @@
 													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 													"type": "Expression"
 												},
-												"parmSourceFilename": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+												"parmSourceFilename": "concat('ItemsLedgerEntries',$parmRegion,'.parquet')",
 												"parmTargetBlob": {
 													"value": "'@{pipeline().globalParameters.blob_silver}'",
 													"type": "Expression"
@@ -2730,12 +2734,13 @@
 													"value": "'@{pipeline().globalParameters.folder_json}'",
 													"type": "Expression"
 												},
-												"parmTargetFilename": "concat('primodate_',$parmRegion,'.json')"
+												"parmTargetFilename": "concat('primodate',$parmRegion,'.json')"
 											},
 											"datasetParameters": {
 												"loadfile": {},
 												"saveJson": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -5452,7 +5457,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolderJson),",
-						"     fileName: (concat('LedgerPeriod_',$parmRegion,'.json')),",
+						"     fileName: (concat('LedgerPeriod',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine',",
 						"     partitionBy('hash', 1)) ~> GetAllLedgerPeriods",
 						"source(output(",
@@ -5519,7 +5524,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('ItemsWithGroups_',$parmRegion,'.parquet'))) ~> GetItems",
+						"     fileName: (concat('ItemsWithGroups',$parmRegion,'.parquet'))) ~> GetItems",
 						"source(output(",
 						"          Item_No as string,",
 						"          EndDate as date,",
@@ -5531,7 +5536,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumSales_',$parmRegion,'.parquet')),",
+						"     fileName: (concat('InventorySumSales',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> GetInventSumSales",
 						"source(output(",
 						"          Item_No as string,",
@@ -5544,7 +5549,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumPurchase_',$parmRegion,'.parquet')),",
+						"     fileName: (concat('InventorySumPurchase',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> GetInventSumPurch",
 						"source(output(",
 						"          Item_No as string,",
@@ -5557,7 +5562,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumPosAdj_',$parmRegion,'.parquet'))) ~> GetInventSumAdjustPos",
+						"     fileName: (concat('InventorySumPosAdj',$parmRegion,'.parquet'))) ~> GetInventSumAdjustPos",
 						"source(output(",
 						"          Item_No as string,",
 						"          EndDate as date,",
@@ -5569,7 +5574,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumNegAdj_',$parmRegion,'.parquet'))) ~> GetInventSumdjustNeg",
+						"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumdjustNeg",
 						"source(output(",
 						"          PrimoDate as date",
 						"     ),",
@@ -5580,7 +5585,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolderJson),",
-						"     fileName: (concat('primodate_',$parmRegion,'.json')),",
+						"     fileName: (concat('primodate',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine') ~> GetPrimoDate",
 						"source(output(",
 						"          Region as string,",
@@ -5594,7 +5599,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumAssOut_',$parmRegion,'.parquet'))) ~> GetInventoryAssOut",
+						"     fileName: (concat('InventorySumAssOut',$parmRegion,'.parquet'))) ~> GetInventoryAssOut",
 						"source(output(",
 						"          Region as string,",
 						"          Item_No as string,",
@@ -5607,7 +5612,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumAssCons_',$parmRegion,'.parquet'))) ~> GetInventoryAccCon",
+						"     fileName: (concat('InventorySumAssCons',$parmRegion,'.parquet'))) ~> GetInventoryAccCon",
 						"OnlyItemNo derive(InventorySum = 0,",
 						"          PurchQty = 0,",
 						"          SalesQty = 0,",
@@ -5799,6 +5804,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
 						"     mapColumn(",
 						"          ItemNo,",
 						"          InventorySum,",
@@ -5995,7 +6001,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('PurchaseLines_',$parmRegion,'.parquet'))) ~> PurchLines",
+						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet'))) ~> PurchLines",
 						"PurchLines aggregate(groupBy(No),",
 						"     SumQty = sum(Quantity)) ~> SumItemsQty",
 						"SumItemsQty filter(No>'') ~> removeBlanks",
@@ -6246,7 +6252,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('Items_',$parmRegion,'.parquet'))) ~> LoadItems",
+						"     fileName: (concat('Items',$parmRegion,'.parquet'))) ~> LoadItems",
 						"source(output(",
 						"          Code as short,",
 						"          GroupDescription as string,",
@@ -6259,7 +6265,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('ItemCategoriesAndGroups_',$parmRegion,'.json')),",
+						"     fileName: (concat('ItemCategoriesAndGroups',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine') ~> ItemCategoriesGroups",
 						"source(output(",
 						"          Allow_Multiple_Posting_Groups as boolean,",
@@ -6312,7 +6318,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('TopRankVendors_',$parmRegion,'.json')),",
+						"     fileName: (concat('TopRankVendors',$parmRegion,'.json')),",
 						"     documentForm: 'documentPerLine') ~> TopRankVendors",
 						"LoadItems select(mapColumn(",
 						"          ItemNo = No,",
@@ -6592,6 +6598,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
 						"     partitionBy('hash', 1)) ~> saveJson"
 					]
 				}
@@ -8809,8 +8816,8 @@
 						"     parmSourceFolder as string,",
 						"     parmTargetBlob as string,",
 						"     parmTargetFolder as string,",
-						"     parmSourceFilename as string (concat('PurchaseLines_',$parmRegion,'.parquet')),",
-						"     parmTargetFilename as string (concat('PurchaseLines_',$parmRegion,'.parquet'))",
+						"     parmSourceFilename as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
+						"     parmTargetFilename as string (concat('PurchaseLines',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
