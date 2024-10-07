@@ -2534,14 +2534,14 @@
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "SaveFile"
+							"name": "SaveParquetFile"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "sink1"
+							"name": "savejsonfile"
 						}
 					],
 					"transformations": [
@@ -2654,7 +2654,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveFile",
+						"     partitionBy('hash', 1)) ~> SaveParquetFile",
 						"SelectFields sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'json',",
@@ -2666,7 +2666,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
+						"     partitionBy('hash', 1)) ~> savejsonfile"
 					]
 				}
 			},

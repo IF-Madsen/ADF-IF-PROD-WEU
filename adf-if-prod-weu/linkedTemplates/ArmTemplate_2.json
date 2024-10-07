@@ -73,8 +73,7 @@
 											"datasetParameters": {
 												"loadfile": {},
 												"saveJson": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -306,8 +305,7 @@
 											"datasetParameters": {
 												"loadItemFile": {},
 												"saveParquetFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -366,10 +364,9 @@
 											},
 											"datasetParameters": {
 												"LoadFile": {},
-												"SaveFile": {},
-												"sink1": {}
-											},
-											"linkedServiceParameters": {}
+												"SaveParquetFile": {},
+												"savejsonfile": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -429,8 +426,7 @@
 											"datasetParameters": {
 												"Items": {},
 												"SaveFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -489,8 +485,7 @@
 												"Items": {},
 												"Vendors": {},
 												"WriteFileJson": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -550,8 +545,7 @@
 											"datasetParameters": {
 												"PurchOrders": {},
 												"SavePurchOrderFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -611,8 +605,7 @@
 											"datasetParameters": {
 												"loadPurchlines": {},
 												"savePurchlines": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -673,8 +666,7 @@
 												"ItemCategories": {},
 												"ItemCategoriesGroup": {},
 												"WriteFileJson": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -742,8 +734,7 @@
 												"ItemCategoriesGroups": {},
 												"TopRankVendors": {},
 												"SaveFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -815,8 +806,7 @@
 												"WriteFileSalesV2": {},
 												"WriteFileAssConsV2": {},
 												"WriteFileAssOutV2": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -878,8 +868,7 @@
 												"GetPositiveAdjustments": {},
 												"GetPrimoDate": {},
 												"SaveFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -938,8 +927,7 @@
 											"datasetParameters": {
 												"LoadItem": {},
 												"saveItemPrices": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -3431,8 +3419,8 @@
 								},
 								"datasetParameters": {
 									"LoadFile": {},
-									"SaveFile": {},
-									"sink1": {}
+									"SaveParquetFile": {},
+									"savejsonfile": {}
 								}
 							},
 							"staging": {},
