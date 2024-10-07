@@ -81,7 +81,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('Items_',pipeline().parameters.parmRegion)",
+								"value": "@concat('Items',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -163,7 +163,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('Vendors_',pipeline().parameters.parmRegion)",
+								"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -814,7 +814,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('ItemsLedgerEntries_',pipeline().parameters.parmRegion)",
+								"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -900,7 +900,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('ItemsCategories_',pipeline().parameters.parmRegion)",
+								"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -986,7 +986,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('PurchaseLines_',pipeline().parameters.parmRegion)",
+								"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -1072,7 +1072,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('PurchaseOrders_',pipeline().parameters.parmRegion)",
+								"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
