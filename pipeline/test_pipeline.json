@@ -247,7 +247,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_Json",
+						"referenceName": "ds_Json_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -259,7 +259,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Json",
+						"referenceName": "ds_Json_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"Cointainer": {
@@ -564,8 +564,7 @@
 							"parmSourceBlob": "'gold'",
 							"parmSourceFolder": "'d365bc'",
 							"parmTargetBlob": "'gold'",
-							"parmTargetFolder": "'d365bc'",
-							"parmSourceBlobSilver": "'silver'"
+							"parmTargetFolder": "'d365bc'"
 						}
 					},
 					"compute": {

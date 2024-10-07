@@ -184,7 +184,7 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[(concat('PurchaseLines_',$parmRegion,'.parquet'))],",
+				"     partitionFileNames:[(concat('PurchaseLines',$parmRegion,'.parquet'))],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",

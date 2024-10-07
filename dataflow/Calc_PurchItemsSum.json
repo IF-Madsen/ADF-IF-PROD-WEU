@@ -31,6 +31,9 @@
 				},
 				{
 					"name": "removeBlanks"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -172,13 +175,14 @@
 				"PurchLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumItemsQty",
 				"SumItemsQty filter(No>'') ~> removeBlanks",
-				"removeBlanks sink(allowSchemaDrift: true,",
+				"removeBlanks filter(No=='23510100') ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[(concat('PurchItemSum_',$parmRegion,'.parquet'))],",
+				"     partitionFileNames:[(concat('PurchItemSum',$parmRegion,'.parquet'))],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",

@@ -1,0 +1,33 @@
+{
+	"name": "Dynamics365BusinessCentral",
+	"properties": {
+		"description": "Direct access to D365bc",
+		"parameters": {
+			"ServiceURL": {
+				"type": "String",
+				"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
+			},
+			"ServicePrincipalID": {
+				"type": "String",
+				"defaultValue": "'98c52d81-2480-4351-9e23-51ae9dae9755'"
+			}
+		},
+		"annotations": [],
+		"type": "Dynamics",
+		"typeProperties": {
+			"deploymentType": "Online",
+			"serviceUri": "@{linkedService().ServiceURL}",
+			"authenticationType": "AADServicePrincipal",
+			"servicePrincipalId": "@{linkedService().ServicePrincipalID}",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultProd",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ar-D365BC-prod-DK"
+			},
+			"servicePrincipalCredentialType": "ServicePrincipalKey"
+		}
+	}
+}

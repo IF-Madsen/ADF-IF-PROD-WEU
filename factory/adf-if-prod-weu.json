@@ -104,6 +104,14 @@
 					"CA",
 					"US"
 				]
+			},
+			"ServiceURL_EU": {
+				"type": "string",
+				"value": "https://ironfortressapsdefault.crm4.dynamics.com/"
+			},
+			"ServiceURL_US": {
+				"type": "string",
+				"value": "'https://ironfortressinc.crm4.dynamics.com/'"
 			}
 		}
 	},

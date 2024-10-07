@@ -1,0 +1,11 @@
+{
+	"name": "D365bcDataLakeDev",
+	"properties": {
+		"description": "Datalake for Development",
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://saadfifdevweu.dfs.core.windows.net/"
+		}
+	}
+}

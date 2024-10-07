@@ -1,5 +1,5 @@
 {
-	"name": "ds_Json",
+	"name": "ds_Json_Prod",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcDataLakeProd",

@@ -1,5 +1,5 @@
 {
-	"name": "ds_Parquet",
+	"name": "ds_Parquet_Dev",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "D365bcDataLakeProd",
@@ -8,29 +8,15 @@
 		"parameters": {
 			"blob": {
 				"type": "string"
-			},
-			"folder": {
-				"type": "string"
-			},
-			"filename": {
-				"type": "string"
 			}
 		},
 		"annotations": [
-			"prod"
+			"Dev"
 		],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@concat(dataset().filename,'.parquet')",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().folder",
-					"type": "Expression"
-				},
 				"fileSystem": {
 					"value": "@dataset().blob",
 					"type": "Expression"

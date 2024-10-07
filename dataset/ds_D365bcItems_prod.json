@@ -1,0 +1,35 @@
+{
+	"name": "ds_D365bcItems_prod",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dynamics365BusinessCentral",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ServiceURL": {
+					"value": "@dataset().ServiceURL",
+					"type": "Expression"
+				},
+				"ServicePrincipalID": {
+					"value": "@dataset().ServicePrincipalID",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"ServiceURL": {
+				"type": "string",
+				"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
+			},
+			"ServicePrincipalID": {
+				"type": "string",
+				"defaultValue": "'7b1647b5-d439-422d-ad72-779b8d13fa50'"
+			}
+		},
+		"annotations": [
+			"prod",
+			"item card"
+		],
+		"type": "DynamicsEntity",
+		"schema": []
+	}
+}

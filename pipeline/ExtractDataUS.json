@@ -72,7 +72,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -154,7 +154,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -240,7 +240,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -326,7 +326,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -412,7 +412,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
@@ -498,7 +498,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_Parquet",
+						"referenceName": "ds_Parquet_Prod",
 						"type": "DatasetReference",
 						"parameters": {
 							"blob": {
