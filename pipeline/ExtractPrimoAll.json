@@ -43,7 +43,7 @@
 											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 											"type": "Expression"
 										},
-										"parmSourceFilename": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
+										"parmSourceFilename": "concat('ItemsLedgerEntries',$parmRegion,'.parquet')",
 										"parmTargetBlob": {
 											"value": "'@{pipeline().globalParameters.blob_silver}'",
 											"type": "Expression"
@@ -52,7 +52,7 @@
 											"value": "'@{pipeline().globalParameters.folder_json}'",
 											"type": "Expression"
 										},
-										"parmTargetFilename": "concat('primodate_',$parmRegion,'.json')"
+										"parmTargetFilename": "concat('primodate',$parmRegion,'.json')"
 									}
 								},
 								"compute": {
