@@ -66,8 +66,8 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('ItemReorder_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('Items',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemReorder',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -121,8 +121,8 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('LedgerPeriod_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('ItemsLedgerEntries',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('LedgerPeriod',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -176,8 +176,8 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('Items_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('Items',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('Items',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -228,9 +228,9 @@
 											"value": "@pipeline().globalParameters.d365bc_vendor_rank",
 											"type": "Expression"
 										},
-										"parmSourceFileItems": "concat('Items_',$parmRegion,'.parquet')",
-										"parmSourceFileVendors": "concat('Vendors_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+										"parmSourceFileItems": "concat('Items',$parmRegion,'.parquet')",
+										"parmSourceFileVendors": "concat('Vendors',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('TopRankVendors',$parmRegion,'.json')"
 									}
 								},
 								"compute": {
@@ -284,8 +284,8 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('PurchaseOrders_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('PurchOrders_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('PurchOrders',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -339,8 +339,8 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmSourceFilename": "concat('PurchaseLines_',$parmRegion,'.parquet')",
-										"parmTargetFilename": "concat('PurchOrderLines_',$parmRegion,'.parquet')"
+										"parmSourceFilename": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmTargetFilename": "concat('PurchOrderLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -394,8 +394,8 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('ItemsCategories_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')"
+										"parmSourceFile": "concat('ItemsCategories',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemCategoriesAndGroups',$parmRegion,'.json')"
 									}
 								},
 								"compute": {
@@ -453,10 +453,10 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('ItemsWithGroups_',$parmRegion,'.parquet')",
-										"parmSourceItemGrpFile": "concat('ItemCategoriesAndGroups_',$parmRegion,'.json')",
-										"parmSourceTopVendFile": "concat('TopRankVendors_',$parmRegion,'.json')"
+										"parmSourceFile": "concat('Items',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('ItemsWithGroups',$parmRegion,'.parquet')",
+										"parmSourceItemGrpFile": "concat('ItemCategoriesAndGroups',$parmRegion,'.json')",
+										"parmSourceTopVendFile": "concat('TopRankVendors',$parmRegion,'.json')"
 									}
 								},
 								"compute": {
@@ -494,14 +494,14 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('ItemsLedgerEntries_',$parmRegion,'.parquet')",
-										"parmAssOutFile": "concat('InventorySumAssOut_',$parmRegion,'.parquet')",
-										"parmAssConsFile": "concat('InventorySumAssCons_',$parmRegion,'.parquet')",
-										"parmTransferFile": "concat('InventorySumTransfer_',$parmRegion,'.parquet')",
-										"parmNegAdjFile": "concat('InventorySumNegAdj_',$parmRegion,'.parquet')",
-										"parmPosAdjFile": "concat('InventorySumPosAdj_',$parmRegion,'.parquet')",
-										"parmSalesFile": "concat('InventorySumSales_',$parmRegion,'.parquet')",
-										"parmPurchFile": "concat('InventorySumPurchase_',$parmRegion,'.parquet')",
+										"parmSourceFile": "concat('ItemsLedgerEntries',$parmRegion,'.parquet')",
+										"parmAssOutFile": "concat('InventorySumAssOut',$parmRegion,'.parquet')",
+										"parmAssConsFile": "concat('InventorySumAssCons',$parmRegion,'.parquet')",
+										"parmTransferFile": "concat('InventorySumTransfer',$parmRegion,'.parquet')",
+										"parmNegAdjFile": "concat('InventorySumNegAdj',$parmRegion,'.parquet')",
+										"parmPosAdjFile": "concat('InventorySumPosAdj',$parmRegion,'.parquet')",
+										"parmSalesFile": "concat('InventorySumSales',$parmRegion,'.parquet')",
+										"parmPurchFile": "concat('InventorySumPurchase',$parmRegion,'.parquet')",
 										"parmSourceBlob": {
 											"value": "'@{variables('blobBronze')}'",
 											"type": "Expression"
@@ -571,8 +571,9 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('InventorySumPosAdj_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('InitialInventory_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('InventorySumPosAdj',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('InitialInventory',$parmRegion,'.parquet')",
+										"parmSourceFolderJson": "'json'"
 									}
 								},
 								"compute": {
@@ -626,7 +627,7 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('Items_',$parmRegion,'.parquet')"
+										"parmSourceFile": "concat('Items',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
