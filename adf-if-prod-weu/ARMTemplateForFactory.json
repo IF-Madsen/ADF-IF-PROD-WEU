@@ -9327,9 +9327,9 @@
 					],
 					"scriptLines": [
 						"parameters{",
-						"     parmSourceBlob as string,",
+						"     parmSourceBlob as string ('bronze'),",
 						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string,",
+						"     parmTargetBlob as string ('silver'),",
 						"     parmTargetFolder as string ('json'),",
 						"     parmRegion as string,",
 						"     parmVendorRank as integer (50),",
