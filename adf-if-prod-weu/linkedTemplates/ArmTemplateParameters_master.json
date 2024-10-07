@@ -5,12 +5,6 @@
 		"factoryName": {
 			"value": "adf-if-prod-weu"
 		},
-		"AzureDataLakeStorageProd_accountKey": {
-			"value": ""
-		},
-		"AzureDataLakeStorageProd_properties_typeProperties_url": {
-			"value": "https://saadfifprodweu.dfs.core.windows.net/"
-		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"value": "https://kv-adf-if-weu.vault.azure.net/"
 		},
@@ -38,8 +32,14 @@
 		"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 			"value": "98c52d81-2480-4351-9e23-51ae9dae9755"
 		},
+		"D365bcDataLakeDev_properties_typeProperties_url": {
+			"value": "https://saadfifdevweu.dfs.core.windows.net/"
+		},
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"value": "https://saadfifprodweu.dfs.core.windows.net/"
+		},
+		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+			"value": "@{linkedService().ServicePrincipalID}"
 		},
 		"default_properties_ServicePrincipalID_value": {
 			"value": "7b1647b5-d439-422d-ad72-779b8d13fa50"
@@ -118,6 +118,12 @@
 				"CA",
 				"US"
 			]
+		},
+		"default_properties_ServiceURL_EU_value": {
+			"value": "https://ironfortressapsdefault.crm4.dynamics.com/"
+		},
+		"default_properties_ServiceURL_US_value": {
+			"value": "'https://ironfortressinc.crm4.dynamics.com/'"
 		},
 		"containerUri": {
 			"value": ""

@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
 		},
-		"AzureDataLakeStorageProd_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageProd'"
-		},
 		"default_properties_ServicePrincipalID_value": {
 			"type": "string",
 			"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
@@ -114,13 +110,21 @@
 				"US"
 			]
 		},
-		"AzureDataLakeStorageProd_properties_typeProperties_url": {
+		"default_properties_ServiceURL_EU_value": {
 			"type": "string",
-			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
+			"defaultValue": "https://ironfortressapsdefault.crm4.dynamics.com/"
+		},
+		"default_properties_ServiceURL_US_value": {
+			"type": "string",
+			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
 		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
+		},
+		"D365bcDataLakeDev_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadfifdevweu.dfs.core.windows.net/"
 		},
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"type": "string",
@@ -157,6 +161,10 @@
 		"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
+		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "@{linkedService().ServicePrincipalID}"
 		}
 	},
 	"variables": {
@@ -267,23 +275,14 @@
 				"ExcludeEU": {
 					"type": "array",
 					"value": "[parameters('default_properties_ExcludeEU_value')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorageProd')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('AzureDataLakeStorageProd_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureDataLakeStorageProd_accountKey')]"
-					}
+				},
+				"ServiceURL_EU": {
+					"type": "string",
+					"value": "[parameters('default_properties_ServiceURL_EU_value')]"
+				},
+				"ServiceURL_US": {
+					"type": "string",
+					"value": "[parameters('default_properties_ServiceURL_US_value')]"
 				}
 			},
 			"dependsOn": []
@@ -298,6 +297,20 @@
 				"type": "AzureKeyVault",
 				"typeProperties": {
 					"baseUrl": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/D365bcDataLakeDev')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Datalake for Development",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('D365bcDataLakeDev_properties_typeProperties_url')]"
 				}
 			},
 			"dependsOn": []
@@ -321,6 +334,205 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinarySinkFileStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your destination data store.",
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeDev",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeDev')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinarySourceFileStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your source data store.",
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PKInput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeDev",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ParquetCrud"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parquetCrud/input/pk",
+						"fileSystem": "sample-data"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "table_name",
+						"type": "UTF8"
+					},
+					{
+						"name": "update_dt",
+						"type": "INT96"
+					},
+					{
+						"name": "PK",
+						"type": "INT32"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeDev')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ParquetCrudOutput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeDev",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ParquetCrud"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parquetCrud/output",
+						"fileSystem": "sample-data"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "PK",
+						"type": "INT32"
+					},
+					{
+						"name": "col1",
+						"type": "UTF8"
+					},
+					{
+						"name": "col2",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeDev')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ParquetInput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeDev",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ParquetCrud"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "parquetCrud/input/tables",
+						"fileSystem": "sample-data"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "PK",
+						"type": "INT32"
+					},
+					{
+						"name": "col1",
+						"type": "UTF8"
+					},
+					{
+						"name": "col2",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeDev')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_Excel')]",
@@ -354,7 +566,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_Json')]",
+			"name": "[concat(parameters('factoryName'), '/ds_Json_Prod')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -385,7 +597,41 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_Parquet')]",
+			"name": "[concat(parameters('factoryName'), '/ds_Parquet_Dev')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"blob": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"Dev"
+				],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": {
+							"value": "@dataset().blob",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Parquet_Prod')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -421,6 +667,41 @@
 						},
 						"fileSystem": {
 							"value": "@dataset().blob",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_Parquet_ProdDev')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string",
+						"defaultValue": "'bronze'"
+					}
+				},
+				"annotations": [
+					"prod"
+				],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": {
+							"value": "@dataset().container",
 							"type": "Expression"
 						}
 					},
@@ -488,6 +769,44 @@
 						},
 						"secretName": "ar-D365BC-prod-DK"
 					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dynamics365BusinessCentral')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Direct access to D365bc",
+				"parameters": {
+					"ServiceURL": {
+						"type": "String",
+						"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
+					},
+					"ServicePrincipalID": {
+						"type": "String",
+						"defaultValue": "'98c52d81-2480-4351-9e23-51ae9dae9755'"
+					}
+				},
+				"annotations": [],
+				"type": "Dynamics",
+				"typeProperties": {
+					"deploymentType": "Online",
+					"serviceUri": "@{linkedService().ServiceURL}",
+					"authenticationType": "AADServicePrincipal",
+					"servicePrincipalId": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultProd",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "ar-D365BC-prod-DK"
+					},
+					"servicePrincipalCredentialType": "ServicePrincipalKey"
 				}
 			},
 			"dependsOn": [
@@ -1020,7 +1339,7 @@
 						"     fileSystem: ($parmTargetBlob),",
 						"     folderPath: ($parmTargetFolder),",
 						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('InventorySum_',$parmRegion,'.parquet'))],",
+						"     partitionFileNames:[(concat('InventorySum',$parmRegion,'.parquet'))],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -1079,6 +1398,12 @@
 					"transformations": [
 						{
 							"name": "SumItemsQty"
+						},
+						{
+							"name": "removeBlanks"
+						},
+						{
+							"name": "filter1"
 						}
 					],
 					"scriptLines": [
@@ -1219,13 +1544,15 @@
 						"     fileName: (concat('PurchaseLines_',$parmRegion,'.parquet'))) ~> PurchLines",
 						"PurchLines aggregate(groupBy(No),",
 						"     SumQty = sum(Quantity)) ~> SumItemsQty",
-						"SumItemsQty sink(allowSchemaDrift: true,",
+						"SumItemsQty filter(No>'') ~> removeBlanks",
+						"removeBlanks filter(No=='23510100') ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
 						"     folderPath: ($parmTargetFolder),",
 						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('PurchItemSum_',$parmRegion,'.parquet'))],",
+						"     partitionFileNames:[(concat('PurchItemSum',$parmRegion,'.parquet'))],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -1236,1968 +1563,6 @@
 						"          SumQty",
 						"     ),",
 						"     partitionBy('hash', 1)) ~> SavePurchItemSum"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Calc_VendorsItemsFiltered')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "3.Gold"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadItems",
-							"description": "Add source dataset Items"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategoriesGroups"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "TopRankVendors"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ItemsSelectedFields"
-						},
-						{
-							"name": "joinItemsAndGroups"
-						},
-						{
-							"name": "MapDrifted1",
-							"description": "Creates an explicit mapping for each drifted column"
-						},
-						{
-							"name": "joinTopRankVendors"
-						},
-						{
-							"name": "selectOutputFields"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmRegion as string,",
-						"     parmSourceBlob as string ('silver'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmSourceJsonFolder as string ('json')",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as string,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as string,",
-						"          Last_Counting_Period_Update as string,",
-						"          Next_Counting_Start_Date as string,",
-						"          Next_Counting_End_Date as string,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('Items_',$parmRegion,'.parquet'))) ~> LoadItems",
-						"source(output(",
-						"          Code as short,",
-						"          GroupDescription as string,",
-						"          ItemCategoryGroup as integer",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('ItemCategoriesAndGroups_',$parmRegion,'.json')),",
-						"     documentForm: 'documentPerLine') ~> ItemCategoriesGroups",
-						"source(output(",
-						"          Allow_Multiple_Posting_Groups as boolean,",
-						"          Application_Method as string,",
-						"          Balance_Due_LCY as double,",
-						"          Balance_LCY as double,",
-						"          Base_Calendar_Code as string,",
-						"          Blocked as string,",
-						"          CDOOutputProfile as string,",
-						"          Contact as string,",
-						"          Country_Region_Code as string,",
-						"          Coupled_to_CRM as boolean,",
-						"          Coupled_to_Dataverse as boolean,",
-						"          Currency_Code as string,",
-						"          Currency_Filter as string,",
-						"          Date_Filter as string,",
-						"          Fax_No as string,",
-						"          Fin_Charge_Terms_Code as string,",
-						"          Gen_Bus_Posting_Group as string,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          IC_Partner_Code as string,",
-						"          ItemsRelated as short,",
-						"          Language_Code as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          Lead_Time_Calculation as string,",
-						"          Location_Code as string,",
-						"          Location_Code2 as string,",
-						"          Name as string,",
-						"          Name_2 as string,",
-						"          No as integer,",
-						"          Payment_Terms_Code as string,",
-						"          Payments_LCY as double,",
-						"          Phone_No as string,",
-						"          Post_Code as string,",
-						"          Privacy_Blocked as boolean,",
-						"          Purchaser_Code as string,",
-						"          Rank as short,",
-						"          Responsibility_Center as string,",
-						"          Search_Name as string,",
-						"          Shipment_Method_Code as string,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          Vendor_No as integer,",
-						"          Vendor_Posting_Group as string",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceJsonFolder),",
-						"     fileName: (concat('TopRankVendors_',$parmRegion,'.json')),",
-						"     documentForm: 'documentPerLine') ~> TopRankVendors",
-						"LoadItems select(mapColumn(",
-						"          ItemNo = No,",
-						"          ItemDescription = Description,",
-						"          VendorNo = Vendor_No,",
-						"          ItemCategoryCode = Item_Category_Code,",
-						"          AssemblyBOM",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> ItemsSelectedFields",
-						"ItemsSelectedFields, MapDrifted1 join(ItemCategoryCode == Code,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     partitionBy('hash', 1),",
-						"     broadcast: 'both')~> joinItemsAndGroups",
-						"ItemCategoriesGroups derive(Code = toString(byName('Code')),",
-						"          GroupDescription = toString(byName('GroupDescription')),",
-						"          ItemCategoryGroup = toString(byName('ItemCategoryGroup'))) ~> MapDrifted1",
-						"joinItemsAndGroups, TopRankVendors join(VendorNo == toString(Vendor_No),",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinTopRankVendors",
-						"joinTopRankVendors select(mapColumn(",
-						"          ItemNo,",
-						"          ItemDescription,",
-						"          GroupDescription,",
-						"          ItemCategoryGroup,",
-						"          ItemCategoryCode,",
-						"          AssemblyBOM,",
-						"          VendorNo,",
-						"          Name,",
-						"          Name_2,",
-						"          Global_Dimension_1_Filter,",
-						"          Global_Dimension_2_Filter,",
-						"          Rank",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectOutputFields",
-						"selectOutputFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ItemNo as string,",
-						"          InventorySum as double,",
-						"          PurchQty as double,",
-						"          SalesQty as double,",
-						"          PosAdjustmentQty as double,",
-						"          NegAdjustmentQty as double,",
-						"          AssemblyOutput as decimal(38,18),",
-						"          AssemblyConsumption as decimal(38,18),",
-						"          StartDate as date,",
-						"          EndDate as date,",
-						"          Region as string,",
-						"          SumQty as decimal(38,18),",
-						"          ItemDescription as string,",
-						"          VendorNo as string,",
-						"          ItemCategoryCode as string,",
-						"          Code as string,",
-						"          GroupDescription as string,",
-						"          ItemCategoryGroup as string,",
-						"          Allow_Multiple_Posting_Groups as boolean,",
-						"          Application_Method as string,",
-						"          Balance_Due_LCY as double,",
-						"          Balance_LCY as double,",
-						"          Base_Calendar_Code as string,",
-						"          Blocked as string,",
-						"          CDOOutputProfile as string,",
-						"          Contact as string,",
-						"          Country_Region_Code as string,",
-						"          Coupled_to_CRM as boolean,",
-						"          Coupled_to_Dataverse as boolean,",
-						"          Currency_Code as string,",
-						"          Currency_Filter as string,",
-						"          Date_Filter as string,",
-						"          Fax_No as string,",
-						"          Fin_Charge_Terms_Code as string,",
-						"          Gen_Bus_Posting_Group as string,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          IC_Partner_Code as string,",
-						"          ItemsRelated as short,",
-						"          Language_Code as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          Lead_Time_Calculation as string,",
-						"          Location_Code as string,",
-						"          Location_Code2 as string,",
-						"          Name as string,",
-						"          Name_2 as string,",
-						"          No as integer,",
-						"          Payment_Terms_Code as string,",
-						"          Payments_LCY as double,",
-						"          Phone_No as string,",
-						"          Post_Code as string,",
-						"          Privacy_Blocked as boolean,",
-						"          Purchaser_Code as string,",
-						"          Rank as short,",
-						"          Responsibility_Center as string,",
-						"          Search_Name as string,",
-						"          Shipment_Method_Code as string,",
-						"          VAT_Bus_Posting_Group as string,",
-						"          Vendor_No as integer,",
-						"          Vendor_Posting_Group as string,",
-						"          Loaded as string",
-						"     ),",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('VendorsItemsWithGroups_',$parmRegion,'.parquet'))],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> saveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Extract_PrimoDate')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Read ever Instance and get the earliest date and save the date in silver-layer as json.",
-				"folder": {
-					"name": "1.Bronze"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadfile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveJson"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectfield"
-						},
-						{
-							"name": "GroupByDate"
-						},
-						{
-							"name": "sortTransactions"
-						},
-						{
-							"name": "RankResult"
-						},
-						{
-							"name": "selectPrimoDate"
-						},
-						{
-							"name": "filterRank"
-						},
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmRegion as string,",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmSourceFilename as string (concat('ItemsLedgerEntries_',$parmRegion,'.parquet')),",
-						"     parmTargetBlob as string ('silver'),",
-						"     parmTargetFolder as string ('json'),",
-						"     parmTargetFilename as string (concat('primodate_',$parmRegion,'.json'))",
-						"}",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFilename)) ~> loadfile",
-						"sortTransactions select(mapColumn(",
-						"          PostingDate = Posting_Date,",
-						"          Entry_Type",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectfield",
-						"selectfield aggregate(groupBy(PostingDate),",
-						"     Counter = count()) ~> GroupByDate",
-						"loadfile sort(asc(Posting_Date, true)) ~> sortTransactions",
-						"GroupByDate rank(asc(PostingDate, true),",
-						"     output(Rank as long)) ~> RankResult",
-						"filterRank select(mapColumn(",
-						"          PrimoDate = PostingDate",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectPrimoDate",
-						"RankResult filter(Rank==1) ~> filterRank",
-						"selectPrimoDate derive(PrimoDate = lastDayOfMonth(PrimoDate)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmTargetFilename)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> saveJson"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Merge_RegionInventories')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "3.Gold"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "EUInventory"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "USInventory"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "EUVendorItems"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "USVendorItems"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "EUReorderInterval"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "USReorderInterval"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "EUPurchItemSum"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "USPurchItemSum"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveInventoryAll"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveVendorItemsAll"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveReorderInterval"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "savePurchSumAll"
-						}
-					],
-					"transformations": [
-						{
-							"name": "mergeInventory"
-						},
-						{
-							"name": "mergeVendorItems"
-						},
-						{
-							"name": "joinReorderInvertal"
-						},
-						{
-							"name": "selectFields"
-						},
-						{
-							"name": "filterItems"
-						},
-						{
-							"name": "mergePurchSum"
-						},
-						{
-							"name": "EUAddRegion"
-						},
-						{
-							"name": "USAddRegion"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('gold'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmSourceBlobSilver as string ('silver')",
-						"}",
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: true,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('InventorySum_EU.parquet')) ~> EUInventory",
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('InventorySum_US.parquet'),",
-						"     compressionCodec: 'snappy') ~> USInventory",
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('VendorsItemsWithGroups_EU.parquet'),",
-						"     partitionBy('hash', 1)) ~> EUVendorItems",
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('VendorsItemsWithGroups_US.parquet')) ~> USVendorItems",
-						"source(output(",
-						"          ItemNo as string,",
-						"          ReorderInterval as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlobSilver),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('ItemReorder_EU.parquet')) ~> EUReorderInterval",
-						"source(output(",
-						"          ItemNo as string,",
-						"          ReorderInterval as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlobSilver),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('ItemReorder_US.parquet')) ~> USReorderInterval",
-						"source(output(",
-						"          ItemNo as string,",
-						"          SumQty as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('PurchItemSum_EU.parquet')) ~> EUPurchItemSum",
-						"source(output(",
-						"          ItemNo as string,",
-						"          SumQty as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ('PurchItemSum_US.parquet')) ~> USPurchItemSum",
-						"EUInventory, USInventory union(byName: true)~> mergeInventory",
-						"EUVendorItems, USVendorItems union(byName: true)~> mergeVendorItems",
-						"EUReorderInterval, USReorderInterval join(EUReorderInterval@ItemNo == USReorderInterval@ItemNo,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinReorderInvertal",
-						"joinReorderInvertal select(mapColumn(",
-						"          ItemNo = EUReorderInterval@ItemNo,",
-						"          ReorderInterval_EU = EUReorderInterval@ReorderInterval,",
-						"          ReorderInterval_US = USReorderInterval@ReorderInterval",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectFields",
-						"selectFields filter(!isNull(ItemNo) && (ReorderInterval_US>0 || ReorderInterval_EU>0)) ~> filterItems",
-						"EUAddRegion, USAddRegion union(byName: true)~> mergePurchSum",
-						"EUPurchItemSum derive(ItemNo = ItemNo,",
-						"          SumQty = SumQty,",
-						"          Region = 'EU') ~> EUAddRegion",
-						"USPurchItemSum derive(ItemNo = ItemNo,",
-						"          SumQty = SumQty,",
-						"          Region = 'US') ~> USAddRegion",
-						"mergeInventory sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[('InventorySumAll.parquet')],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> saveInventoryAll",
-						"mergeVendorItems sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[('VendorsItemsWithGroupsAll.parquet')],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 2,",
-						"     partitionBy('hash', 1)) ~> saveVendorItemsAll",
-						"filterItems sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[('ItemReorderAll.parquet')],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 3,",
-						"     partitionBy('hash', 1)) ~> SaveReorderInterval",
-						"mergePurchSum sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[('PurchItemSumAll.parquet')],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 4,",
-						"     partitionBy('hash', 1)) ~> savePurchSumAll"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventoryPrimo')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Post : \nSource : Silver\nTarget : Silver",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GetPositiveAdjustments"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GetPrimoDate"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "AddPrDate"
-						},
-						{
-							"name": "sortTransactions"
-						},
-						{
-							"name": "joinPrimeDate"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('silver'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('silver'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('InventorySumPosAdj_',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('InitialInventory_',$parmRegion,'.parquet')),",
-						"     parmSourceFolderJson as string ('json')",
-						"}",
-						"source(output(",
-						"          Item_No as string,",
-						"          EndDate as date,",
-						"          Quantity as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> GetPositiveAdjustments",
-						"source(output(",
-						"          PrimoDate as date",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolderJson),",
-						"     fileName: (concat('primodate_',$parmRegion,'.json')),",
-						"     documentForm: 'documentPerLine') ~> GetPrimoDate",
-						"joinPrimeDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
-						"AddPrDate sort(asc(Item_No, true),",
-						"     asc(PrimoDate, true)) ~> sortTransactions",
-						"GetPositiveAdjustments, GetPrimoDate join(EndDate == PrimoDate,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinPrimeDate",
-						"sortTransactions sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[($parmTargetFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_InventorySumPrEntryType')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Sum on each Itemno for each transactiontype pr. EOM\n",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile",
-							"description": "Import data from ItemLedgerEntries D365bcDataLakeProd"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePurchV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileTransferV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileNegAdjV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFilePosAdjV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileSalesV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssConsV2"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileAssOutV2"
-						}
-					],
-					"transformations": [
-						{
-							"name": "OnlyPurchase"
-						},
-						{
-							"name": "SumupQtyPurch"
-						},
-						{
-							"name": "OnlySales"
-						},
-						{
-							"name": "OnlyPosAdjmnt"
-						},
-						{
-							"name": "RemoveFields"
-						},
-						{
-							"name": "SumupPosAdj"
-						},
-						{
-							"name": "SumupSales"
-						},
-						{
-							"name": "sort1"
-						},
-						{
-							"name": "sort2"
-						},
-						{
-							"name": "sort3"
-						},
-						{
-							"name": "OnlyNegAdjmnt"
-						},
-						{
-							"name": "AddEndDate"
-						},
-						{
-							"name": "SumupNegAdj"
-						},
-						{
-							"name": "sort4"
-						},
-						{
-							"name": "OnlyTransfer"
-						},
-						{
-							"name": "SumupQtyTransfer"
-						},
-						{
-							"name": "sort5"
-						},
-						{
-							"name": "OnlyAssCons"
-						},
-						{
-							"name": "SumupAssCons"
-						},
-						{
-							"name": "sort6"
-						},
-						{
-							"name": "OnlyAssOut"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "sort7"
-						},
-						{
-							"name": "sortOnItemNo"
-						},
-						{
-							"name": "excludedItems"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('ItemsLedgerEntries_',$parmRegion,'.parquet')),",
-						"     parmAssOutFile as string (concat('InventorySumAssOut_',$parmRegion,'.parquet')),",
-						"     parmAssConsFile as string (concat('InventorySumAssCons_',$parmRegion,'.parquet')),",
-						"     parmTransferFile as string (concat('InventorySumTransfer_',$parmRegion,'.parquet')),",
-						"     parmNegAdjFile as string (concat('InventorySumNegAdj_',$parmRegion,'.parquet')),",
-						"     parmPosAdjFile as string (concat('InventorySumPosAdj_',$parmRegion,'.parquet')),",
-						"     parmSalesFile as string (concat('InventorySumSales_',$parmRegion,'.parquet')),",
-						"     parmPurchFile as string (concat('InventorySumPurchase_',$parmRegion,'.parquet')),",
-						"     parmSourceBlob as string,",
-						"     parmSourceFolder as string,",
-						"     parmTargetBlob as string,",
-						"     parmTargetFolder as string",
-						"}",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"AddEndDate filter(startsWith(Entry_Type,\"Purchase\")) ~> OnlyPurchase",
-						"OnlyPurchase aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyPurch",
-						"AddEndDate filter(startsWith(Entry_Type,\"Sale\")) ~> OnlySales",
-						"AddEndDate filter(startsWith(Entry_Type,\"Positive Adjmt.\")) ~> OnlyPosAdjmnt",
-						"sortOnItemNo select(mapColumn(",
-						"          Posting_Date,",
-						"          Entry_Type,",
-						"          Item_No,",
-						"          Quantity,",
-						"          Region,",
-						"          Document_Type",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveFields",
-						"OnlyPosAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupPosAdj",
-						"OnlySales aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupSales",
-						"SumupSales sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort1",
-						"SumupPosAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort2",
-						"SumupQtyPurch sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort3",
-						"AddEndDate filter(startsWith(Entry_Type,\"Negative Adjmt.\")) ~> OnlyNegAdjmnt",
-						"RemoveFields derive(EndDate = lastDayOfMonth(Posting_Date)) ~> AddEndDate",
-						"OnlyNegAdjmnt aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupNegAdj",
-						"SumupNegAdj sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort4",
-						"AddEndDate filter(startsWith(Entry_Type,\"Transfer\")) ~> OnlyTransfer",
-						"OnlyTransfer aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupQtyTransfer",
-						"SumupQtyTransfer sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort5",
-						"AddEndDate filter(startsWith(Entry_Type,\"Assembly Consumption\")) ~> OnlyAssCons",
-						"OnlyAssCons aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> SumupAssCons",
-						"SumupAssCons sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort6",
-						"AddEndDate filter(startsWith(Entry_Type,\"Assembly Output\")) ~> OnlyAssOut",
-						"OnlyAssOut aggregate(groupBy(Region,",
-						"          Item_No,",
-						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> aggregate1",
-						"aggregate1 sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort7",
-						"excludedItems sort(asc(Item_No, true)) ~> sortOnItemNo",
-						"LoadFile filter(!isNull(Item_No) &&",
-						"!startsWith(Item_No,\"BOX\") && ",
-						"!startsWith(Item_No, \"PREBOX\") && ",
-						"!startsWith(Item_No, \"ZIP\") && ",
-						"!startsWith(Item_No, \"FREIGHT\") &&",
-						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> excludedItems",
-						"sort3 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmPurchFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFilePurchV2",
-						"sort5 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmTransferFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> WriteFileTransferV2",
-						"sort4 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmNegAdjFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 3,",
-						"     partitionBy('hash', 1)) ~> WriteFileNegAdjV2",
-						"sort2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmPosAdjFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 6,",
-						"     partitionBy('hash', 1)) ~> WriteFilePosAdjV2",
-						"sort1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmSalesFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 7,",
-						"     partitionBy('hash', 1)) ~> WriteFileSalesV2",
-						"sort6 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmAssConsFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 5,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssConsV2",
-						"sort7 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     partitionFileNames:[($parmAssOutFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 4,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssOutV2"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemCategoriesGroup')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategories"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemCategoriesGroup"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "WriteFileJson"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ConvertCodeToInt"
-						},
-						{
-							"name": "JoinCategoryGroups"
-						},
-						{
-							"name": "ItemCodesAndGroups"
-						},
-						{
-							"name": "ConvertCodeToStr"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string,",
-						"     parmSourceFolder as string,",
-						"     parmJsonFolder as string,",
-						"     parmTargetBlob as string,",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('ItemsCategories_',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('ItemCategoriesAndGroups_',$parmRegion,'.json'))",
-						"}",
-						"source(output(",
-						"          Code as string,",
-						"          Description as string,",
-						"          Not_Webshipper as boolean",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile)) ~> ItemCategories",
-						"source(output(",
-						"          Description as string,",
-						"          FromICC as short,",
-						"          ItemCategoryGroup as integer,",
-						"          ToICC as short",
-						"     ),",
-						"     useSchema: false,",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmJsonFolder),",
-						"     fileName: 'ItemCategoryGroupsFromTo.json',",
-						"     documentForm: 'arrayOfDocuments') ~> ItemCategoriesGroup",
-						"ItemCategories derive(CodeInt = toInteger(Code),",
-						"          Description = Description) ~> ConvertCodeToInt",
-						"ConvertCodeToInt, ItemCategoriesGroup join(CodeInt >= FromICC",
-						"     && CodeInt <= ToICC,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'both')~> JoinCategoryGroups",
-						"JoinCategoryGroups derive(CodeInt = CodeInt,",
-						"          ItemCategoryGroup = ItemCategoryGroup,",
-						"          Description = ItemCategoriesGroup@Description) ~> ItemCodesAndGroups",
-						"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
-						"ConvertCodeToStr sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmJsonFolder),",
-						"     partitionFileNames:[(concat('ItemCategoriesAndGroups_',$parmRegion,'.json'))],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     mapColumn(",
-						"          Code,",
-						"          ItemCategoryGroup,",
-						"          GroupDescription = Description",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> WriteFileJson"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemPrices')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Extract Of ItemNo, Description and Prices",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadItem"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveItemPrices"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectPriceFields"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmRegion as string ('EU'),",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as string,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Service_Transaction_Type_Code as string,",
-						"          Exclude_From_Service_Decl as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Qty_in_Transit as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Exclude_from_Intrastat_Report as boolean,",
-						"          Supplementary_Unit_of_Measure as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as string,",
-						"          Last_Counting_Period_Update as string,",
-						"          Next_Counting_Start_Date as string,",
-						"          Next_Counting_End_Date as string,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> LoadItem",
-						"LoadItem select(mapColumn(",
-						"          ItemNo = No,",
-						"          ItemNoAlt = No_270842,",
-						"          Description,",
-						"          UnitPrice = Unit_Price,",
-						"          StandardCost = Standard_Cost,",
-						"          Unit_Cost",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
-						"selectPriceFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('ItemPrices.parquet'))],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          ItemNo,",
-						"          ItemNoAlt,",
-						"          Description,",
-						"          UnitPrice,",
-						"          StandardCost,",
-						"          Unit_Cost",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> saveItemPrices"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_ItemReorderInterval')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Builds list of Items with each instance of the vaule from the reorder interval.",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "loadItemFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveParquetFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectFields"
-						},
-						{
-							"name": "filterResult"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('ItemReorder_',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          No as string,",
-						"          No_270842 as string,",
-						"          Description as string,",
-						"          Description_264540 as string,",
-						"          Description_2 as string,",
-						"          Blocked as boolean,",
-						"          Type as string,",
-						"          Base_Unit_of_Measure as string,",
-						"          Last_Date_Modified as timestamp,",
-						"          GTIN as string,",
-						"          Item_Category_Code as string,",
-						"          Manufacturer_Code as string,",
-						"          Service_Item_Group as string,",
-						"          Automatic_Ext_Texts as boolean,",
-						"          Common_Item_No as string,",
-						"          Purchasing_Code as string,",
-						"          VariantMandatoryDefaultYes as string,",
-						"          VariantMandatoryDefaultNo as string,",
-						"          Ava_AFC_Transaction_Type as integer,",
-						"          Ava_AFC_Service_Type as integer,",
-						"          Ava_AFC_Sales_Type as string,",
-						"          Ava_VAT_isGoodsSecondHand as boolean,",
-						"          Shelf_No as string,",
-						"          Created_From_Nonstock_Item as boolean,",
-						"          Search_Description as string,",
-						"          Inventory as decimal(38,18),",
-						"          InventoryNonFoundation as decimal(38,18),",
-						"          Qty_on_Purch_Order as decimal(38,18),",
-						"          Qty_on_Prod_Order as decimal(38,18),",
-						"          Qty_on_Component_Lines as decimal(38,18),",
-						"          Qty_on_Sales_Order as decimal(38,18),",
-						"          Qty_on_Service_Order as decimal(38,18),",
-						"          Qty_on_Job_Order as decimal(38,18),",
-						"          Qty_on_Assembly_Order as decimal(38,18),",
-						"          Qty_on_Asm_Component as decimal(38,18),",
-						"          StockoutWarningDefaultYes as string,",
-						"          StockoutWarningDefaultNo as string,",
-						"          PreventNegInventoryDefaultYes as string,",
-						"          PreventNegInventoryDefaultNo as string,",
-						"          Net_Weight as decimal(38,18),",
-						"          Gross_Weight as decimal(38,18),",
-						"          Unit_Volume as decimal(38,18),",
-						"          SAT_Item_Classification as string,",
-						"          SAT_Hazardous_Material as string,",
-						"          SAT_Packaging_Type as string,",
-						"          SAT_Material_Type as string,",
-						"          Over_Receipt_Code as string,",
-						"          Trans_Ord_Receipt_Qty as decimal(38,18),",
-						"          Trans_Ord_Shipment_Qty as decimal(38,18),",
-						"          Costing_Method as string,",
-						"          Standard_Cost as decimal(38,18),",
-						"          Unit_Cost as decimal(38,18),",
-						"          Indirect_Cost_Percent as decimal(38,18),",
-						"          Last_Direct_Cost as decimal(38,18),",
-						"          Net_Invoiced_Qty as decimal(38,18),",
-						"          Cost_is_Adjusted as boolean,",
-						"          Excluded_from_Cost_Adjustment as boolean,",
-						"          Cost_is_Posted_to_G_L as boolean,",
-						"          Inventory_Value_Zero as boolean,",
-						"          SpecialPurchPriceListTxt as string,",
-						"          SpecialPurchPricesAndDiscountsTxt as string,",
-						"          Gen_Prod_Posting_Group as string,",
-						"          VAT_Prod_Posting_Group as string,",
-						"          Tax_Group_Code as string,",
-						"          Inventory_Posting_Group as string,",
-						"          Default_Deferral_Template_Code as string,",
-						"          Tariff_No as string,",
-						"          Country_Region_of_Origin_Code as string,",
-						"          MID_Code_58500 as string,",
-						"          Unit_Price as decimal(38,18),",
-						"          CalcUnitPriceExclVAT as decimal(38,18),",
-						"          Price_Includes_VAT as boolean,",
-						"          Price_Profit_Calculation as string,",
-						"          Profit_Percent as decimal(38,18),",
-						"          SpecialSalesPriceListTxt as string,",
-						"          SpecialPricesAndDiscountsTxt as string,",
-						"          Allow_Invoice_Disc as boolean,",
-						"          Item_Disc_Group as string,",
-						"          Sales_Unit_of_Measure as string,",
-						"          Sales_Blocked as boolean,",
-						"          Service_Blocked as boolean,",
-						"          Application_Wksh_User_ID as string,",
-						"          VAT_Bus_Posting_Gr_Price as string,",
-						"          Replenishment_System as string,",
-						"          Lead_Time_Calculation as string,",
-						"          Vendor_No as string,",
-						"          Vendor_Item_No as string,",
-						"          Purch_Unit_of_Measure as string,",
-						"          Purchasing_Blocked as boolean,",
-						"          Manufacturing_Policy as string,",
-						"          Routing_No as string,",
-						"          Production_BOM_No as string,",
-						"          Rounding_Precision as decimal(38,18),",
-						"          Flushing_Method as string,",
-						"          Overhead_Rate as decimal(38,18),",
-						"          Scrap_Percent as decimal(38,18),",
-						"          Lot_Size as decimal(38,18),",
-						"          Assembly_Policy as string,",
-						"          AssemblyBOM as boolean,",
-						"          Reordering_Policy as string,",
-						"          Reserve as string,",
-						"          Order_Tracking_Policy as string,",
-						"          Stockkeeping_Unit_Exists as boolean,",
-						"          Dampener_Period as string,",
-						"          Dampener_Quantity as decimal(38,18),",
-						"          Critical as boolean,",
-						"          Safety_Lead_Time as string,",
-						"          Safety_Stock_Quantity as decimal(38,18),",
-						"          Include_Inventory as boolean,",
-						"          Lot_Accumulation_Period as string,",
-						"          Rescheduling_Period as string,",
-						"          Reorder_Point as decimal(38,18),",
-						"          Reorder_Quantity as decimal(38,18),",
-						"          Maximum_Inventory as decimal(38,18),",
-						"          Overflow_Level as decimal(38,18),",
-						"          Time_Bucket as string,",
-						"          Minimum_Order_Quantity as decimal(38,18),",
-						"          Maximum_Order_Quantity as decimal(38,18),",
-						"          Order_Multiple as decimal(38,18),",
-						"          Reorder_Interval_58501 as integer,",
-						"          Item_Tracking_Code as string,",
-						"          Serial_Nos as string,",
-						"          Lot_Nos as string,",
-						"          Expiration_Calculation as string,",
-						"          Warehouse_Class_Code as string,",
-						"          Special_Equipment_Code as string,",
-						"          Put_away_Template_Code as string,",
-						"          Put_away_Unit_of_Measure_Code as string,",
-						"          Phys_Invt_Counting_Period_Code as string,",
-						"          Last_Phys_Invt_Date as timestamp,",
-						"          Last_Counting_Period_Update as timestamp,",
-						"          Next_Counting_Start_Date as timestamp,",
-						"          Next_Counting_End_Date as timestamp,",
-						"          Identifier_Code as string,",
-						"          Use_Cross_Docking as boolean,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Location_Filter as string,",
-						"          Drop_Shipment_Filter as string,",
-						"          Variant_Filter as string,",
-						"          Lot_No_Filter as string,",
-						"          Serial_No_Filter as string,",
-						"          Unit_of_Measure_Filter as string,",
-						"          Package_No_Filter as string,",
-						"          Date_Filter as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile)) ~> loadItemFile",
-						"loadItemFile select(mapColumn(",
-						"          ItemNo = No,",
-						"          ReorderInterval = Reorder_Interval_58501",
-						"     ),",
-						"     partitionBy('hash', 1),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectFields",
-						"selectFields filter(!isNull(ItemNo) && ReorderInterval>0) ~> filterResult",
-						"filterResult sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[($parmTargetFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     partitionBy('hash', 1)) ~> saveParquetFile"
 					]
 				}
 			},

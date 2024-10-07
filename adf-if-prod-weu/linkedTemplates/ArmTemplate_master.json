@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
 		},
-		"AzureDataLakeStorageProd_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageProd'"
-		},
-		"AzureDataLakeStorageProd_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
-		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
@@ -51,9 +43,17 @@
 			"type": "string",
 			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
 		},
+		"D365bcDataLakeDev_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saadfifdevweu.dfs.core.windows.net/"
+		},
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
+		},
+		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "@{linkedService().ServicePrincipalID}"
 		},
 		"default_properties_ServicePrincipalID_value": {
 			"type": "string",
@@ -158,6 +158,14 @@
 				"US"
 			]
 		},
+		"default_properties_ServiceURL_EU_value": {
+			"type": "string",
+			"defaultValue": "https://ironfortressapsdefault.crm4.dynamics.com/"
+		},
+		"default_properties_ServiceURL_US_value": {
+			"type": "string",
+			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -184,9 +192,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"AzureDataLakeStorageProd_accountKey": {
-						"value": "[parameters('AzureDataLakeStorageProd_accountKey')]"
 					},
 					"default_properties_ServicePrincipalID_value": {
 						"value": "[parameters('default_properties_ServicePrincipalID_value')]"
@@ -263,11 +268,17 @@
 					"default_properties_ExcludeEU_value": {
 						"value": "[parameters('default_properties_ExcludeEU_value')]"
 					},
-					"AzureDataLakeStorageProd_properties_typeProperties_url": {
-						"value": "[parameters('AzureDataLakeStorageProd_properties_typeProperties_url')]"
+					"default_properties_ServiceURL_EU_value": {
+						"value": "[parameters('default_properties_ServiceURL_EU_value')]"
+					},
+					"default_properties_ServiceURL_US_value": {
+						"value": "[parameters('default_properties_ServiceURL_US_value')]"
 					},
 					"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"
+					},
+					"D365bcDataLakeDev_properties_typeProperties_url": {
+						"value": "[parameters('D365bcDataLakeDev_properties_typeProperties_url')]"
 					},
 					"D365bcDataLakeProd_properties_typeProperties_url": {
 						"value": "[parameters('D365bcDataLakeProd_properties_typeProperties_url')]"
@@ -295,6 +306,9 @@
 					},
 					"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId')]"
+					},
+					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},
@@ -318,6 +332,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "adf-if-prod-weu_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-if-prod-weu_ArmTemplate_1')]"
 			]
 		}
 	]
