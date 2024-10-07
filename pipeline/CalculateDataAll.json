@@ -273,16 +273,20 @@
 		],
 		"variables": {
 			"blobSilver": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'silver'"
 			},
 			"blobGold": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'gold'"
 			},
 			"folderD365bc": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'d365bc'"
 			},
 			"folderJson": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "'json'"
 			}
 		},
 		"folder": {
