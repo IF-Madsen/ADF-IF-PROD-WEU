@@ -394,7 +394,7 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[(concat('VendorsItemsWithGroups_',$parmRegion,'.parquet'))],",
+				"     partitionFileNames:[(concat('VendorsItemsWithGroups',$parmRegion,'.parquet'))],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",

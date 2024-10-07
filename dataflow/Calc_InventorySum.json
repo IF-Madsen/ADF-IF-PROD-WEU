@@ -522,7 +522,7 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[(concat('InventorySum_',$parmRegion,'.parquet'))],",
+				"     partitionFileNames:[(concat('InventorySum',$parmRegion,'.parquet'))],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
