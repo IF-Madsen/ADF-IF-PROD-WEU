@@ -9,7 +9,7 @@
 			},
 			"ServicePrincipalID": {
 				"type": "String",
-				"defaultValue": "'98c52d81-2480-4351-9e23-51ae9dae9755'"
+				"defaultValue": "'7b1647b5-d439-422d-ad72-779b8d13fa50''"
 			}
 		},
 		"annotations": [],
@@ -25,7 +25,7 @@
 					"referenceName": "AzureKeyVaultProd",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "ar-D365BC-prod-DK"
+				"secretName": "ar-D365bc"
 			},
 			"servicePrincipalCredentialType": "ServicePrincipalKey"
 		}
