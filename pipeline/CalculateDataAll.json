@@ -269,6 +269,29 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Execute Merge",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Region",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RunMergeRegions",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"variables": {
