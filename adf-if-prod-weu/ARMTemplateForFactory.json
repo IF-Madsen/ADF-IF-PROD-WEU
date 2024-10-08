@@ -469,6 +469,30 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Execute Merge",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Region",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "RunMergeRegions",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -498,6 +522,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_VendorsItemsFiltered')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_PurchItemsSum')]"
@@ -7012,7 +7037,8 @@
 						"     parmRegion as string,",
 						"     parmSourceFile as string (concat('InventorySumPosAdj',$parmRegion,'.parquet')),",
 						"     parmTargetFile as string (concat('InitialInventory',$parmRegion,'.parquet')),",
-						"     parmSourceFolderJson as string ('json')",
+						"     parmSourceFolderJson as string ('json'),",
+						"     ParmSourceJsonFile as string (concat('primodate',$parmRegion,'.json'))",
 						"}",
 						"source(output(",
 						"          Item_No as string,",
@@ -7037,7 +7063,7 @@
 						"     format: 'json',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolderJson),",
-						"     fileName: (concat('primodate_',$parmRegion,'.json')),",
+						"     fileName: ($ParmSourceJsonFile),",
 						"     documentForm: 'documentPerLine') ~> GetPrimoDate",
 						"joinPrimeDate derive(PrDate = addMonths(EndDate, -1)+1) ~> AddPrDate",
 						"AddPrDate sort(asc(Item_No, true),",
