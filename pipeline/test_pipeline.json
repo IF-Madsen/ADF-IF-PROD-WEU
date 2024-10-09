@@ -636,7 +636,9 @@
 							"parmTargetFolder": {
 								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 								"type": "Expression"
-							}
+							},
+							"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+							"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 						}
 					},
 					"compute": {
