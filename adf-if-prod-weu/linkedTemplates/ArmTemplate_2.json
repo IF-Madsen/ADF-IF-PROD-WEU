@@ -1260,7 +1260,7 @@
 												"GetPrimoDate": {},
 												"GetInventoryAssOut": {},
 												"GetInventoryAccCon": {},
-												"GetSalesExtCustomer": {},
+												"GetInventorySumSalesExtCust": {},
 												"saveInventorySum2File": {}
 											}
 										},
@@ -4014,7 +4014,7 @@
 									"GetPrimoDate": {},
 									"GetInventoryAssOut": {},
 									"GetInventoryAccCon": {},
-									"GetSalesExtCustomer": {},
+									"GetInventorySumSalesExtCust": {},
 									"saveInventorySum2File": {}
 								}
 							},
