@@ -37,7 +37,7 @@
 				"     parmSourceFolder as string ('d365bc'),",
 				"     parmTargetBlob as string ('gold'),",
 				"     parmTargetFolder as string ('d365bc'),",
-				"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet'))",
+				"     parmSourceFile as string (concat('Items',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          No as string,",

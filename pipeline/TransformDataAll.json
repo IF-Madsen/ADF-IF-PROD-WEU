@@ -588,7 +588,7 @@
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "Create Reorder Interval",
+									"activity": "Create Filtered Items",
 									"dependencyConditions": [
 										"Succeeded"
 									]
