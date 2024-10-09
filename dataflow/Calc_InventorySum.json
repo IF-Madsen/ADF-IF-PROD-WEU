@@ -165,7 +165,7 @@
 					"name": "RemoveAssConFields"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "CalculateSalesQty"
 				},
 				{
 					"name": "joinExtCustSales"
@@ -374,8 +374,8 @@
 				"          AssemblyOutput = 0,",
 				"          AssemblyConsumption = 0,",
 				"          SalesQtyExtCust = 0) ~> addSumFieldsToItem",
-				"removeFields, GetInventSumPurch join(ItemNo == GetInventSumPurch@Item_No",
-				"     && RemoveAdjustNegFields@EndDate == GetInventSumPurch@EndDate,",
+				"removeFields, GetInventSumPurch join(ItemNo == Item_No",
+				"     && GetInventSumPurch@EndDate == GetInventSumPurch@EndDate,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -386,7 +386,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinSalesSum",
-				"derivedColumn1 select(mapColumn(",
+				"CalculateSalesQty select(mapColumn(",
 				"          ItemNo,",
 				"          InventorySum,",
 				"          PurchQty,",
@@ -416,7 +416,7 @@
 				"          AssemblyOutput,",
 				"          AssemblyConsumption,",
 				"          StartDate,",
-				"          EndDate = RemoveAdjustNegFields@EndDate,",
+				"          EndDate = removeFields@EndDate,",
 				"          Region",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
@@ -549,11 +549,11 @@
 				"          AssemblyOutput,",
 				"          AssemblyConsumption,",
 				"          StartDate,",
-				"          EndDate = PrimeDates@EndDate",
+				"          EndDate = GetInventoryAccCon@EndDate",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveAssConFields",
-				"updateSalesSum derive(SalesQty = SalesQty+AssemblyConsumption+(SalesQtyExtCust*-1)) ~> derivedColumn1",
+				"updateSalesSum derive(SalesQty = SalesQty+AssemblyConsumption) ~> CalculateSalesQty",
 				"RemoveAdjustNegFields, GetInventorySumSalesExtCust join(ItemNo == Item_No",
 				"     && RemoveAdjustNegFields@EndDate == GetInventorySumSalesExtCust@EndDate,",
 				"     joinType:'left',",
@@ -595,6 +595,7 @@
 				"          InventorySum,",
 				"          PurchQty,",
 				"          SalesQty,",
+				"          SalesQtyExtCust,",
 				"          PosAdjustmentQty,",
 				"          NegAdjustmentQty,",
 				"          AssemblyOutput,",
