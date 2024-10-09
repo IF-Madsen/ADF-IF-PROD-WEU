@@ -1053,6 +1053,13 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "WriteFileAssOutV2"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "WriteFileExtSalesV2"
 						}
 					],
 					"transformations": [
@@ -1078,13 +1085,13 @@
 							"name": "SumupSales"
 						},
 						{
-							"name": "sort1"
-						},
-						{
 							"name": "sort2"
 						},
 						{
 							"name": "sort3"
+						},
+						{
+							"name": "sort1"
 						},
 						{
 							"name": "OnlyNegAdjmnt"
@@ -1120,7 +1127,7 @@
 							"name": "OnlyAssOut"
 						},
 						{
-							"name": "aggregate1"
+							"name": "SumupAssOut"
 						},
 						{
 							"name": "sort7"
@@ -1130,6 +1137,15 @@
 						},
 						{
 							"name": "excludedItems"
+						},
+						{
+							"name": "OnlyExternSales"
+						},
+						{
+							"name": "SumExtCustomerSales"
+						},
+						{
+							"name": "sort8"
 						}
 					],
 					"scriptLines": [
@@ -1146,7 +1162,9 @@
 						"     parmSourceBlob as string,",
 						"     parmSourceFolder as string,",
 						"     parmTargetBlob as string,",
-						"     parmTargetFolder as string",
+						"     parmTargetFolder as string,",
+						"     parmExtCustNo as string,",
+						"     parmExtCustSalesFile as string (concat('InventorySumSalesExtCust',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Entry_No as integer,",
@@ -1227,7 +1245,9 @@
 						"          Item_No,",
 						"          Quantity,",
 						"          Region,",
-						"          Document_Type",
+						"          Document_Type,",
+						"          Source_Type,",
+						"          Source_No",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveFields",
@@ -1240,11 +1260,11 @@
 						"          EndDate),",
 						"     Quantity = sum(Quantity)) ~> SumupSales",
 						"SumupSales sort(asc(Item_No, true),",
-						"     asc(EndDate, true)) ~> sort1",
-						"SumupPosAdj sort(asc(Item_No, true),",
 						"     asc(EndDate, true)) ~> sort2",
-						"SumupQtyPurch sort(asc(Item_No, true),",
+						"SumupPosAdj sort(asc(Item_No, true),",
 						"     asc(EndDate, true)) ~> sort3",
+						"SumupQtyPurch sort(asc(Item_No, true),",
+						"     asc(EndDate, true)) ~> sort1",
 						"AddEndDate filter(startsWith(Entry_Type,\"Negative Adjmt.\")) ~> OnlyNegAdjmnt",
 						"RemoveFields derive(EndDate = lastDayOfMonth(Posting_Date)) ~> AddEndDate",
 						"OnlyNegAdjmnt aggregate(groupBy(Region,",
@@ -1271,8 +1291,8 @@
 						"OnlyAssOut aggregate(groupBy(Region,",
 						"          Item_No,",
 						"          EndDate),",
-						"     Quantity = sum(Quantity)) ~> aggregate1",
-						"aggregate1 sort(asc(Item_No, true),",
+						"     Quantity = sum(Quantity)) ~> SumupAssOut",
+						"SumupAssOut sort(asc(Item_No, true),",
 						"     asc(EndDate, true)) ~> sort7",
 						"excludedItems sort(asc(Item_No, true)) ~> sortOnItemNo",
 						"LoadFile filter(!isNull(Item_No) &&",
@@ -1281,7 +1301,17 @@
 						"!startsWith(Item_No, \"ZIP\") && ",
 						"!startsWith(Item_No, \"FREIGHT\") &&",
 						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> excludedItems",
-						"sort3 sink(allowSchemaDrift: true,",
+						"AddEndDate filter(startsWith(Entry_Type,\"Sale\") && ",
+						"startsWith(Source_Type, \"Customer\") &&",
+						"Source_No == $parmExtCustNo ",
+						") ~> OnlyExternSales",
+						"OnlyExternSales aggregate(groupBy(Region,",
+						"          Item_No,",
+						"          EndDate),",
+						"     Quantity = sum(Quantity)) ~> SumExtCustomerSales",
+						"SumExtCustomerSales sort(asc(Item_No, true),",
+						"     asc(EndDate, true)) ~> sort8",
+						"sort1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -1305,7 +1335,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
+						"     saveOrder: 2,",
 						"     partitionBy('hash', 1)) ~> WriteFileTransferV2",
 						"sort4 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -1320,7 +1350,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     saveOrder: 3,",
 						"     partitionBy('hash', 1)) ~> WriteFileNegAdjV2",
-						"sort2 sink(allowSchemaDrift: true,",
+						"sort3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -1333,7 +1363,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     saveOrder: 6,",
 						"     partitionBy('hash', 1)) ~> WriteFilePosAdjV2",
-						"sort1 sink(allowSchemaDrift: true,",
+						"sort2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -1371,7 +1401,20 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     saveOrder: 4,",
-						"     partitionBy('hash', 1)) ~> WriteFileAssOutV2"
+						"     partitionBy('hash', 1)) ~> WriteFileAssOutV2",
+						"sort8 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     partitionFileNames:[($parmExtCustSalesFile)],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 8,",
+						"     partitionBy('hash', 1)) ~> WriteFileExtSalesV2"
 					]
 				}
 			},
@@ -1539,7 +1582,7 @@
 						"     parmSourceFolder as string ('d365bc'),",
 						"     parmTargetBlob as string ('gold'),",
 						"     parmTargetFolder as string ('d365bc'),",
-						"     parmSourceFile as string (concat('Items_',$parmRegion,'.parquet'))",
+						"     parmSourceFile as string (concat('Items',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          No as string,",
@@ -3586,7 +3629,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: 'bronze',",
 						"     folderPath: 'd365bc',",
-						"     fileName: 'ItemsLedgerEntries_EU.parquet') ~> source1",
+						"     fileName: 'ItemsLedgerEntriesEU.parquet') ~> source1",
 						"source(output(",
 						"          Region as string,",
 						"          Item_No as string,",
@@ -3599,14 +3642,14 @@
 						"     format: 'parquet',",
 						"     fileSystem: 'silver',",
 						"     folderPath: 'd365bc',",
-						"     fileName: 'InventorySumSales_EU.parquet') ~> source2",
+						"     fileName: 'InventorySumSalesEU.parquet') ~> source2",
 						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     format: 'parquet',",
 						"     fileSystem: 'silver',",
 						"     folderPath: 'd365bc',",
-						"     fileName: 'PurchOrders_EU.parquet') ~> source3",
+						"     fileName: 'PurchOrdersEU.parquet') ~> source3",
 						"source(output(",
 						"          ItemNo as string,",
 						"          InventorySum as double,",

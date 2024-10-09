@@ -710,7 +710,9 @@
 												"parmTargetFolder": {
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
-												}
+												},
+												"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+												"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"LoadFile": {},
@@ -720,8 +722,10 @@
 												"WriteFilePosAdjV2": {},
 												"WriteFileSalesV2": {},
 												"WriteFileAssConsV2": {},
-												"WriteFileAssOutV2": {}
-											}
+												"WriteFileAssOutV2": {},
+												"WriteFileExtSalesV2": {}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -798,7 +802,7 @@
 									"type": "ExecuteDataFlow",
 									"dependsOn": [
 										{
-											"activity": "Create Reorder Interval",
+											"activity": "Create Filtered Items",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -822,7 +826,7 @@
 													"type": "Expression"
 												},
 												"parmSourceBlob": {
-													"value": "'@{variables('blobBronze')}'",
+													"value": "'@{variables('blobSilver')}'",
 													"type": "Expression"
 												},
 												"parmSourceFolder": {
@@ -842,7 +846,8 @@
 											"datasetParameters": {
 												"LoadItem": {},
 												"saveItemPrices": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -1255,6 +1260,7 @@
 												"GetPrimoDate": {},
 												"GetInventoryAssOut": {},
 												"GetInventoryAccCon": {},
+												"GetSalesExtCustomer": {},
 												"saveInventorySum2File": {}
 											}
 										},
@@ -4008,6 +4014,7 @@
 									"GetPrimoDate": {},
 									"GetInventoryAssOut": {},
 									"GetInventoryAccCon": {},
+									"GetSalesExtCustomer": {},
 									"saveInventorySum2File": {}
 								}
 							},
@@ -4129,7 +4136,9 @@
 									"parmTargetFolder": {
 										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 										"type": "Expression"
-									}
+									},
+									"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+									"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 								},
 								"datasetParameters": {
 									"LoadFile": {},
@@ -4139,8 +4148,10 @@
 									"WriteFilePosAdjV2": {},
 									"WriteFileSalesV2": {},
 									"WriteFileAssConsV2": {},
-									"WriteFileAssOutV2": {}
-								}
+									"WriteFileAssOutV2": {},
+									"WriteFileExtSalesV2": {}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {

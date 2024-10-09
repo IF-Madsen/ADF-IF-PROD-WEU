@@ -887,6 +887,13 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "GetInventoryAccCon"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GetSalesExtCustomer"
 						}
 					],
 					"sinks": [
@@ -1154,13 +1161,21 @@
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
 						"     fileName: (concat('InventorySumAssCons',$parmRegion,'.parquet'))) ~> GetInventoryAccCon",
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: (concat('InventorySumSalesExtCust',$parmRegion,'.parquet'))) ~> GetSalesExtCustomer",
 						"OnlyItemNo derive(InventorySum = 0,",
 						"          PurchQty = 0,",
 						"          SalesQty = 0,",
 						"          PosAdjustmentQty = 0,",
 						"          NegAdjustmentQty = 0,",
 						"          AssemblyOutput = 0,",
-						"          AssemblyConsumption = 0) ~> addSumFieldsToItem",
+						"          AssemblyConsumption = 0,",
+						"          ExtCustSalesQty = 0) ~> addSumFieldsToItem",
 						"RemoveAdjustNegFields, GetInventSumPurch join(ItemNo == Item_No",
 						"     && RemoveAdjustNegFields@EndDate == GetInventSumPurch@EndDate,",
 						"     joinType:'left',",
