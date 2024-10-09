@@ -5687,7 +5687,7 @@
 						"          AssemblyConsumption = 0,",
 						"          SalesQtyExtCust = 0) ~> addSumFieldsToItem",
 						"removeFields, GetInventSumPurch join(ItemNo == Item_No",
-						"     && GetInventSumPurch@EndDate == GetInventSumPurch@EndDate,",
+						"     && removeFields@EndDate == GetInventSumPurch@EndDate,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
