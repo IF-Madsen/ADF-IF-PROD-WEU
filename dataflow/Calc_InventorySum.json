@@ -47,7 +47,7 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "GetInventSumdjustNeg"
+					"name": "GetInventSumAdjustNeg"
 				},
 				{
 					"linkedService": {
@@ -314,7 +314,7 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumdjustNeg",
+				"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumAdjustNeg",
 				"source(output(",
 				"          PrimoDate as date",
 				"     ),",
@@ -357,7 +357,7 @@
 				"          Region as string,",
 				"          Item_No as string,",
 				"          EndDate as date,",
-				"          Quantity as decimal(38,18)",
+				"          Quantity as double",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -488,8 +488,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveAdjustPosFields",
-				"RemoveAdjustPosFields, GetInventSumdjustNeg join(ItemNo == Item_No",
-				"     && RemoveAdjustPosFields@EndDate == GetInventSumdjustNeg@EndDate,",
+				"RemoveAdjustPosFields, GetInventSumAdjustNeg join(ItemNo == Item_No",
+				"     && RemoveAdjustPosFields@EndDate == GetInventSumAdjustNeg@EndDate,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
