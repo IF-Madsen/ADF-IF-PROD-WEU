@@ -518,8 +518,11 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
-										"parmExtCustSalesFile": "'D00482'"
+										"parmExtCustNo": {
+											"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer1}'",
+											"type": "Expression"
+										},
+										"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
