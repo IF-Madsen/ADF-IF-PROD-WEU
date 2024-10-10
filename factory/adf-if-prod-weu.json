@@ -112,6 +112,10 @@
 			"ServiceURL_US": {
 				"type": "string",
 				"value": "'https://ironfortressinc.crm4.dynamics.com/'"
+			},
+			"d365bc_ExtCustomer1": {
+				"type": "string",
+				"value": "D00482"
 			}
 		}
 	},
