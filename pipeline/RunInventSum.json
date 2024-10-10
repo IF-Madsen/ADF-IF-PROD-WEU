@@ -1,0 +1,60 @@
+{
+	"name": "RunInventSum",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "CalculateInventSum",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Calc_InventorySum",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": "'silver'",
+										"parmSourceFolder": "'d365bc'",
+										"parmTargetBlob": "'gold'",
+										"parmTargetFolder": "'d365bc'",
+										"parmSourceFolderJson": "'json'"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "InventoryForecast"
+		},
+		"annotations": []
+	}
+}
