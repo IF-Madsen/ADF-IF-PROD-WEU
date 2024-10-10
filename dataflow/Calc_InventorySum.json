@@ -549,7 +549,7 @@
 				"          AssemblyOutput,",
 				"          AssemblyConsumption,",
 				"          StartDate,",
-				"          EndDate = GetInventoryAccCon@EndDate",
+				"          EndDate = PrimeDates@EndDate",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveAssConFields",
