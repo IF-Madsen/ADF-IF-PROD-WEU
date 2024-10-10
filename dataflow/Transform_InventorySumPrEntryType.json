@@ -163,7 +163,7 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     parmRegion as string,",
+				"     parmRegion as string ('EU'),",
 				"     parmSourceFile as string (concat('ItemsLedgerEntries',$parmRegion,'.parquet')),",
 				"     parmAssOutFile as string (concat('InventorySumAssOut',$parmRegion,'.parquet')),",
 				"     parmAssConsFile as string (concat('InventorySumAssCons',$parmRegion,'.parquet')),",
@@ -316,8 +316,7 @@
 				"!startsWith(Item_No, \"LSGIFTCARD\")) ~> excludedItems",
 				"AddEndDate filter(startsWith(Entry_Type,\"Sale\") && ",
 				"startsWith(Source_Type, \"Customer\") &&",
-				"Source_No == $parmExtCustNo",
-				") ~> OnlyExternSales",
+				"Source_No == $parmExtCustNo) ~> OnlyExternSales",
 				"OnlyExternSales aggregate(groupBy(Region,",
 				"          Item_No,",
 				"          EndDate),",

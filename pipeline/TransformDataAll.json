@@ -519,7 +519,7 @@
 											"type": "Expression"
 										},
 										"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
-										"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
+										"parmExtCustSalesFile": "'D00482'"
 									}
 								},
 								"compute": {
