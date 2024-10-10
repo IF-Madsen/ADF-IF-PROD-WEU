@@ -23,13 +23,6 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "SaveParquetFile"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "savejsonfile"
 				}
 			],
 			"transformations": [
@@ -142,19 +135,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SaveParquetFile",
-				"SelectFields sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: 'json',",
-				"     partitionFileNames:[(concat('LedgerPeriod',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> savejsonfile"
+				"     partitionBy('hash', 1)) ~> SaveParquetFile"
 			]
 		}
 	}
