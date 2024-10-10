@@ -688,7 +688,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Gold layer",
+						"activity": "Set Layer Gold",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -732,7 +732,7 @@
 				}
 			},
 			{
-				"name": "Set Gold layer",
+				"name": "Set Layer Gold",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
