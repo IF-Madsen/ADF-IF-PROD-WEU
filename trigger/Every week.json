@@ -1,5 +1,5 @@
 {
-	"name": "Every second week",
+	"name": "Every week",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
@@ -15,12 +15,13 @@
 		"typeProperties": {
 			"recurrence": {
 				"frequency": "Week",
-				"interval": 2,
-				"startTime": "2024-09-05T04:40:00",
+				"interval": 1,
+				"startTime": "2024-09-05T04:00:00",
 				"timeZone": "Romance Standard Time",
 				"schedule": {
 					"weekDays": [
-						"Saturday"
+						"Saturday",
+						"Sunday"
 					]
 				}
 			}
