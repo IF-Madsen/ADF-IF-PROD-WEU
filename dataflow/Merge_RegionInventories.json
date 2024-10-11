@@ -62,16 +62,6 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "USPurchItemSum"
-				},
-				{
-					"name": "source1"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "EUSalesQtyExt"
 				}
 			],
 			"sinks": [
@@ -243,12 +233,6 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ('PurchItemSumUS.parquet')) ~> USPurchItemSum",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> EUSalesQtyExt",
 				"EUInventory, USInventory union(byName: false)~> mergeInventory",
 				"EUVendorItems, USVendorItems union(byName: true)~> mergeVendorItems",
 				"EUReorderInterval, USReorderInterval join(EUReorderInterval@ItemNo == USReorderInterval@ItemNo,",
