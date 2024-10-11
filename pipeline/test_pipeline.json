@@ -14,7 +14,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "TransformDataAll",
+						"referenceName": "RunMergeRegions",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
