@@ -62,6 +62,16 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "USPurchItemSum"
+				},
+				{
+					"name": "source1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUSalesQtyExt"
 				}
 			],
 			"sinks": [
@@ -118,6 +128,9 @@
 				},
 				{
 					"name": "USAddRegion"
+				},
+				{
+					"name": "sort1"
 				}
 			],
 			"scriptLines": [
@@ -127,7 +140,21 @@
 				"     parmTargetBlob as string ('gold'),",
 				"     parmTargetFolder as string ('d365bc')",
 				"}",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          ItemNo as string,",
+				"          InventorySum as double,",
+				"          PurchQty as double,",
+				"          SalesQty as double,",
+				"          SalesQtyExtCust as double,",
+				"          PosAdjustmentQty as double,",
+				"          NegAdjustmentQty as double,",
+				"          AssemblyOutput as double,",
+				"          AssemblyConsumption as double,",
+				"          StartDate as date,",
+				"          EndDate as date,",
+				"          Region as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: true,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false,",
@@ -135,7 +162,21 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ('InventorySumEU.parquet')) ~> EUInventory",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          ItemNo as string,",
+				"          InventorySum as double,",
+				"          PurchQty as double,",
+				"          SalesQty as double,",
+				"          SalesQtyExtCust as double,",
+				"          PosAdjustmentQty as double,",
+				"          NegAdjustmentQty as double,",
+				"          AssemblyOutput as double,",
+				"          AssemblyConsumption as double,",
+				"          StartDate as date,",
+				"          EndDate as date,",
+				"          Region as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet',",
@@ -202,7 +243,13 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ('PurchItemSumUS.parquet')) ~> USPurchItemSum",
-				"EUInventory, USInventory union(byName: true)~> mergeInventory",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> EUSalesQtyExt",
+				"EUInventory, USInventory union(byName: false)~> mergeInventory",
 				"EUVendorItems, USVendorItems union(byName: true)~> mergeVendorItems",
 				"EUReorderInterval, USReorderInterval join(EUReorderInterval@ItemNo == USReorderInterval@ItemNo,",
 				"     joinType:'outer',",
@@ -224,7 +271,11 @@
 				"USPurchItemSum derive(ItemNo = ItemNo,",
 				"          SumQty = SumQty,",
 				"          Region = 'US') ~> USAddRegion",
-				"mergeInventory sink(allowSchemaDrift: true,",
+				"mergeInventory sort(asc(ItemNo, true),",
+				"     asc(StartDate, true),",
+				"     asc(EndDate, true),",
+				"     asc(Region, true)) ~> sort1",
+				"sort1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
