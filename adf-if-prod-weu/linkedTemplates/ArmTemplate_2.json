@@ -13,6 +13,86 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "CalculateInventSum",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_InventorySum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": "'silver'",
+												"parmSourceFolder": "'d365bc'",
+												"parmTargetBlob": "'gold'",
+												"parmTargetFolder": "'d365bc'",
+												"parmSourceFolderJson": "'json'"
+											},
+											"datasetParameters": {
+												"GetAllLedgerPeriods": {},
+												"GetItems": {},
+												"GetInventSumSales": {},
+												"GetInventSumPurch": {},
+												"GetInventSumAdjustPos": {},
+												"GetInventSumAdjustNeg": {},
+												"GetPrimoDate": {},
+												"GetInventoryAssOut": {},
+												"GetInventoryAccCon": {},
+												"GetInventorySumSalesExtCust": {},
+												"saveInventorySum2File": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "InventoryForecast"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RunMergeRegions')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -279,8 +359,7 @@
 											},
 											"datasetParameters": {
 												"LoadFile": {},
-												"SaveParquetFile": {},
-												"savejsonfile": {}
+												"SaveParquetFile": {}
 											}
 										},
 										"staging": {},
@@ -711,7 +790,10 @@
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
-												"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+												"parmExtCustNo": {
+													"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer1}'",
+													"type": "Expression"
+												},
 												"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
@@ -724,8 +806,7 @@
 												"WriteFileAssConsV2": {},
 												"WriteFileAssOutV2": {},
 												"WriteFileExtSalesV2": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -846,8 +927,7 @@
 											"datasetParameters": {
 												"LoadItem": {},
 												"saveItemPrices": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -906,7 +986,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Gold layer",
+								"activity": "Set Layer Gold",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -950,7 +1030,7 @@
 						}
 					},
 					{
-						"name": "Set Gold layer",
+						"name": "Set Layer Gold",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1256,7 +1336,7 @@
 												"GetInventSumSales": {},
 												"GetInventSumPurch": {},
 												"GetInventSumAdjustPos": {},
-												"GetInventSumdjustNeg": {},
+												"GetInventSumAdjustNeg": {},
 												"GetPrimoDate": {},
 												"GetInventoryAssOut": {},
 												"GetInventoryAccCon": {},
@@ -3433,8 +3513,6 @@
 					{
 						"name": "Execute TransformAll",
 						"type": "ExecutePipeline",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"secureInput": false
@@ -3442,7 +3520,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "TransformDataAll",
+								"referenceName": "RunMergeRegions",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -3948,8 +4026,7 @@
 								},
 								"datasetParameters": {
 									"LoadFile": {},
-									"SaveParquetFile": {},
-									"savejsonfile": {}
+									"SaveParquetFile": {}
 								}
 							},
 							"staging": {},
@@ -4010,7 +4087,7 @@
 									"GetInventSumSales": {},
 									"GetInventSumPurch": {},
 									"GetInventSumAdjustPos": {},
-									"GetInventSumdjustNeg": {},
+									"GetInventSumAdjustNeg": {},
 									"GetPrimoDate": {},
 									"GetInventoryAssOut": {},
 									"GetInventoryAccCon": {},
@@ -4095,6 +4172,8 @@
 					{
 						"name": "Run ItemLedgerEntries",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -4150,8 +4229,7 @@
 									"WriteFileAssConsV2": {},
 									"WriteFileAssOutV2": {},
 									"WriteFileExtSalesV2": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -4168,7 +4246,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
 				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]"
 			]
 		},

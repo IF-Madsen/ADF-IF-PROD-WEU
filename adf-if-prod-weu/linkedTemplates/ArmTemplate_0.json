@@ -118,6 +118,10 @@
 			"type": "string",
 			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
 		},
+		"default_properties_d365bc_ExtCustomer1_value": {
+			"type": "string",
+			"defaultValue": "D00482"
+		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
@@ -283,6 +287,10 @@
 				"ServiceURL_US": {
 					"type": "string",
 					"value": "[parameters('default_properties_ServiceURL_US_value')]"
+				},
+				"d365bc_ExtCustomer1": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
 				}
 			},
 			"dependsOn": []
@@ -864,7 +872,7 @@
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "GetInventSumdjustNeg"
+							"name": "GetInventSumAdjustNeg"
 						},
 						{
 							"linkedService": {
@@ -1131,7 +1139,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumdjustNeg",
+						"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumAdjustNeg",
 						"source(output(",
 						"          PrimoDate as date",
 						"     ),",
@@ -1174,7 +1182,7 @@
 						"          Region as string,",
 						"          Item_No as string,",
 						"          EndDate as date,",
-						"          Quantity as decimal(38,18)",
+						"          Quantity as double",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -1190,7 +1198,8 @@
 						"          NegAdjustmentQty = 0,",
 						"          AssemblyOutput = 0,",
 						"          AssemblyConsumption = 0,",
-						"          SalesQtyExtCust = 0) ~> addSumFieldsToItem",
+						"          SalesQtyExtCust = 0,",
+						"          Region = $parmRegion) ~> addSumFieldsToItem",
 						"removeFields, GetInventSumPurch join(ItemNo == Item_No",
 						"     && removeFields@EndDate == GetInventSumPurch@EndDate,",
 						"     joinType:'left',",
@@ -1238,8 +1247,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemovePurchSumFields",
-						"joinSalesSum derive(Region = $parmRegion,",
-						"          tmpSum = 0,",
+						"joinSalesSum derive(tmpSum = 0,",
 						"          SalesQty = iifNull(Quantity, 0)) ~> updateSalesSum",
 						"removeSalesSumFields window(over(ItemNo),",
 						"     asc(StartDate, true),",
@@ -1300,12 +1308,13 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAssOutFields@EndDate",
+						"          EndDate = RemoveAssOutFields@EndDate,",
+						"          Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAdjustPosFields",
-						"RemoveAdjustPosFields, GetInventSumdjustNeg join(ItemNo == Item_No",
-						"     && RemoveAdjustPosFields@EndDate == GetInventSumdjustNeg@EndDate,",
+						"RemoveAdjustPosFields, GetInventSumAdjustNeg join(ItemNo == Item_No",
+						"     && RemoveAdjustPosFields@EndDate == GetInventSumAdjustNeg@EndDate,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
@@ -1322,7 +1331,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAdjustPosFields@EndDate",
+						"          EndDate = RemoveAdjustPosFields@EndDate,",
+						"          Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAdjustNegFields",
@@ -1344,7 +1354,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAssConFields@EndDate",
+						"          EndDate = RemoveAssConFields@EndDate,",
+						"          Region = RemoveAssConFields@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAssOutFields",
@@ -1366,7 +1377,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = GetInventoryAccCon@EndDate",
+						"          EndDate = PrimeDates@EndDate,",
+						"          Region = addSumFieldsToItem@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAssConFields",
@@ -1390,7 +1402,7 @@
 						"          AssemblyConsumption,",
 						"          StartDate,",
 						"          EndDate = RemoveAdjustNegFields@EndDate,",
-						"          Region",
+						"          Region = RemoveAdjustNegFields@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> removeFields",

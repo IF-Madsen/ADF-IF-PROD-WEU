@@ -166,6 +166,10 @@
 			"type": "string",
 			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
 		},
+		"default_properties_d365bc_ExtCustomer1_value": {
+			"type": "string",
+			"defaultValue": "D00482"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -273,6 +277,9 @@
 					},
 					"default_properties_ServiceURL_US_value": {
 						"value": "[parameters('default_properties_ServiceURL_US_value')]"
+					},
+					"default_properties_d365bc_ExtCustomer1_value": {
+						"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
 					},
 					"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"

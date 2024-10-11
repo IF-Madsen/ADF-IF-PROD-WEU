@@ -125,6 +125,9 @@
 		"default_properties_ServiceURL_US_value": {
 			"value": "'https://ironfortressinc.crm4.dynamics.com/'"
 		},
+		"default_properties_d365bc_ExtCustomer1_value": {
+			"value": "D00482"
+		},
 		"containerUri": {
 			"value": ""
 		},

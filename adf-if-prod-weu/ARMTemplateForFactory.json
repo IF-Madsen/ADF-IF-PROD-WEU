@@ -165,6 +165,10 @@
 		"default_properties_ServiceURL_US_value": {
 			"type": "string",
 			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
+		},
+		"default_properties_d365bc_ExtCustomer1_value": {
+			"type": "string",
+			"defaultValue": "D00482"
 		}
 	},
 	"variables": {
@@ -262,7 +266,7 @@
 												"GetInventSumSales": {},
 												"GetInventSumPurch": {},
 												"GetInventSumAdjustPos": {},
-												"GetInventSumdjustNeg": {},
+												"GetInventSumAdjustNeg": {},
 												"GetPrimoDate": {},
 												"GetInventoryAssOut": {},
 												"GetInventoryAccCon": {},
@@ -2880,6 +2884,88 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "CalculateInventSum",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_InventorySum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": "'silver'",
+												"parmSourceFolder": "'d365bc'",
+												"parmTargetBlob": "'gold'",
+												"parmTargetFolder": "'d365bc'",
+												"parmSourceFolderJson": "'json'"
+											},
+											"datasetParameters": {
+												"GetAllLedgerPeriods": {},
+												"GetItems": {},
+												"GetInventSumSales": {},
+												"GetInventSumPurch": {},
+												"GetInventSumAdjustPos": {},
+												"GetInventSumAdjustNeg": {},
+												"GetPrimoDate": {},
+												"GetInventoryAssOut": {},
+												"GetInventoryAccCon": {},
+												"GetInventorySumSalesExtCust": {},
+												"saveInventorySum2File": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "InventoryForecast"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RunMergeRegions')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -3148,8 +3234,7 @@
 											},
 											"datasetParameters": {
 												"LoadFile": {},
-												"SaveParquetFile": {},
-												"savejsonfile": {}
+												"SaveParquetFile": {}
 											}
 										},
 										"staging": {},
@@ -3580,7 +3665,10 @@
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
-												"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+												"parmExtCustNo": {
+													"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer1}'",
+													"type": "Expression"
+												},
 												"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
@@ -3593,8 +3681,7 @@
 												"WriteFileAssConsV2": {},
 												"WriteFileAssOutV2": {},
 												"WriteFileExtSalesV2": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -3715,8 +3802,7 @@
 											"datasetParameters": {
 												"LoadItem": {},
 												"saveItemPrices": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -3775,7 +3861,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Gold layer",
+								"activity": "Set Layer Gold",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -3819,7 +3905,7 @@
 						}
 					},
 					{
-						"name": "Set Gold layer",
+						"name": "Set Layer Gold",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -3896,8 +3982,6 @@
 					{
 						"name": "Execute TransformAll",
 						"type": "ExecutePipeline",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"secureInput": false
@@ -3905,7 +3989,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "TransformDataAll",
+								"referenceName": "RunMergeRegions",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -4411,8 +4495,7 @@
 								},
 								"datasetParameters": {
 									"LoadFile": {},
-									"SaveParquetFile": {},
-									"savejsonfile": {}
+									"SaveParquetFile": {}
 								}
 							},
 							"staging": {},
@@ -4473,7 +4556,7 @@
 									"GetInventSumSales": {},
 									"GetInventSumPurch": {},
 									"GetInventSumAdjustPos": {},
-									"GetInventSumdjustNeg": {},
+									"GetInventSumAdjustNeg": {},
 									"GetPrimoDate": {},
 									"GetInventoryAssOut": {},
 									"GetInventoryAccCon": {},
@@ -4558,6 +4641,8 @@
 					{
 						"name": "Run ItemLedgerEntries",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -4613,8 +4698,7 @@
 									"WriteFileAssConsV2": {},
 									"WriteFileAssOutV2": {},
 									"WriteFileExtSalesV2": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -4631,7 +4715,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemCategoriesGroup')]",
 				"[concat(variables('factoryId'), '/datasets/ds_Json_Prod')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]",
@@ -5359,7 +5443,7 @@
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "GetInventSumdjustNeg"
+							"name": "GetInventSumAdjustNeg"
 						},
 						{
 							"linkedService": {
@@ -5626,7 +5710,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumdjustNeg",
+						"     fileName: (concat('InventorySumNegAdj',$parmRegion,'.parquet'))) ~> GetInventSumAdjustNeg",
 						"source(output(",
 						"          PrimoDate as date",
 						"     ),",
@@ -5669,7 +5753,7 @@
 						"          Region as string,",
 						"          Item_No as string,",
 						"          EndDate as date,",
-						"          Quantity as decimal(38,18)",
+						"          Quantity as double",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -5685,7 +5769,8 @@
 						"          NegAdjustmentQty = 0,",
 						"          AssemblyOutput = 0,",
 						"          AssemblyConsumption = 0,",
-						"          SalesQtyExtCust = 0) ~> addSumFieldsToItem",
+						"          SalesQtyExtCust = 0,",
+						"          Region = $parmRegion) ~> addSumFieldsToItem",
 						"removeFields, GetInventSumPurch join(ItemNo == Item_No",
 						"     && removeFields@EndDate == GetInventSumPurch@EndDate,",
 						"     joinType:'left',",
@@ -5733,8 +5818,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemovePurchSumFields",
-						"joinSalesSum derive(Region = $parmRegion,",
-						"          tmpSum = 0,",
+						"joinSalesSum derive(tmpSum = 0,",
 						"          SalesQty = iifNull(Quantity, 0)) ~> updateSalesSum",
 						"removeSalesSumFields window(over(ItemNo),",
 						"     asc(StartDate, true),",
@@ -5795,12 +5879,13 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAssOutFields@EndDate",
+						"          EndDate = RemoveAssOutFields@EndDate,",
+						"          Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAdjustPosFields",
-						"RemoveAdjustPosFields, GetInventSumdjustNeg join(ItemNo == Item_No",
-						"     && RemoveAdjustPosFields@EndDate == GetInventSumdjustNeg@EndDate,",
+						"RemoveAdjustPosFields, GetInventSumAdjustNeg join(ItemNo == Item_No",
+						"     && RemoveAdjustPosFields@EndDate == GetInventSumAdjustNeg@EndDate,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
@@ -5817,7 +5902,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAdjustPosFields@EndDate",
+						"          EndDate = RemoveAdjustPosFields@EndDate,",
+						"          Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAdjustNegFields",
@@ -5839,7 +5925,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = RemoveAssConFields@EndDate",
+						"          EndDate = RemoveAssConFields@EndDate,",
+						"          Region = RemoveAssConFields@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAssOutFields",
@@ -5861,7 +5948,8 @@
 						"          AssemblyOutput,",
 						"          AssemblyConsumption,",
 						"          StartDate,",
-						"          EndDate = GetInventoryAccCon@EndDate",
+						"          EndDate = PrimeDates@EndDate,",
+						"          Region = addSumFieldsToItem@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RemoveAssConFields",
@@ -5885,7 +5973,7 @@
 						"          AssemblyConsumption,",
 						"          StartDate,",
 						"          EndDate = RemoveAdjustNegFields@EndDate,",
-						"          Region",
+						"          Region = RemoveAdjustNegFields@Region",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> removeFields",
@@ -6827,6 +6915,9 @@
 						},
 						{
 							"name": "USAddRegion"
+						},
+						{
+							"name": "sort1"
 						}
 					],
 					"scriptLines": [
@@ -6836,7 +6927,21 @@
 						"     parmTargetBlob as string ('gold'),",
 						"     parmTargetFolder as string ('d365bc')",
 						"}",
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          ItemNo as string,",
+						"          InventorySum as double,",
+						"          PurchQty as double,",
+						"          SalesQty as double,",
+						"          SalesQtyExtCust as double,",
+						"          PosAdjustmentQty as double,",
+						"          NegAdjustmentQty as double,",
+						"          AssemblyOutput as double,",
+						"          AssemblyConsumption as double,",
+						"          StartDate as date,",
+						"          EndDate as date,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: true,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false,",
@@ -6844,7 +6949,21 @@
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
 						"     fileName: ('InventorySumEU.parquet')) ~> EUInventory",
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          ItemNo as string,",
+						"          InventorySum as double,",
+						"          PurchQty as double,",
+						"          SalesQty as double,",
+						"          SalesQtyExtCust as double,",
+						"          PosAdjustmentQty as double,",
+						"          NegAdjustmentQty as double,",
+						"          AssemblyOutput as double,",
+						"          AssemblyConsumption as double,",
+						"          StartDate as date,",
+						"          EndDate as date,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     format: 'parquet',",
@@ -6911,7 +7030,7 @@
 						"     fileSystem: ($parmTargetBlob),",
 						"     folderPath: ($parmSourceFolder),",
 						"     fileName: ('PurchItemSumUS.parquet')) ~> USPurchItemSum",
-						"EUInventory, USInventory union(byName: true)~> mergeInventory",
+						"EUInventory, USInventory union(byName: false)~> mergeInventory",
 						"EUVendorItems, USVendorItems union(byName: true)~> mergeVendorItems",
 						"EUReorderInterval, USReorderInterval join(EUReorderInterval@ItemNo == USReorderInterval@ItemNo,",
 						"     joinType:'outer',",
@@ -6933,7 +7052,11 @@
 						"USPurchItemSum derive(ItemNo = ItemNo,",
 						"          SumQty = SumQty,",
 						"          Region = 'US') ~> USAddRegion",
-						"mergeInventory sink(allowSchemaDrift: true,",
+						"mergeInventory sort(asc(ItemNo, true),",
+						"     asc(StartDate, true),",
+						"     asc(EndDate, true),",
+						"     asc(Region, true)) ~> sort1",
+						"sort1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -7334,7 +7457,7 @@
 					],
 					"scriptLines": [
 						"parameters{",
-						"     parmRegion as string,",
+						"     parmRegion as string ('EU'),",
 						"     parmSourceFile as string (concat('ItemsLedgerEntries',$parmRegion,'.parquet')),",
 						"     parmAssOutFile as string (concat('InventorySumAssOut',$parmRegion,'.parquet')),",
 						"     parmAssConsFile as string (concat('InventorySumAssCons',$parmRegion,'.parquet')),",
@@ -8775,13 +8898,6 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "SaveParquetFile"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "savejsonfile"
 						}
 					],
 					"transformations": [
@@ -8894,19 +9010,7 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveParquetFile",
-						"SelectFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: 'json',",
-						"     partitionFileNames:[(concat('LedgerPeriod',$parmRegion,'.json'))],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> savejsonfile"
+						"     partitionBy('hash', 1)) ~> SaveParquetFile"
 					]
 				}
 			},
@@ -9843,9 +9947,9 @@
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     format: 'parquet',",
-						"     fileSystem: 'silver',",
+						"     fileSystem: 'gold',",
 						"     folderPath: 'd365bc',",
-						"     fileName: 'InventorySumSalesEU.parquet') ~> source2",
+						"     fileName: 'InventorySumEU.parquet') ~> source2",
 						"source(output(",
 						"          Region as string,",
 						"          Item_No as string,",
@@ -10082,6 +10186,10 @@
 				"ServiceURL_US": {
 					"type": "string",
 					"value": "[parameters('default_properties_ServiceURL_US_value')]"
+				},
+				"d365bc_ExtCustomer1": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
 				}
 			},
 			"dependsOn": []
