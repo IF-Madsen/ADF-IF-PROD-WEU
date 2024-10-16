@@ -116,6 +116,10 @@
 			"d365bc_ExtCustomer1": {
 				"type": "string",
 				"value": "D00482"
+			},
+			"folderExcel": {
+				"type": "string",
+				"value": "excel"
 			}
 		}
 	},
