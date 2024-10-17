@@ -196,6 +196,7 @@
 				"     compressionCodec: 'snappy') ~> Items",
 				"Items filter(!Blocked ",
 				"&& !Purchasing_Blocked",
+				"&& Vendor_No",
 				"&& Type!=\"Service\" ",
 				"&& Vendor_No!=\"\" ",
 				"&& !startsWith(No,\"BOX\") ",
