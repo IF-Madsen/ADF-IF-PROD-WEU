@@ -89,7 +89,7 @@
 		},
 		"default_properties_d365bc_vendor_rank_value": {
 			"type": "int",
-			"defaultValue": 15
+			"defaultValue": 25
 		},
 		"default_properties_Region_EU_value": {
 			"type": "string",
@@ -121,6 +121,10 @@
 		"default_properties_d365bc_ExtCustomer1_value": {
 			"type": "string",
 			"defaultValue": "D00482"
+		},
+		"default_properties_folderExcel_value": {
+			"type": "string",
+			"defaultValue": "excel"
 		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -291,6 +295,10 @@
 				"d365bc_ExtCustomer1": {
 					"type": "string",
 					"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
+				},
+				"folderExcel": {
+					"type": "string",
+					"value": "[parameters('default_properties_folderExcel_value')]"
 				}
 			},
 			"dependsOn": []

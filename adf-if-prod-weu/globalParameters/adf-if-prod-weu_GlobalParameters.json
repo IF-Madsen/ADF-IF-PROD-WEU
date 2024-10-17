@@ -81,7 +81,7 @@
 	},
 	"d365bc_vendor_rank": {
 		"type": "int",
-		"value": 15
+		"value": 25
 	},
 	"Region_EU": {
 		"type": "string",
@@ -113,5 +113,9 @@
 	"d365bc_ExtCustomer1": {
 		"type": "string",
 		"value": "D00482"
+	},
+	"folderExcel": {
+		"type": "string",
+		"value": "excel"
 	}
 }

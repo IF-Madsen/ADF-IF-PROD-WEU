@@ -13,86 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "CalculateInventSum",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "Calc_InventorySum",
-											"type": "DataFlowReference",
-											"parameters": {
-												"parmRegion": {
-													"value": "'@{item()}'",
-													"type": "Expression"
-												},
-												"parmSourceBlob": "'silver'",
-												"parmSourceFolder": "'d365bc'",
-												"parmTargetBlob": "'gold'",
-												"parmTargetFolder": "'d365bc'",
-												"parmSourceFolderJson": "'json'"
-											},
-											"datasetParameters": {
-												"GetAllLedgerPeriods": {},
-												"GetItems": {},
-												"GetInventSumSales": {},
-												"GetInventSumPurch": {},
-												"GetInventSumAdjustPos": {},
-												"GetInventSumAdjustNeg": {},
-												"GetPrimoDate": {},
-												"GetInventoryAssOut": {},
-												"GetInventoryAccCon": {},
-												"GetInventorySumSalesExtCust": {},
-												"saveInventorySum2File": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "InventoryForecast"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/RunMergeRegions')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4339,7 +4259,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Every second week')]",
+			"name": "[concat(parameters('factoryName'), '/Every week')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4358,12 +4278,13 @@
 				"typeProperties": {
 					"recurrence": {
 						"frequency": "Week",
-						"interval": 2,
-						"startTime": "2024-09-05T04:40:00",
+						"interval": 1,
+						"startTime": "2024-09-05T04:00:00",
 						"timeZone": "Romance Standard Time",
 						"schedule": {
 							"weekDays": [
-								"Saturday"
+								"Saturday",
+								"Sunday"
 							]
 						}
 					}
