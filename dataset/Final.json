@@ -1,0 +1,42 @@
+{
+	"name": "Final",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "InventorySumAll.parquet",
+				"folderPath": "d365bc",
+				"fileSystem": "gold"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Code",
+				"type": "UTF8"
+			},
+			{
+				"name": "Description",
+				"type": "UTF8"
+			},
+			{
+				"name": "Not_Webshipper",
+				"type": "BOOLEAN"
+			},
+			{
+				"name": "Region",
+				"type": "UTF8"
+			},
+			{
+				"name": "Loaded",
+				"type": "UTF8"
+			}
+		]
+	}
+}
