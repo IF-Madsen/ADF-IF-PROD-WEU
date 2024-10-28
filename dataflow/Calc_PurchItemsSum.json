@@ -31,9 +31,6 @@
 				},
 				{
 					"name": "removeBlanks"
-				},
-				{
-					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -175,8 +172,7 @@
 				"PurchLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumItemsQty",
 				"SumItemsQty filter(No>'') ~> removeBlanks",
-				"removeBlanks filter(No=='23510100') ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"removeBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
