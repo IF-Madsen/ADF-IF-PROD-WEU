@@ -608,10 +608,22 @@
 						"referenceName": "Merge_RegionInventories_Purch",
 						"type": "DataFlowReference",
 						"parameters": {
-							"parmSourceBlob": "'gold'",
-							"parmSourceFolder": "'d365bc'",
-							"parmTargetBlob": "'gold'",
-							"parmTargetFolder": "'d365bc'"
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_gold}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							}
 						}
 					},
 					"compute": {
