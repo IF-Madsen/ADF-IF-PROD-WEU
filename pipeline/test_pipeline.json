@@ -78,7 +78,7 @@
 				}
 			},
 			{
-				"name": "ForEachRegion",
+				"name": "ForEachRegion Do PurchSum",
 				"type": "ForEach",
 				"dependsOn": [],
 				"userProperties": [],
@@ -587,11 +587,11 @@
 				}
 			},
 			{
-				"name": "Data flow3",
+				"name": "Merge Purch Sum",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "ForEachRegion",
+						"activity": "ForEachRegion Do PurchSum",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -611,7 +611,7 @@
 						"type": "DataFlowReference",
 						"parameters": {
 							"parmSourceBlob": {
-								"value": "'@{pipeline().globalParameters.blob_silver}'",
+								"value": "'@{pipeline().globalParameters.blob_gold}'",
 								"type": "Expression"
 							},
 							"parmSourceFolder": {
