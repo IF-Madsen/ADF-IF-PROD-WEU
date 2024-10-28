@@ -78,8 +78,6 @@
 			{
 				"name": "ForEachRegion",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
@@ -103,92 +101,8 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Transform_ItemsFiltered",
-									"type": "DataFlowReference",
-									"parameters": {
-										"parmSourceBlob": {
-											"value": "'@{pipeline().globalParameters.blob_bronze}'",
-											"type": "Expression"
-										},
-										"parmSourceFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmTargetBlob": {
-											"value": "'@{pipeline().globalParameters.blob_silver}'",
-											"type": "Expression"
-										},
-										"parmTargetFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmSourceFile": "'Items_'+$parmRegion+'.parquet'",
-										"parmTargetFile": "'Items_'+$parmRegion+'.parquet'",
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										}
-									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
-						},
-						{
-							"name": "Data flow3",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "Data flow2",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "Transform_TopRankVendor",
-									"type": "DataFlowReference",
-									"parameters": {
-										"parmSourceBlob": {
-											"value": "'@{pipeline().globalParameters.blob_silver}'",
-											"type": "Expression"
-										},
-										"parmSourceFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmTargetBlob": {
-											"value": "'@{pipeline().globalParameters.blob_silver}'",
-											"type": "Expression"
-										},
-										"parmTargetFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										},
-										"parmVendorRank": {
-											"value": "@pipeline().globalParameters.d365bc_vendor_rank",
-											"type": "Expression"
-										},
-										"parmSourceFileItems": "concat('Items_',$parmRegion,'.parquet')",
-										"parmSourceFileVendors": "concat('Vendors_',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('TopRankVendors_',$parmRegion,'.json')"
-									}
+									"referenceName": "Calc_PurchItemsSum",
+									"type": "DataFlowReference"
 								},
 								"compute": {
 									"coreCount": 8,
@@ -639,6 +553,43 @@
 							},
 							"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
 							"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow3",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "ForEachRegion",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Merge_RegionInventories_Purch",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": "'gold'",
+							"parmSourceFolder": "'d365bc'",
+							"parmTargetBlob": "'gold'",
+							"parmTargetFolder": "'d365bc'"
 						}
 					},
 					"compute": {
