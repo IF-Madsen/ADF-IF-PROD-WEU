@@ -1,0 +1,97 @@
+{
+	"name": "Merge_RegionInventories_Purch",
+	"properties": {
+		"folder": {
+			"name": "3.Gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EUPurchItemSum"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "USPurchItemSum"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "savePurchSumAll"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mergePurchSum"
+				},
+				{
+					"name": "EUAddRegion"
+				},
+				{
+					"name": "USAddRegion"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSourceBlob as string ('gold'),",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmTargetBlob as string ('gold'),",
+				"     parmTargetFolder as string ('d365bc')",
+				"}",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('PurchItemSumEU.parquet')) ~> EUPurchItemSum",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ('PurchItemSumUS.parquet')) ~> USPurchItemSum",
+				"EUAddRegion, USAddRegion union(byName: true)~> mergePurchSum",
+				"EUPurchItemSum derive(ItemNo = ItemNo,",
+				"          SumQty = SumQty,",
+				"          Region = 'EU') ~> EUAddRegion",
+				"USPurchItemSum derive(ItemNo = ItemNo,",
+				"          SumQty = SumQty,",
+				"          Region = 'US') ~> USAddRegion",
+				"mergePurchSum sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     partitionFileNames:[('PurchItemSumAll.parquet')],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> savePurchSumAll"
+			]
+		}
+	}
+}
