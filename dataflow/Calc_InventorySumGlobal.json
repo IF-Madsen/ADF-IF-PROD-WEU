@@ -1,0 +1,129 @@
+{
+	"name": "Calc_InventorySumGlobal",
+	"properties": {
+		"folder": {
+			"name": "3.Gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InventorySumEU"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InventorySumUS"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Items"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "ItemPrices"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "selectItemFields"
+				},
+				{
+					"name": "RemoveBOM"
+				},
+				{
+					"name": "selectPriceFields"
+				},
+				{
+					"name": "join"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'InventorySumEU.parquet') ~> InventorySumEU",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'ItemReorderUS.parquet') ~> InventorySumUS",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ItemDescription as string,",
+				"          GroupDescription as string,",
+				"          ItemCategoryGroup as string,",
+				"          ItemCategoryCode as string,",
+				"          AssemblyBOM as boolean,",
+				"          VendorNo as string,",
+				"          Name as string,",
+				"          Name_2 as string,",
+				"          Global_Dimension_1_Filter as string,",
+				"          Global_Dimension_2_Filter as string,",
+				"          Rank as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'VendorsItemsWithGroupsAll.parquet') ~> Items",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ItemNoAlt as string,",
+				"          Description as string,",
+				"          UnitPrice as decimal(38,18),",
+				"          StandardCost as decimal(38,18),",
+				"          Unit_Cost as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'ItemPrices.parquet') ~> ItemPrices",
+				"RemoveBOM select(mapColumn(",
+				"          VendorNo,",
+				"          Name,",
+				"          ItemNo,",
+				"          ItemDescription,",
+				"          ItemGroupDescription = GroupDescription",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectItemFields",
+				"Items filter(!AssemblyBOM) ~> RemoveBOM",
+				"ItemPrices select(mapColumn(",
+				"          ItemNo,",
+				"          UnitCostPrice = Unit_Cost",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
+				"selectItemFields, selectPriceFields join(selectItemFields@ItemNo == selectPriceFields@ItemNo,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join"
+			]
+		}
+	}
+}
