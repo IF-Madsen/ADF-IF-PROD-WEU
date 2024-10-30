@@ -78,6 +78,9 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -216,17 +219,21 @@
 				"SumUpInstockAndSold derive(InStockAll = InStockEU+InStockUS,",
 				"          SoldAll = SoldEU+SoldUS) ~> SumUpAll",
 				"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
-				"     joinType:'outer',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
+				"     broadcast: 'both')~> join1",
 				"join1 select(mapColumn(",
-				"          ItemNo = TransitEU@ItemNo,",
+				"          ItemNoEU = TransitEU@ItemNo,",
 				"          SumQtyEU = TransitEU@SumQty,",
+				"          ItemNoUS = TransitUS@ItemNo,",
 				"          SumQtyUS = TransitUS@SumQty",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
+				"select1 derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+				"          US_SumQty = iifNull(SumQtyUS,0),",
+				"          EU_SumQty = iifNull(SumQtyEU,0)) ~> derivedColumn1"
 			]
 		}
 	}
