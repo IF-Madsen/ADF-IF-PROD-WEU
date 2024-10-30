@@ -34,6 +34,20 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "ItemPrices"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "TransitEU"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "TransitUS"
 				}
 			],
 			"sinks": [],
@@ -58,6 +72,12 @@
 				},
 				{
 					"name": "SumUpAll"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -139,6 +159,28 @@
 				"     fileSystem: 'gold',",
 				"     folderPath: 'd365bc',",
 				"     fileName: 'ItemPrices.parquet') ~> ItemPrices",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'PurchItemSumEU.parquet') ~> TransitEU",
+				"source(output(",
+				"          ItemNo as string,",
+				"          SumQty as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'd365bc',",
+				"     fileName: 'PurchItemSumUS.parquet') ~> TransitUS",
 				"RemoveBOM select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
@@ -172,7 +214,19 @@
 				"          SoldEU = iifNull(InventorySumEU@SalesQty-InventorySumEU@SalesQtyExtCust,0),",
 				"          SoldUS = iifNull(InventorySumUS@SalesQty,0)) ~> SumUpInstockAndSold",
 				"SumUpInstockAndSold derive(InStockAll = InStockEU+InStockUS,",
-				"          SoldAll = SoldEU+SoldUS) ~> SumUpAll"
+				"          SoldAll = SoldEU+SoldUS) ~> SumUpAll",
+				"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          ItemNo = TransitEU@ItemNo,",
+				"          SumQtyEU = TransitEU@SumQty,",
+				"          SumQtyUS = TransitUS@SumQty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
