@@ -166,7 +166,7 @@
 				"     broadcast: 'auto')~> joinSummes",
 				"joinSummes derive(InStockEU = iifNull(InventorySumEU@InventorySum,0),",
 				"          InStockUS = iifNull(InventorySumUS@InventorySum,0),",
-				"          InStockAll = iifNull(add(InventorySumEU@InventorySum,InventorySumUS@InventorySum),0)) ~> derivedColumn2"
+				"          InStockAll = InStockEU+InStockUS) ~> derivedColumn2"
 			]
 		}
 	}
