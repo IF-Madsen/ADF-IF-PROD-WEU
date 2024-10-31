@@ -282,9 +282,9 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"union1 derive(ItemNo = ItemNoUS,",
-				"          US_SumQty = SumQtyUS,",
-				"          EU_SumQty = 0) ~> derivedColumn2"
+				"union1 derive(ItemNo = iifNull(ItemNoUS),",
+				"          US_SumQty = iifNull(SumQtyUS),",
+				"          EU_SumQty = iifNull(0)) ~> derivedColumn2"
 			]
 		}
 	}
