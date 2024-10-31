@@ -291,7 +291,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
-				"select2, select3 join(ItemNo == ERROR_FUNCTION(''),",
+				"select2, select3 join(ItemNo == ItemNoUS,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
