@@ -96,12 +96,15 @@
 				},
 				{
 					"name": "select3"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     parmSourceBlob as string,",
-				"     parmSourceFolder as string",
+				"     parmSourceBlob as string ('gold'),",
+				"     parmSourceFolder as string ('d365bc')",
 				"}",
 				"source(output(",
 				"          ItemNo as string,",
@@ -272,15 +275,16 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 union(byName: true)~> union1",
+				"select2, select3 union(byName: true)~> union1",
 				"filter1 select(mapColumn(",
-				"          ItemNo = TransitUS@ItemNo,",
-				"          SumQty = TransitUS@SumQty,",
-				"          ItemNo = TransitEU@ItemNo,",
-				"          SumQty = TransitEU@SumQty",
+				"          ItemNoUS = TransitUS@ItemNo,",
+				"          SumQtyUS = TransitUS@SumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3"
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"union1 derive(ItemNo = ItemNoUS,",
+				"          US_SumQty = SumQtyUS,",
+				"          EU_SumQty = 0) ~> derivedColumn2"
 			]
 		}
 	}
