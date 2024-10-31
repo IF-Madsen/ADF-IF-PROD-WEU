@@ -50,7 +50,22 @@
 					"name": "TransitUS"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveGlobalSums"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SaveGlobalItems"
+				}
+			],
 			"transformations": [
 				{
 					"name": "selectItemFields"
@@ -107,7 +122,9 @@
 			"scriptLines": [
 				"parameters{",
 				"     parmSourceBlob as string ('gold'),",
-				"     parmSourceFolder as string ('d365bc')",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmTargetBlob as string ('gold'),",
+				"     parmTargetFolder as string ('d365bc')",
 				"}",
 				"source(output(",
 				"          ItemNo as string,",
@@ -317,7 +334,33 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select6",
-				"select6 derive(TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3"
+				"select6 derive(TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['\\'globalSummesAll.parquet\\''],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SaveGlobalSums",
+				"select4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['\\'globalItemsAll.parquet\\''],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SaveGlobalItems"
 			]
 		}
 	}
