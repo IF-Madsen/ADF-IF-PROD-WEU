@@ -116,7 +116,7 @@
 					"name": "SumUpAll"
 				},
 				{
-					"name": "sortOnItems"
+					"name": "sortOnVendorItems"
 				}
 			],
 			"scriptLines": [
@@ -334,7 +334,7 @@
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
 				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
 				"selectItemFields2 sort(asc(VendorNo, true),",
-				"     asc(ItemNo, true)) ~> sortOnItems",
+				"     asc(ItemNo, true)) ~> sortOnVendorItems",
 				"SumUpAll sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -348,7 +348,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SaveGlobalSums",
-				"sortOnItems sink(allowSchemaDrift: true,",
+				"sortOnVendorItems sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
