@@ -80,6 +80,8 @@
 			{
 				"name": "ForEachRegion Do PurchSum",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
@@ -589,6 +591,8 @@
 			{
 				"name": "Merge Purch Sum",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ForEachRegion Do PurchSum",
@@ -608,6 +612,48 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "Merge_RegionInventories_Purch",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{pipeline().globalParameters.blob_gold}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{pipeline().globalParameters.blob_gold}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "GlobalNumbers",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Calc_InventorySumGlobal",
 						"type": "DataFlowReference",
 						"parameters": {
 							"parmSourceBlob": {
