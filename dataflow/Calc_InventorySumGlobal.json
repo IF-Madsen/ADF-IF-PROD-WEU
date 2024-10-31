@@ -86,34 +86,31 @@
 					"name": "SumUpInstockAndSold"
 				},
 				{
-					"name": "SumUpAll"
+					"name": "joinTransitRegions"
 				},
 				{
-					"name": "join1"
+					"name": "selectTransitFields"
 				},
 				{
-					"name": "select1"
+					"name": "allignTransitFields"
 				},
 				{
-					"name": "derivedColumn1"
-				},
-				{
-					"name": "select2"
+					"name": "selectTransitQty"
 				},
 				{
 					"name": "select4"
 				},
 				{
-					"name": "select5"
+					"name": "selectSumFields"
 				},
 				{
-					"name": "join2"
+					"name": "joinSumAndTransit"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "allignTransitToSum"
 				},
 				{
-					"name": "select6"
+					"name": "selectAllFields"
 				},
 				{
 					"name": "derivedColumn3"
@@ -256,39 +253,38 @@
 				"InventorySumEU, InventorySumUS join(InventorySumEU@ItemNo == InventorySumUS@ItemNo",
 				"     && InventorySumEU@StartDate == InventorySumUS@StartDate",
 				"     && InventorySumEU@EndDate == InventorySumUS@EndDate,",
-				"     joinType:'left',",
+				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinSummes",
 				"joinSummes derive(InStockEU = iifNull(InventorySumEU@InventorySum,0),",
 				"          InStockUS = iifNull(InventorySumUS@InventorySum,0),",
 				"          SoldEU = iifNull(InventorySumEU@SalesQty-InventorySumEU@SalesQtyExtCust,0),",
-				"          SoldUS = iifNull(InventorySumUS@SalesQty,0)) ~> SumUpInstockAndSold",
-				"SumUpInstockAndSold derive(InStockAll = InStockEU+InStockUS,",
-				"          SoldAll = SoldEU+SoldUS) ~> SumUpAll",
+				"          SoldUS = iifNull(InventorySumUS@SalesQty,0),",
+				"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo)) ~> SumUpInstockAndSold",
 				"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'both')~> join1",
-				"join1 select(mapColumn(",
+				"     broadcast: 'both')~> joinTransitRegions",
+				"joinTransitRegions select(mapColumn(",
 				"          ItemNoEU = TransitEU@ItemNo,",
 				"          SumQtyEU = TransitEU@SumQty,",
 				"          ItemNoUS = TransitUS@ItemNo,",
 				"          SumQtyUS = TransitUS@SumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> select1",
-				"select1 derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+				"     skipDuplicateMapOutputs: false) ~> selectTransitFields",
+				"selectTransitFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
 				"          US_SumQty = iifNull(SumQtyUS,0),",
-				"          EU_SumQty = iifNull(SumQtyEU,0)) ~> derivedColumn1",
-				"derivedColumn1 select(mapColumn(",
+				"          EU_SumQty = iifNull(SumQtyEU,0)) ~> allignTransitFields",
+				"allignTransitFields select(mapColumn(",
 				"          ItemNo,",
 				"          US_SumQty,",
 				"          EU_SumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
+				"     skipDuplicateMapOutputs: true) ~> selectTransitQty",
 				"join select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
@@ -299,42 +295,41 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
-				"SumUpAll select(mapColumn(",
-				"          ItemNo = InventorySumEU@ItemNo,",
+				"SumUpInstockAndSold select(mapColumn(",
+				"          ItemNo,",
 				"          StartDate = InventorySumEU@StartDate,",
 				"          EndDate = InventorySumEU@EndDate,",
 				"          InStockEU,",
 				"          InStockUS,",
 				"          SoldEU,",
-				"          SoldUS,",
-				"          InStockAll,",
-				"          SoldAll",
+				"          SoldUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select5",
-				"select5, select2 join(select5@ItemNo == select2@ItemNo,",
+				"     skipDuplicateMapOutputs: true) ~> selectSumFields",
+				"selectSumFields, selectTransitQty join(selectSumFields@ItemNo == selectTransitQty@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join2",
-				"join2 derive(TransitEU = iifNull(EU_SumQty,0),",
-				"          TransitUS = iifNull(US_SumQty,0)) ~> derivedColumn2",
-				"derivedColumn2 select(mapColumn(",
-				"          ItemNo = select5@ItemNo,",
+				"     broadcast: 'auto')~> joinSumAndTransit",
+				"joinSumAndTransit derive(TransitEU = iifNull(EU_SumQty,0),",
+				"          TransitUS = iifNull(US_SumQty,0),",
+				"          ItemNo = iifNull(selectSumFields@ItemNo,selectTransitQty@ItemNo)) ~> allignTransitToSum",
+				"allignTransitToSum select(mapColumn(",
+				"          ItemNo,",
 				"          StartDate,",
 				"          EndDate,",
 				"          InStockEU,",
 				"          InStockUS,",
 				"          SoldEU,",
 				"          SoldUS,",
-				"          InStockAll,",
-				"          SoldAll,",
 				"          TransitEU,",
 				"          TransitUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select6",
-				"select6 derive(TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3",
+				"     skipDuplicateMapOutputs: true) ~> selectAllFields",
+				"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
+				"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
+				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3",
 				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
