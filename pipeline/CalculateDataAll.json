@@ -292,6 +292,55 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "GlobalNumbers",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Execute Merge",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Calc_InventorySumGlobal",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": {
+								"value": "'@{variables('blobGold')}'",
+								"type": "Expression"
+							},
+							"parmSourceFolder": {
+								"value": "'@{variables('folderD365bc')}'",
+								"type": "Expression"
+							},
+							"parmTargetBlob": {
+								"value": "'@{variables('blobGold')}'",
+								"type": "Expression"
+							},
+							"parmTargetFolder": {
+								"value": "'@{variables('folderD365bc')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"variables": {
