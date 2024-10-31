@@ -114,6 +114,9 @@
 				},
 				{
 					"name": "derivedColumn3"
+				},
+				{
+					"name": "sortOnItems"
 				}
 			],
 			"scriptLines": [
@@ -330,6 +333,8 @@
 				"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
 				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3",
+				"select4 sort(asc(VendorNo, true),",
+				"     asc(ItemNo, true)) ~> sortOnItems",
 				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -343,7 +348,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SaveGlobalSums",
-				"select4 sink(allowSchemaDrift: true,",
+				"sortOnItems sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
