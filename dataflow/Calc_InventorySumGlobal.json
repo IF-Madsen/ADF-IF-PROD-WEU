@@ -68,7 +68,7 @@
 			],
 			"transformations": [
 				{
-					"name": "selectItemFields"
+					"name": "selectItemFields1"
 				},
 				{
 					"name": "RemoveBOM"
@@ -98,7 +98,7 @@
 					"name": "selectTransitQty"
 				},
 				{
-					"name": "select4"
+					"name": "selectItemFields2"
 				},
 				{
 					"name": "selectSumFields"
@@ -113,7 +113,7 @@
 					"name": "selectAllFields"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "SumUpAll"
 				},
 				{
 					"name": "sortOnItems"
@@ -240,7 +240,7 @@
 				"          ItemGroupDescription = GroupDescription",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectItemFields",
+				"     skipDuplicateMapOutputs: true) ~> selectItemFields1",
 				"Items filter(!AssemblyBOM) ~> RemoveBOM",
 				"ItemPrices select(mapColumn(",
 				"          ItemNo,",
@@ -248,7 +248,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
-				"selectItemFields, selectPriceFields join(selectItemFields@ItemNo == selectPriceFields@ItemNo,",
+				"selectItemFields1, selectPriceFields join(selectItemFields1@ItemNo == selectPriceFields@ItemNo,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -291,13 +291,13 @@
 				"join select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
-				"          ItemNo = selectItemFields@ItemNo,",
+				"          ItemNo = selectItemFields1@ItemNo,",
 				"          ItemDescription,",
 				"          ItemGroupDescription,",
 				"          UnitCostPrice",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select4",
+				"     skipDuplicateMapOutputs: true) ~> selectItemFields2",
 				"SumUpInstockAndSold select(mapColumn(",
 				"          ItemNo,",
 				"          StartDate = InventorySumEU@StartDate,",
@@ -332,10 +332,10 @@
 				"     skipDuplicateMapOutputs: true) ~> selectAllFields",
 				"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
-				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> derivedColumn3",
-				"select4 sort(asc(VendorNo, true),",
+				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
+				"selectItemFields2 sort(asc(VendorNo, true),",
 				"     asc(ItemNo, true)) ~> sortOnItems",
-				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"SumUpAll sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
