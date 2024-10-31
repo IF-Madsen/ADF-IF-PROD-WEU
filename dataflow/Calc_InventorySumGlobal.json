@@ -81,6 +81,21 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -243,7 +258,29 @@
 				"     skipDuplicateMapOutputs: false) ~> select1",
 				"select1 derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
 				"          US_SumQty = iifNull(SumQtyUS,0),",
-				"          EU_SumQty = iifNull(SumQtyEU,0)) ~> derivedColumn1"
+				"          EU_SumQty = iifNull(SumQtyEU,0)) ~> derivedColumn1",
+				"TransitUS, TransitEU join(TransitUS@ItemNo == TransitEU@ItemNo,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'both')~> join2",
+				"join2 filter(isNull(TransitEU@ItemNo)) ~> filter1",
+				"derivedColumn1 select(mapColumn(",
+				"          ItemNo,",
+				"          US_SumQty,",
+				"          EU_SumQty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 union(byName: true)~> union1",
+				"filter1 select(mapColumn(",
+				"          ItemNo = TransitUS@ItemNo,",
+				"          SumQty = TransitUS@SumQty,",
+				"          ItemNo = TransitEU@ItemNo,",
+				"          SumQty = TransitEU@SumQty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3"
 			]
 		}
 	}
