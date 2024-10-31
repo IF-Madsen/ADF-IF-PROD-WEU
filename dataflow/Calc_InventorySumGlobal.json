@@ -99,6 +99,9 @@
 				},
 				{
 					"name": "join3"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -295,7 +298,10 @@
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join3"
+				"     broadcast: 'auto')~> join3",
+				"join3 derive(ItemNoTmp = iifNull(ItemNo, ItemNoUS),",
+				"          QtyEU = iifNull(EU_SumQty,0),",
+				"          QtyUS = iifNull(SumQtyUS, US_SumQty, 0)) ~> derivedColumn2"
 			]
 		}
 	}
