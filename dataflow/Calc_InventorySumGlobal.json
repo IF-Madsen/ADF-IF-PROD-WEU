@@ -262,7 +262,7 @@
 				"     broadcast: 'auto')~> joinSummes",
 				"joinSummes derive(InStockEU = iifNull(InventorySumEU@InventorySum,0),",
 				"          InStockUS = iifNull(InventorySumUS@InventorySum,0),",
-				"          SoldEU = iifNull(InventorySumEU@SalesQty-InventorySumEU@SalesQtyExtCust,0),",
+				"          SoldEU = iifNull(InventorySumEU@SalesQty+InventorySumEU@SalesQtyExtCust,0),",
 				"          SoldUS = iifNull(InventorySumUS@SalesQty,0),",
 				"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo)) ~> SumUpInstockAndSold",
 				"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
