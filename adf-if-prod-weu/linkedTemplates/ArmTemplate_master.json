@@ -51,6 +51,10 @@
 			"type": "string",
 			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
 		},
+		"Dataverse_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
 		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "@{linkedService().ServicePrincipalID}"
@@ -320,6 +324,9 @@
 					},
 					"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId')]"
+					},
+					"Dataverse_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
 					},
 					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"

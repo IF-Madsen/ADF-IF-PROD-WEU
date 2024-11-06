@@ -51,6 +51,10 @@
 			"type": "string",
 			"defaultValue": "https://saadfifprodweu.dfs.core.windows.net/"
 		},
+		"Dataverse_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
 		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "@{linkedService().ServicePrincipalID}"
@@ -5383,6 +5387,33 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CommonDataServiceForApps",
+				"typeProperties": {
+					"deploymentType": "Online",
+					"serviceUri": "https://ironfortressapsdefault.crm4.dynamics.com",
+					"authenticationType": "AADServicePrincipal",
+					"servicePrincipalId": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultProd",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "ar-D365BC-prod-DK"
+					},
+					"servicePrincipalCredentialType": "ServicePrincipalKey"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Dynamics365BusinessCentral')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -6228,7 +6259,8 @@
 						"          AssemblyConsumption as double,",
 						"          StartDate as date,",
 						"          EndDate as date,",
-						"          Region as string",
+						"          Region as string,",
+						"          ItemCategoryCode as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -6250,7 +6282,8 @@
 						"          AssemblyConsumption as double,",
 						"          StartDate as date,",
 						"          EndDate as date,",
-						"          Region as string",
+						"          Region as string,",
+						"          ItemCategoryCode as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -6397,7 +6430,8 @@
 						"          InStockEU,",
 						"          InStockUS,",
 						"          SoldEU,",
-						"          SoldUS",
+						"          SoldUS,",
+						"          ItemCategoryCode = InventorySumUS@ItemCategoryCode",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectSumFields",
@@ -6418,7 +6452,8 @@
 						"          SoldEU,",
 						"          SoldUS,",
 						"          TransitEU,",
-						"          TransitUS",
+						"          TransitUS,",
+						"          ItemCategoryCode",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectAllFields",
@@ -10830,6 +10865,46 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalItems')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "cr171_itemforecastglobalitems"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalSum')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "cr171_itemforecastglobalsums"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/default')]",

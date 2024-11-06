@@ -38,6 +38,9 @@
 		"D365bcDataLakeProd_properties_typeProperties_url": {
 			"value": "https://saadfifprodweu.dfs.core.windows.net/"
 		},
+		"Dataverse_properties_typeProperties_servicePrincipalId": {
+			"value": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
 		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 			"value": "@{linkedService().ServicePrincipalID}"
 		},
