@@ -1,0 +1,22 @@
+{
+	"name": "Dataverse",
+	"properties": {
+		"annotations": [],
+		"type": "CommonDataServiceForApps",
+		"typeProperties": {
+			"deploymentType": "Online",
+			"serviceUri": "https://ironfortressapsdefault.crm4.dynamics.com",
+			"authenticationType": "AADServicePrincipal",
+			"servicePrincipalId": "98c52d81-2480-4351-9e23-51ae9dae9755",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultProd",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ar-D365BC-prod-DK"
+			},
+			"servicePrincipalCredentialType": "ServicePrincipalKey"
+		}
+	}
+}
