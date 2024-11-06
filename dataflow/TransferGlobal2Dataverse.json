@@ -28,7 +28,11 @@
 						"referenceName": "Dataverse_ItemForecastGlobalItems",
 						"type": "DatasetReference"
 					},
-					"name": "GlobalItemDataverse"
+					"name": "GlobalItemDataverse",
+					"rejectedDataLinkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
@@ -50,12 +54,13 @@
 				"          ItemCategoryCode as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     validateSchema: true,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet',",
 				"     fileSystem: 'gold',",
 				"     folderPath: 'd365bc',",
-				"     fileName: 'globalItemsAll.parquet') ~> GlobalItemParquet",
+				"     fileName: 'globalItemsAll.parquet',",
+				"     compressionCodec: 'snappy') ~> GlobalItemParquet",
 				"source(output(",
 				"          ItemNo as string,",
 				"          StartDate as date,",
@@ -79,7 +84,7 @@
 				"     folderPath: 'd365bc',",
 				"     fileName: 'globalSummesAll.parquet') ~> GlobalSumsParquet",
 				"GlobalItemParquet sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     validateSchema: true,",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
