@@ -614,7 +614,7 @@
 				}
 			},
 			{
-				"name": "GlobalNumbers",
+				"name": "TransferGlobalData2Dataverse",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
