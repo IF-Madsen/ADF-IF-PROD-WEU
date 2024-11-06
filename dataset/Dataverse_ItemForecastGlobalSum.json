@@ -1,0 +1,15 @@
+{
+	"name": "Dataverse_ItemForecastGlobalSum",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dataverse",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CommonDataServiceForAppsEntity",
+		"schema": [],
+		"typeProperties": {
+			"entityName": "cr171_itemforecastglobalsums"
+		}
+	}
+}
