@@ -102,7 +102,22 @@
 				"     updateable:false,",
 				"     upsertable:false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> GlobalSumDataverse"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ItemNo,",
+				"          StartDate,",
+				"          EndDate,",
+				"          InStockEU,",
+				"          InStockUS,",
+				"          SoldEU,",
+				"          SoldUS,",
+				"          TransitEU,",
+				"          TransitUS,",
+				"          ItemCategoryCode,",
+				"          InStockAll,",
+				"          SoldAll,",
+				"          TransitAll",
+				"     )) ~> GlobalSumDataverse"
 			]
 		}
 	}
