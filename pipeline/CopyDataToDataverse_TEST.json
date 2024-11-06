@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "TransferGlobalData2Dataverse",
+				"name": "TransferGlobalData",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
