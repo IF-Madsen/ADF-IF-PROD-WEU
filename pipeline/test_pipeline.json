@@ -342,34 +342,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Transform_ItemPrices",
-						"type": "DataFlowReference",
-						"parameters": {
-							"parmRegion": {
-								"value": "'@{pipeline().globalParameters.Region_EU}'",
-								"type": "Expression"
-							},
-							"parmSourceBlob": {
-								"value": "'@{pipeline().globalParameters.blob_bronze}'",
-								"type": "Expression"
-							},
-							"parmSourceFolder": {
-								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-								"type": "Expression"
-							},
-							"parmTargetBlob": {
-								"value": "'@{pipeline().globalParameters.blob_gold}'",
-								"type": "Expression"
-							},
-							"parmTargetFolder": {
-								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-								"type": "Expression"
-							},
-							"parmSourceFile": {
-								"value": "'@{concat('Items_',pipeline().globalParameters.Region_EU,'.parquet')}'",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "TransferGlobal2Dataverse",
+						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 32,
@@ -653,25 +627,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Calc_InventorySumGlobal",
+						"referenceName": "Calc_InventorySumGlobal_Dataverse_copy1",
 						"type": "DataFlowReference",
 						"parameters": {
-							"parmSourceBlob": {
-								"value": "'@{pipeline().globalParameters.blob_gold}'",
-								"type": "Expression"
-							},
-							"parmSourceFolder": {
-								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-								"type": "Expression"
-							},
-							"parmTargetBlob": {
-								"value": "'@{pipeline().globalParameters.blob_gold}'",
-								"type": "Expression"
-							},
-							"parmTargetFolder": {
-								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-								"type": "Expression"
-							}
+							"parmSourceBlob": "'gold'",
+							"parmSourceFolder": "'d365bc'",
+							"parmTargetBlob": "'gold'",
+							"parmTargetFolder": "'d365bc'"
 						}
 					},
 					"compute": {
