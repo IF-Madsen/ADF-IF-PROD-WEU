@@ -347,6 +347,8 @@
 				"name": "Copy2Dataverse",
 				"description": "Copy Global Data to Dataverse",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Calc_GlobalData",
