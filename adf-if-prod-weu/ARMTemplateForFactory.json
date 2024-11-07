@@ -508,7 +508,8 @@
 						}
 					},
 					{
-						"name": "GlobalNumbers",
+						"name": "Calc_GlobalData",
+						"description": "Calculate ",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
@@ -566,6 +567,48 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Copy2Dataverse",
+						"description": "Copy Global Data to Dataverse",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [
+							{
+								"activity": "Calc_GlobalData",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransferGlobal2Dataverse",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"GlobalItemParquet": {},
+									"GlobalSumsParquet": {},
+									"GlobalItemDataverse": {},
+									"GlobalSumDataverse": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -597,9 +640,58 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySumGlobal')]",
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_VendorsItemsFiltered')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_PurchItemsSum')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyDataToDataverse_TEST')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "TransferGlobalData",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransferGlobal2Dataverse",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"GlobalItemParquet": {},
+									"GlobalSumsParquet": {},
+									"GlobalItemDataverse": {},
+									"GlobalSumDataverse": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]"
 			]
 		},
 		{
@@ -4318,37 +4410,14 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Transform_ItemPrices",
+								"referenceName": "TransferGlobal2Dataverse",
 								"type": "DataFlowReference",
-								"parameters": {
-									"parmRegion": {
-										"value": "'@{pipeline().globalParameters.Region_EU}'",
-										"type": "Expression"
-									},
-									"parmSourceBlob": {
-										"value": "'@{pipeline().globalParameters.blob_bronze}'",
-										"type": "Expression"
-									},
-									"parmSourceFolder": {
-										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-										"type": "Expression"
-									},
-									"parmTargetBlob": {
-										"value": "'@{pipeline().globalParameters.blob_gold}'",
-										"type": "Expression"
-									},
-									"parmTargetFolder": {
-										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-										"type": "Expression"
-									},
-									"parmSourceFile": {
-										"value": "'@{concat('Items_',pipeline().globalParameters.Region_EU,'.parquet')}'",
-										"type": "Expression"
-									}
-								},
+								"parameters": {},
 								"datasetParameters": {
-									"LoadItem": {},
-									"saveItemPrices": {}
+									"GlobalItemParquet": {},
+									"GlobalSumsParquet": {},
+									"GlobalItemDataverse": {},
+									"GlobalSumDataverse": {}
 								}
 							},
 							"staging": {},
@@ -4674,7 +4743,7 @@
 						}
 					},
 					{
-						"name": "GlobalNumbers",
+						"name": "TransferGlobalData2Dataverse",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -4690,22 +4759,10 @@
 								"referenceName": "Calc_InventorySumGlobal",
 								"type": "DataFlowReference",
 								"parameters": {
-									"parmSourceBlob": {
-										"value": "'@{pipeline().globalParameters.blob_gold}'",
-										"type": "Expression"
-									},
-									"parmSourceFolder": {
-										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-										"type": "Expression"
-									},
-									"parmTargetBlob": {
-										"value": "'@{pipeline().globalParameters.blob_gold}'",
-										"type": "Expression"
-									},
-									"parmTargetFolder": {
-										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-										"type": "Expression"
-									}
+									"parmSourceBlob": "'gold'",
+									"parmSourceFolder": "'d365bc'",
+									"parmTargetBlob": "'gold'",
+									"parmTargetFolder": "'d365bc'"
 								},
 								"datasetParameters": {
 									"InventorySumEU": {},
@@ -4738,7 +4795,7 @@
 				"[concat(variables('factoryId'), '/datasets/ds_Json_Prod')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_TopRankVendor')]",
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemPrices')]",
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_LedgerPeriod')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]",
 				"[concat(variables('factoryId'), '/dataflows/Merge_RegionInventories')]",
@@ -4823,6 +4880,46 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalItems')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "cr171_itemforecastglobalitems"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalSum')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "cr171_itemforecastglobalsums"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
 			]
 		},
 		{
@@ -6238,6 +6335,12 @@
 						},
 						{
 							"name": "sortOnVendorItems"
+						},
+						{
+							"name": "addingSumsHash"
+						},
+						{
+							"name": "addingItemsHash"
 						}
 					],
 					"scriptLines": [
@@ -6462,7 +6565,9 @@
 						"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
 						"selectItemFields2 sort(asc(VendorNo, true),",
 						"     asc(ItemNo, true)) ~> sortOnVendorItems",
-						"SumUpAll sink(allowSchemaDrift: true,",
+						"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll)) ~> addingSumsHash",
+						"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
+						"addingSumsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -6475,7 +6580,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> SaveGlobalSums",
-						"sortOnVendorItems sink(allowSchemaDrift: true,",
+						"addingItemsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -7756,6 +7861,150 @@
 				"[concat(variables('factoryId'), '/datasets/PKInput')]",
 				"[concat(variables('factoryId'), '/datasets/ParquetInput')]",
 				"[concat(variables('factoryId'), '/datasets/ParquetCrudOutput')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TransferGlobal2Dataverse')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "3.Gold"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GlobalItemParquet"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GlobalSumsParquet"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Dataverse_ItemForecastGlobalItems",
+								"type": "DatasetReference"
+							},
+							"name": "GlobalItemDataverse",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "Dataverse_ItemForecastGlobalSum",
+								"type": "DatasetReference"
+							},
+							"name": "GlobalSumDataverse"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorNo as string,",
+						"          Name as string,",
+						"          ItemNo as string,",
+						"          ItemDescription as string,",
+						"          UnitCostPrice as double,",
+						"          ItemCategoryDescription as string,",
+						"          ItemCategoryCode as string,",
+						"          Hash as long",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'gold',",
+						"     folderPath: 'd365bc',",
+						"     fileName: 'globalItemsAll.parquet',",
+						"     compressionCodec: 'snappy') ~> GlobalItemParquet",
+						"source(output(",
+						"          ItemNo as string,",
+						"          StartDate as date,",
+						"          EndDate as date,",
+						"          InStockEU as double,",
+						"          InStockUS as double,",
+						"          SoldEU as double,",
+						"          SoldUS as double,",
+						"          TransitEU as double,",
+						"          TransitUS as double,",
+						"          ItemCategoryCode as string,",
+						"          InStockAll as double,",
+						"          SoldAll as double,",
+						"          TransitAll as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'gold',",
+						"     folderPath: 'd365bc',",
+						"     fileName: 'globalSummesAll.parquet') ~> GlobalSumsParquet",
+						"GlobalItemParquet alterRow() ~> AlterRow1",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          cr171_vendorno = VendorNo,",
+						"          cr171_name = Name,",
+						"          cr171_itemno = ItemNo,",
+						"          cr171_itemdescription = ItemDescription,",
+						"          cr171_unitcostprice = UnitCostPrice,",
+						"          cr171_itemcategorydescription = ItemCategoryDescription,",
+						"          cr171_itemcategorycode = ItemCategoryCode",
+						"     )) ~> GlobalItemDataverse",
+						"GlobalSumsParquet sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
+						"     mapColumn(",
+						"          cr171_itemno = ItemNo,",
+						"          cr171_startdate = StartDate,",
+						"          cr171_enddate = EndDate,",
+						"          cr171_instockeu = InStockEU,",
+						"          cr171_instockus = InStockUS,",
+						"          cr171_soldeu = SoldEU,",
+						"          cr171_soldus = SoldUS,",
+						"          cr171_transiteu = TransitEU,",
+						"          cr171_transitus = TransitUS,",
+						"          cr171_itemcategorycode = ItemCategoryCode,",
+						"          cr171_instockall = InStockAll,",
+						"          cr171_soldall = SoldAll,",
+						"          cr171_transitall = TransitAll",
+						"     )) ~> GlobalSumDataverse"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]",
+				"[concat(variables('factoryId'), '/datasets/Dataverse_ItemForecastGlobalItems')]",
+				"[concat(variables('factoryId'), '/datasets/Dataverse_ItemForecastGlobalSum')]"
 			]
 		},
 		{
@@ -10865,458 +11114,6 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalItems')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dataverse",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "CommonDataServiceForAppsEntity",
-				"schema": [],
-				"typeProperties": {
-					"entityName": "cr171_itemforecastglobalitems"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalSum')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dataverse",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "CommonDataServiceForAppsEntity",
-				"schema": [],
-				"typeProperties": {
-					"entityName": "cr171_itemforecastglobalsums"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Dataverse')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Calc_InventorySumGlobal_Dataverse')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "3.Gold"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "InventorySumEU"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "InventorySumUS"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Items"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "ItemPrices"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "TransitEU"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "TransitUS"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveGlobalSums"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveGlobalItems"
-						},
-						{
-							"dataset": {
-								"referenceName": "Dataverse_ItemForecastGlobalSum",
-								"type": "DatasetReference"
-							},
-							"name": "DataVerseGlobalSum"
-						},
-						{
-							"dataset": {
-								"referenceName": "Dataverse_ItemForecastGlobalItems",
-								"type": "DatasetReference"
-							},
-							"name": "DataVerseGlobalItems"
-						}
-					],
-					"transformations": [
-						{
-							"name": "selectItemFields1"
-						},
-						{
-							"name": "RemoveBOM"
-						},
-						{
-							"name": "selectPriceFields"
-						},
-						{
-							"name": "join"
-						},
-						{
-							"name": "joinSummes"
-						},
-						{
-							"name": "SumUpInstockAndSold"
-						},
-						{
-							"name": "joinTransitRegions"
-						},
-						{
-							"name": "selectTransitFields"
-						},
-						{
-							"name": "allignTransitFields"
-						},
-						{
-							"name": "selectTransitQty"
-						},
-						{
-							"name": "selectItemFields2"
-						},
-						{
-							"name": "selectSumFields"
-						},
-						{
-							"name": "joinSumAndTransit"
-						},
-						{
-							"name": "allignTransitToSum"
-						},
-						{
-							"name": "selectAllFields"
-						},
-						{
-							"name": "SumUpAll"
-						},
-						{
-							"name": "sortOnVendorItems"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('gold'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc')",
-						"}",
-						"source(output(",
-						"          ItemNo as string,",
-						"          InventorySum as double,",
-						"          PurchQty as double,",
-						"          SalesQty as double,",
-						"          SalesQtyExtCust as double,",
-						"          PosAdjustmentQty as double,",
-						"          NegAdjustmentQty as double,",
-						"          AssemblyOutput as double,",
-						"          AssemblyConsumption as double,",
-						"          StartDate as date,",
-						"          EndDate as date,",
-						"          Region as string,",
-						"          ItemCategoryCode as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'InventorySumEU.parquet',",
-						"     compressionCodec: 'snappy') ~> InventorySumEU",
-						"source(output(",
-						"          ItemNo as string,",
-						"          InventorySum as double,",
-						"          PurchQty as double,",
-						"          SalesQty as double,",
-						"          SalesQtyExtCust as double,",
-						"          PosAdjustmentQty as double,",
-						"          NegAdjustmentQty as double,",
-						"          AssemblyOutput as double,",
-						"          AssemblyConsumption as double,",
-						"          StartDate as date,",
-						"          EndDate as date,",
-						"          Region as string,",
-						"          ItemCategoryCode as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'InventorySumUS.parquet',",
-						"     compressionCodec: 'snappy') ~> InventorySumUS",
-						"source(output(",
-						"          ItemNo as string,",
-						"          ItemDescription as string,",
-						"          GroupDescription as string,",
-						"          ItemCategoryGroup as string,",
-						"          ItemCategoryCode as string,",
-						"          AssemblyBOM as boolean,",
-						"          VendorNo as string,",
-						"          Name as string,",
-						"          Name_2 as string,",
-						"          Global_Dimension_1_Filter as string,",
-						"          Global_Dimension_2_Filter as string,",
-						"          Rank as short",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'VendorsItemsWithGroupsAll.parquet',",
-						"     compressionCodec: 'snappy') ~> Items",
-						"source(output(",
-						"          ItemNo as string,",
-						"          ItemNoAlt as string,",
-						"          Description as string,",
-						"          UnitPrice as decimal(38,18),",
-						"          StandardCost as decimal(38,18),",
-						"          Unit_Cost as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'ItemPrices.parquet',",
-						"     compressionCodec: 'snappy') ~> ItemPrices",
-						"source(output(",
-						"          ItemNo as string,",
-						"          SumQty as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'PurchItemSumEU.parquet',",
-						"     compressionCodec: 'snappy') ~> TransitEU",
-						"source(output(",
-						"          ItemNo as string,",
-						"          SumQty as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: 'PurchItemSumUS.parquet',",
-						"     compressionCodec: 'snappy') ~> TransitUS",
-						"RemoveBOM select(mapColumn(",
-						"          VendorNo,",
-						"          Name,",
-						"          ItemNo,",
-						"          ItemDescription,",
-						"          ItemCategoryDescription = GroupDescription,",
-						"          ItemCategoryCode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectItemFields1",
-						"Items filter(!AssemblyBOM) ~> RemoveBOM",
-						"ItemPrices select(mapColumn(",
-						"          ItemNo,",
-						"          UnitCostPrice = Unit_Cost",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
-						"selectItemFields1, selectPriceFields join(selectItemFields1@ItemNo == selectPriceFields@ItemNo,",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join",
-						"InventorySumEU, InventorySumUS join(InventorySumEU@ItemNo == InventorySumUS@ItemNo",
-						"     && InventorySumEU@StartDate == InventorySumUS@StartDate",
-						"     && InventorySumEU@EndDate == InventorySumUS@EndDate,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinSummes",
-						"joinSummes derive(InStockEU = iifNull(InventorySumEU@InventorySum,0),",
-						"          InStockUS = iifNull(InventorySumUS@InventorySum,0),",
-						"          SoldEU = iifNull(InventorySumEU@SalesQty+InventorySumEU@SalesQtyExtCust,0),",
-						"          SoldUS = iifNull(InventorySumUS@SalesQty,0),",
-						"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo)) ~> SumUpInstockAndSold",
-						"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'both')~> joinTransitRegions",
-						"joinTransitRegions select(mapColumn(",
-						"          ItemNoEU = TransitEU@ItemNo,",
-						"          SumQtyEU = TransitEU@SumQty,",
-						"          ItemNoUS = TransitUS@ItemNo,",
-						"          SumQtyUS = TransitUS@SumQty",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> selectTransitFields",
-						"selectTransitFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
-						"          US_SumQty = iifNull(SumQtyUS,0),",
-						"          EU_SumQty = iifNull(SumQtyEU,0)) ~> allignTransitFields",
-						"allignTransitFields select(mapColumn(",
-						"          ItemNo,",
-						"          US_SumQty,",
-						"          EU_SumQty",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectTransitQty",
-						"join select(mapColumn(",
-						"          VendorNo,",
-						"          Name,",
-						"          ItemNo = selectItemFields1@ItemNo,",
-						"          ItemDescription,",
-						"          UnitCostPrice,",
-						"          ItemCategoryDescription,",
-						"          ItemCategoryCode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectItemFields2",
-						"SumUpInstockAndSold select(mapColumn(",
-						"          ItemNo,",
-						"          StartDate = InventorySumEU@StartDate,",
-						"          EndDate = InventorySumEU@EndDate,",
-						"          InStockEU,",
-						"          InStockUS,",
-						"          SoldEU,",
-						"          SoldUS,",
-						"          ItemCategoryCode = InventorySumUS@ItemCategoryCode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectSumFields",
-						"selectSumFields, selectTransitQty join(selectSumFields@ItemNo == selectTransitQty@ItemNo,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinSumAndTransit",
-						"joinSumAndTransit derive(TransitEU = iifNull(EU_SumQty,0),",
-						"          TransitUS = iifNull(US_SumQty,0),",
-						"          ItemNo = iifNull(selectSumFields@ItemNo,selectTransitQty@ItemNo)) ~> allignTransitToSum",
-						"allignTransitToSum select(mapColumn(",
-						"          ItemNo,",
-						"          StartDate,",
-						"          EndDate,",
-						"          InStockEU,",
-						"          InStockUS,",
-						"          SoldEU,",
-						"          SoldUS,",
-						"          TransitEU,",
-						"          TransitUS,",
-						"          ItemCategoryCode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectAllFields",
-						"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
-						"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
-						"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
-						"selectItemFields2 sort(asc(VendorNo, true),",
-						"     asc(ItemNo, true)) ~> sortOnVendorItems",
-						"SumUpAll sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['globalSummesAll.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveGlobalSums",
-						"sortOnVendorItems sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['globalItemsAll.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveGlobalItems",
-						"SumUpAll sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 2) ~> DataVerseGlobalSum",
-						"sortOnVendorItems sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1) ~> DataVerseGlobalItems"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]",
-				"[concat(variables('factoryId'), '/datasets/Dataverse_ItemForecastGlobalSum')]",
-				"[concat(variables('factoryId'), '/datasets/Dataverse_ItemForecastGlobalItems')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/default')]",

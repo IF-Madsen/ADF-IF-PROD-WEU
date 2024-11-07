@@ -761,6 +761,12 @@
 						},
 						{
 							"name": "sortOnVendorItems"
+						},
+						{
+							"name": "addingSumsHash"
+						},
+						{
+							"name": "addingItemsHash"
 						}
 					],
 					"scriptLines": [
@@ -985,7 +991,9 @@
 						"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
 						"selectItemFields2 sort(asc(VendorNo, true),",
 						"     asc(ItemNo, true)) ~> sortOnVendorItems",
-						"SumUpAll sink(allowSchemaDrift: true,",
+						"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll)) ~> addingSumsHash",
+						"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
+						"addingSumsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -998,7 +1006,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> SaveGlobalSums",
-						"sortOnVendorItems sink(allowSchemaDrift: true,",
+						"addingItemsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
