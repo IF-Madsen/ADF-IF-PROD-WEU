@@ -627,8 +627,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "TransferGlobal2Dataverse",
-						"type": "DataFlowReference"
+						"referenceName": "Calc_InventorySumGlobal",
+						"type": "DataFlowReference",
+						"parameters": {
+							"parmSourceBlob": "'gold'",
+							"parmSourceFolder": "'d365bc'",
+							"parmTargetBlob": "'gold'",
+							"parmTargetFolder": "'d365bc'"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
