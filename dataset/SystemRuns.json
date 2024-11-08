@@ -1,0 +1,25 @@
+{
+	"name": "SystemRuns",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "D365bcDataLakeProd",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"parmFileName": {
+				"type": "string",
+				"defaultValue": "systemrun.json"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "json",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	}
+}
