@@ -1,0 +1,40 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "GetSystemRuns"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmRunDate as date (currentDate('EST')),",
+				"     parmRunTime as timestamp (currentTimestamp()),",
+				"     paraRunID as string",
+				"}",
+				"source(useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     format: 'json',",
+				"     fileSystem: 'bronze',",
+				"     folderPath: 'json',",
+				"     fileName: 'systemrun.json',",
+				"     documentForm: 'documentPerLine') ~> GetSystemRuns",
+				"GetSystemRuns alterRow() ~> alterRow1"
+			]
+		}
+	}
+}
