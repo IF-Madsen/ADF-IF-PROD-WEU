@@ -92,7 +92,8 @@
 				"     broadcast: 'both')~> JoinCategoryGroups",
 				"JoinCategoryGroups derive(CodeInt = CodeInt,",
 				"          ItemCategoryGroup = ItemCategoryGroup,",
-				"          Description = ItemCategoriesGroup@Description) ~> ItemCodesAndGroups",
+				"          Description = ItemCategoriesGroup@Description,",
+				"          CategoryDescription = ConvertCodeToInt@Description) ~> ItemCodesAndGroups",
 				"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
 				"ConvertCodeToStr sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -109,7 +110,8 @@
 				"     mapColumn(",
 				"          Code,",
 				"          ItemCategoryGroup,",
-				"          GroupDescription = Description",
+				"          GroupDescription = Description,",
+				"          CategoryDescription",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> WriteFileJson"
 			]
