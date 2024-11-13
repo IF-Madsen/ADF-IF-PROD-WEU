@@ -173,10 +173,6 @@
 		"Dataverse_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
-		},
-		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "@{linkedService().ServicePrincipalID}"
 		}
 	},
 	"variables": {
@@ -602,6 +598,36 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SystemRuns')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"parmFileName": {
+						"type": "string",
+						"defaultValue": "systemrun.json"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "json",
+						"fileSystem": "bronze"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_Excel')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -861,44 +887,6 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ar-D365BC-prod-DK"
-					},
-					"servicePrincipalCredentialType": "ServicePrincipalKey"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultProd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Dynamics365BusinessCentral')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Direct access to D365bc",
-				"parameters": {
-					"ServiceURL": {
-						"type": "String",
-						"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
-					},
-					"ServicePrincipalID": {
-						"type": "String",
-						"defaultValue": "'7b1647b5-d439-422d-ad72-779b8d13fa50''"
-					}
-				},
-				"annotations": [],
-				"type": "Dynamics",
-				"typeProperties": {
-					"deploymentType": "Online",
-					"serviceUri": "@{linkedService().ServiceURL}",
-					"authenticationType": "AADServicePrincipal",
-					"servicePrincipalId": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalCredential": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVaultProd",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "ar-D365bc"
 					},
 					"servicePrincipalCredentialType": "ServicePrincipalKey"
 				}

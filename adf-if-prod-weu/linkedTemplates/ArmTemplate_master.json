@@ -327,9 +327,6 @@
 					},
 					"Dataverse_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
-					},
-					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
-						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},
@@ -348,6 +345,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},

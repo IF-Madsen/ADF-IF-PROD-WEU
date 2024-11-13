@@ -6,12 +6,52 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
+		},
+		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "@{linkedService().ServicePrincipalID}"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Dynamics365BusinessCentral')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Direct access to D365bc",
+				"parameters": {
+					"ServiceURL": {
+						"type": "String",
+						"defaultValue": "'https://ironfortressapsdefault.crm4.dynamics.com/'"
+					},
+					"ServicePrincipalID": {
+						"type": "String",
+						"defaultValue": "'7b1647b5-d439-422d-ad72-779b8d13fa50''"
+					}
+				},
+				"annotations": [],
+				"type": "Dynamics",
+				"typeProperties": {
+					"deploymentType": "Online",
+					"serviceUri": "@{linkedService().ServiceURL}",
+					"authenticationType": "AADServicePrincipal",
+					"servicePrincipalId": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultProd",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "ar-D365bc"
+					},
+					"servicePrincipalCredentialType": "ServicePrincipalKey"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Calc_InventorySum')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
@@ -2860,7 +2900,8 @@
 						"     broadcast: 'both')~> JoinCategoryGroups",
 						"JoinCategoryGroups derive(CodeInt = CodeInt,",
 						"          ItemCategoryGroup = ItemCategoryGroup,",
-						"          Description = ItemCategoriesGroup@Description) ~> ItemCodesAndGroups",
+						"          Description = ItemCategoriesGroup@Description,",
+						"          CategoryDescription = ConvertCodeToInt@Description) ~> ItemCodesAndGroups",
 						"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
 						"ConvertCodeToStr sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -2877,7 +2918,8 @@
 						"     mapColumn(",
 						"          Code,",
 						"          ItemCategoryGroup,",
-						"          GroupDescription = Description",
+						"          GroupDescription = Description,",
+						"          CategoryDescription",
 						"     ),",
 						"     partitionBy('hash', 1)) ~> WriteFileJson"
 					]
@@ -5242,28 +5284,6 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> sink1"
 					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AppRegD365EU')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Service Principle for Iron Fortress EU",
-				"type": "ServicePrincipal",
-				"typeProperties": {
-					"tenant": "d4894685-0807-4578-a538-77143ab48788",
-					"servicePrincipalId": "98c52d81-2480-4351-9e23-51ae9dae9755",
-					"servicePrincipalKey": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVaultProd",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "ar-D365BC-prod-DK"
-					}
 				}
 			},
 			"dependsOn": []

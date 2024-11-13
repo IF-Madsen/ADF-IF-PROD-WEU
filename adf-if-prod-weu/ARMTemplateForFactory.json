@@ -4745,6 +4745,8 @@
 					{
 						"name": "TransferGlobalData2Dataverse",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -4782,6 +4784,61 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Copy data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_EU",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_europe",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_ItemCategories",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Json_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"Cointainer": "staing\\raw"
+								}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -4803,6 +4860,7 @@
 				"[concat(variables('factoryId'), '/dataflows/Transform_InventorySumPrEntryType')]",
 				"[concat(variables('factoryId'), '/dataflows/Merge_RegionInventories_Purch')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySumGlobal')]",
+				"[concat(variables('factoryId'), '/datasets/ds_OData_EU')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_PurchItemsSum')]"
 			]
 		},
@@ -5090,6 +5148,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeDev')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SystemRuns')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"parmFileName": {
+						"type": "string",
+						"defaultValue": "systemrun.json"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "json",
+						"fileSystem": "bronze"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
 			]
 		},
 		{
@@ -8654,7 +8742,8 @@
 						"     broadcast: 'both')~> JoinCategoryGroups",
 						"JoinCategoryGroups derive(CodeInt = CodeInt,",
 						"          ItemCategoryGroup = ItemCategoryGroup,",
-						"          Description = ItemCategoriesGroup@Description) ~> ItemCodesAndGroups",
+						"          Description = ItemCategoriesGroup@Description,",
+						"          CategoryDescription = ConvertCodeToInt@Description) ~> ItemCodesAndGroups",
 						"ItemCodesAndGroups derive(Code = toString(CodeInt)) ~> ConvertCodeToStr",
 						"ConvertCodeToStr sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -8671,7 +8760,8 @@
 						"     mapColumn(",
 						"          Code,",
 						"          ItemCategoryGroup,",
-						"          GroupDescription = Description",
+						"          GroupDescription = Description,",
+						"          CategoryDescription",
 						"     ),",
 						"     partitionBy('hash', 1)) ~> WriteFileJson"
 					]
