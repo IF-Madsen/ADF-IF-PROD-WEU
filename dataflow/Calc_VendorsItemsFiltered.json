@@ -55,6 +55,9 @@
 				},
 				{
 					"name": "selectOutputFields"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -295,7 +298,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> ItemsSelectedFields",
-				"ItemsSelectedFields, MapDrifted1 join(ItemCategoryCode == Code,",
+				"filter1, MapDrifted1 join(ItemCategoryCode == Code,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -325,6 +328,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectOutputFields",
+				"ItemsSelectedFields filter(VendorNo=='400') ~> filter1",
 				"selectOutputFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

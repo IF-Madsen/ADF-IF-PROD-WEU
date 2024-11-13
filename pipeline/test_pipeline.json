@@ -616,6 +616,8 @@
 			{
 				"name": "TransferGlobalData2Dataverse",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -642,6 +644,61 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_OData_EU",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": {
+								"value": "@pipeline().globalParameters.d365bc_company_europe",
+								"type": "Expression"
+							},
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_ItemCategories",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Json_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"Cointainer": "staing"
+						}
+					}
+				]
 			}
 		],
 		"annotations": []
