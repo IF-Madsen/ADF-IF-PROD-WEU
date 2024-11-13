@@ -695,7 +695,7 @@
 						"referenceName": "ds_Json_Prod",
 						"type": "DatasetReference",
 						"parameters": {
-							"Cointainer": "staing"
+							"Cointainer": "staing\\raw"
 						}
 					}
 				]
