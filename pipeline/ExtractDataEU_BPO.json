@@ -1,9 +1,10 @@
 {
-	"name": "ExtractDataEU_copy1",
+	"name": "ExtractDataEU_BPO",
 	"properties": {
+		"description": "Blamnket Purchase Orders",
 		"activities": [
 			{
-				"name": "PurchaseLines",
+				"name": "BlanketPurchaseLines",
 				"type": "Copy",
 				"dependsOn": [
 					{
