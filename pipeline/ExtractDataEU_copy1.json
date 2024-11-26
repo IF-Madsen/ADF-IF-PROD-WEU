@@ -1,0 +1,188 @@
+{
+	"name": "ExtractDataEU_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "PurchaseLines",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "PurchaseOrders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_OData_EU",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "PurchaseOrders",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"additionalColumns": [
+							{
+								"name": "Region",
+								"value": {
+									"value": "@pipeline().parameters.parmRegion",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Loaded",
+								"value": {
+									"value": "@pipeline().parameters.parmLoaded",
+									"type": "Expression"
+								}
+							}
+						],
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_OData_EU",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrders",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"parmRegion": {
+				"type": "string",
+				"defaultValue": "EU"
+			},
+			"parmLoaded": {
+				"type": "string",
+				"defaultValue": "@utcNow()"
+			}
+		},
+		"folder": {
+			"name": "InventoryForecast/ExtractData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-01-23T16:45:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
