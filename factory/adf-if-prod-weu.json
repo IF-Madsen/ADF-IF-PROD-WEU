@@ -125,7 +125,7 @@
 				"type": "string",
 				"value": "ADF_BlanketPurchaseOrders"
 			},
-			"ADF_BlanketPurchaseOrderLines": {
+			"d365bc_ds_BlanketPurchaseOrderLines": {
 				"type": "string",
 				"value": "ADF_BlanketPurchaseOrderlines"
 			}
