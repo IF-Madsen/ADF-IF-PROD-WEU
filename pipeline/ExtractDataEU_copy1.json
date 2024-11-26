@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "PurchaseOrders",
+						"activity": "BlanketPurchaseOrders",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -61,7 +61,7 @@
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
 							"apipath": {
-								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
 								"type": "Expression"
 							}
 						}
@@ -81,7 +81,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
+								"value": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
@@ -89,7 +89,7 @@
 				]
 			},
 			{
-				"name": "PurchaseOrders",
+				"name": "BlanketPurchaseOrders",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -140,7 +140,7 @@
 						"parameters": {
 							"company": "@pipeline().globalParameters.d365bc_company_europe",
 							"apipath": {
-								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrders",
+								"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrders",
 								"type": "Expression"
 							}
 						}
@@ -160,7 +160,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
+								"value": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
