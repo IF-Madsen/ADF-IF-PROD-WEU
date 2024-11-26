@@ -120,6 +120,10 @@
 			"folderExcel": {
 				"type": "string",
 				"value": "excel"
+			},
+			"d365bc_ds_BlanketPurchaseOrders": {
+				"type": "string",
+				"value": "ADF_BlanketPurchaseOrders"
 			}
 		}
 	},
