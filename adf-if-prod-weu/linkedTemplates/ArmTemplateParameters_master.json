@@ -134,6 +134,12 @@
 		"default_properties_folderExcel_value": {
 			"value": "excel"
 		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
+			"value": "ADF_BlanketPurchaseOrders"
+		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
+			"value": "ADF_BlanketPurchaseOrderlines"
+		},
 		"containerUri": {
 			"value": ""
 		},

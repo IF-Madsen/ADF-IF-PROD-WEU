@@ -178,6 +178,14 @@
 			"type": "string",
 			"defaultValue": "excel"
 		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "ADF_BlanketPurchaseOrders"
+		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "ADF_BlanketPurchaseOrderlines"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -291,6 +299,12 @@
 					},
 					"default_properties_folderExcel_value": {
 						"value": "[parameters('default_properties_folderExcel_value')]"
+					},
+					"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
+						"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrders_value')]"
+					},
+					"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
+						"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
 					},
 					"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"

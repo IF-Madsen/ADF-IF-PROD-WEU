@@ -126,6 +126,14 @@
 			"type": "string",
 			"defaultValue": "excel"
 		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "ADF_BlanketPurchaseOrders"
+		},
+		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "ADF_BlanketPurchaseOrderlines"
+		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
@@ -299,6 +307,14 @@
 				"folderExcel": {
 					"type": "string",
 					"value": "[parameters('default_properties_folderExcel_value')]"
+				},
+				"d365bc_ds_BlanketPurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrders_value')]"
+				},
+				"d365bc_ds_BlanketPurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
 				}
 			},
 			"dependsOn": []
