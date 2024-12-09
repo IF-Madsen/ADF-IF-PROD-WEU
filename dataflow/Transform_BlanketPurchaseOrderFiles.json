@@ -1,0 +1,129 @@
+{
+	"name": "Transform_BlanketPurchaseOrderFiles",
+	"properties": {
+		"description": "source : bronze\ntarget : silver",
+		"folder": {
+			"name": "2.Silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "BlanketPurchOrders"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePurchOrderFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "PurchOrderFields"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSourceBlob as string,",
+				"     parmSourceFolder as string,",
+				"     ParmTargetBlob as string,",
+				"     parmTargetFolder as string,",
+				"     parmRegion as string,",
+				"     parmSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmTargetFile as string (concat('BlanketPurchOrders',$parmRegion,'.parquet'))",
+				"}",
+				"source(output(",
+				"          Document_Type as string,",
+				"          No as string,",
+				"          Buy_from_Vendor_No as string,",
+				"          Order_Address_Code as string,",
+				"          Buy_from_Vendor_Name as string,",
+				"          Vendor_Authorization_No as string,",
+				"          Buy_from_Post_Code as string,",
+				"          Buy_from_Country_Region_Code as string,",
+				"          Buy_from_Contact as string,",
+				"          Pay_to_Vendor_No as string,",
+				"          Pay_to_Name as string,",
+				"          Pay_to_Post_Code as string,",
+				"          Pay_to_Country_Region_Code as string,",
+				"          Pay_to_Contact as string,",
+				"          Ship_to_Code as string,",
+				"          Ship_to_Name as string,",
+				"          Ship_to_Post_Code as string,",
+				"          Ship_to_Country_Region_Code as string,",
+				"          Ship_to_Contact as string,",
+				"          Posting_Date as timestamp,",
+				"          Shortcut_Dimension_1_Code as string,",
+				"          Shortcut_Dimension_2_Code as string,",
+				"          Location_Code as string,",
+				"          Purchaser_Code as string,",
+				"          Assigned_User_ID as string,",
+				"          Currency_Code as string,",
+				"          Status as string,",
+				"          CDO_Output_Profile as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSourceFile),",
+				"     compressionCodec: 'snappy') ~> BlanketPurchOrders",
+				"BlanketPurchOrders select(mapColumn(",
+				"          Document_Type,",
+				"          No,",
+				"          Buy_from_Vendor_No,",
+				"          Order_Address_Code,",
+				"          Buy_from_Vendor_Name,",
+				"          Vendor_Authorization_No,",
+				"          Buy_from_Post_Code,",
+				"          Buy_from_Country_Region_Code,",
+				"          Buy_from_Contact,",
+				"          Pay_to_Vendor_No,",
+				"          Pay_to_Name,",
+				"          Pay_to_Post_Code,",
+				"          Pay_to_Country_Region_Code,",
+				"          Pay_to_Contact,",
+				"          Ship_to_Code,",
+				"          Ship_to_Name,",
+				"          Ship_to_Post_Code,",
+				"          Ship_to_Country_Region_Code,",
+				"          Ship_to_Contact,",
+				"          Posting_Date,",
+				"          Shortcut_Dimension_1_Code,",
+				"          Shortcut_Dimension_2_Code,",
+				"          Location_Code,",
+				"          Purchaser_Code,",
+				"          Assigned_User_ID,",
+				"          Currency_Code,",
+				"          Status,",
+				"          CDO_Output_Profile",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> PurchOrderFields",
+				"PurchOrderFields sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($ParmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[($parmTargetFile)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePurchOrderFile"
+			]
+		}
+	}
+}
