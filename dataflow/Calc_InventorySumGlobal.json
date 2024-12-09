@@ -100,7 +100,7 @@
 					"name": "SumUpInstockAndSold"
 				},
 				{
-					"name": "joinTransitRegions"
+					"name": "InTransitSumJoin"
 				},
 				{
 					"name": "selectTransitFields"
@@ -109,22 +109,22 @@
 					"name": "allignTransitFields"
 				},
 				{
-					"name": "selectTransitQty"
+					"name": "PurchInTransitSum"
 				},
 				{
 					"name": "selectItemFields2"
 				},
 				{
-					"name": "selectSumFields"
+					"name": "selectInventorySumFields"
 				},
 				{
-					"name": "joinSumAndTransit"
+					"name": "joinPurchInTransit"
 				},
 				{
-					"name": "allignTransitToSum"
+					"name": "allignPurchInTransit"
 				},
 				{
-					"name": "selectAllFields"
+					"name": "selectInventorySumFields2"
 				},
 				{
 					"name": "SumUpAll"
@@ -139,7 +139,7 @@
 					"name": "addingItemsHash"
 				},
 				{
-					"name": "joinInOrderRegions"
+					"name": "InOrderSumJoin"
 				},
 				{
 					"name": "selectInOrderFields"
@@ -148,7 +148,16 @@
 					"name": "derivedColumn1"
 				},
 				{
-					"name": "selectInOrderQty"
+					"name": "PurchInOrderSum"
+				},
+				{
+					"name": "joinPurchInOrderSum"
+				},
+				{
+					"name": "allignPurchInOrder"
+				},
+				{
+					"name": "selectInventorySumFields3"
 				}
 			],
 			"scriptLines": [
@@ -328,8 +337,8 @@
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'both')~> joinTransitRegions",
-				"joinTransitRegions select(mapColumn(",
+				"     broadcast: 'both')~> InTransitSumJoin",
+				"InTransitSumJoin select(mapColumn(",
 				"          ItemNoEU = TransitEU@ItemNo,",
 				"          SumQtyEU = TransitEU@SumQty,",
 				"          ItemNoUS = TransitUS@ItemNo,",
@@ -346,7 +355,7 @@
 				"          EU_SumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectTransitQty",
+				"     skipDuplicateMapOutputs: true) ~> PurchInTransitSum",
 				"join select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
@@ -369,16 +378,16 @@
 				"          ItemCategoryCode = InventorySumUS@ItemCategoryCode",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectSumFields",
-				"selectSumFields, selectTransitQty join(selectSumFields@ItemNo == selectTransitQty@ItemNo,",
+				"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields",
+				"selectInventorySumFields, PurchInTransitSum join(selectInventorySumFields@ItemNo == PurchInTransitSum@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinSumAndTransit",
-				"joinSumAndTransit derive(TransitEU = iifNull(EU_SumQty,0),",
+				"     broadcast: 'auto')~> joinPurchInTransit",
+				"joinPurchInTransit derive(TransitEU = iifNull(EU_SumQty,0),",
 				"          TransitUS = iifNull(US_SumQty,0),",
-				"          ItemNo = iifNull(selectSumFields@ItemNo,selectTransitQty@ItemNo)) ~> allignTransitToSum",
-				"allignTransitToSum select(mapColumn(",
+				"          ItemNo = iifNull(selectInventorySumFields@ItemNo,PurchInTransitSum@ItemNo)) ~> allignPurchInTransit",
+				"allignPurchInTransit select(mapColumn(",
 				"          ItemNo,",
 				"          StartDate,",
 				"          EndDate,",
@@ -391,20 +400,21 @@
 				"          ItemCategoryCode",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectAllFields",
-				"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
+				"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields2",
+				"selectInventorySumFields3 derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
-				"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
+				"          TransitAll = iifNull(add(TransitEU,TransitUS),0),",
+				"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0)) ~> SumUpAll",
 				"selectItemFields2 sort(asc(VendorNo, true),",
 				"     asc(ItemNo, true)) ~> sortOnVendorItems",
-				"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll)) ~> addingSumsHash",
+				"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll,InOrderAll)) ~> addingSumsHash",
 				"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
 				"InOrderEU, InOrderUS join(InOrderEU@No == InOrderUS@No,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinInOrderRegions",
-				"joinInOrderRegions select(mapColumn(",
+				"     broadcast: 'auto')~> InOrderSumJoin",
+				"InOrderSumJoin select(mapColumn(",
 				"          ItemNoEU = InOrderEU@No,",
 				"          QuantityEU = InOrderEU@Quantity,",
 				"          ItemNoUS = InOrderUS@No,",
@@ -421,7 +431,31 @@
 				"          EUInOrderSumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectInOrderQty",
+				"     skipDuplicateMapOutputs: true) ~> PurchInOrderSum",
+				"selectInventorySumFields2, PurchInOrderSum join(selectInventorySumFields2@ItemNo == PurchInOrderSum@ItemNo,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinPurchInOrderSum",
+				"joinPurchInOrderSum derive(ItemNo = iifNull(selectInventorySumFields2@ItemNo,PurchInOrderSum@ItemNo),",
+				"          InOrderQtyEU = iifNull(EUInOrderSumQty,0),",
+				"          InOrderQtyUS = iifNull(USInOrderSumQty,0)) ~> allignPurchInOrder",
+				"allignPurchInOrder select(mapColumn(",
+				"          ItemNo,",
+				"          StartDate,",
+				"          EndDate,",
+				"          InStockEU,",
+				"          InStockUS,",
+				"          SoldEU,",
+				"          SoldUS,",
+				"          TransitEU,",
+				"          InOrderEU = InOrderQtyEU,",
+				"          TransitUS,",
+				"          InOrderUS = InOrderQtyUS,",
+				"          ItemCategoryCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields3",
 				"addingSumsHash sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
