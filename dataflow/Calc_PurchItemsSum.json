@@ -14,6 +14,13 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "PurchLines"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "BlanketPurchLines"
 				}
 			],
 			"sinks": [
@@ -27,10 +34,13 @@
 			],
 			"transformations": [
 				{
-					"name": "SumItemsQty"
+					"name": "SumTransitItemsQty"
 				},
 				{
 					"name": "removeBlanks"
+				},
+				{
+					"name": "SumInOrderItemsQty"
 				}
 			],
 			"scriptLines": [
@@ -168,10 +178,20 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet'))) ~> PurchLines",
+				"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')),",
+				"     compressionCodec: 'snappy') ~> PurchLines",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
+				"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 				"PurchLines aggregate(groupBy(No),",
-				"     SumQty = sum(Quantity)) ~> SumItemsQty",
-				"SumItemsQty filter(No>'') ~> removeBlanks",
+				"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
+				"SumTransitItemsQty filter(No>'') ~> removeBlanks",
+				"BlanketPurchLines aggregate(groupBy(No)) ~> SumInOrderItemsQty",
 				"removeBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
