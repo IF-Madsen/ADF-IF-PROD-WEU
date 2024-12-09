@@ -641,6 +641,116 @@
 								},
 								"traceLevel": "Fine"
 							}
+						},
+						{
+							"name": "Create BlanketPurch files",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create BlanketPurchLine Files",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_BlanketPurchaseOrderFiles",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"ParmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Create BlanketPurchLine Files",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "Create Filtered Items",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "Transform_BlanketPurchLineFile",
+									"type": "DataFlowReference",
+									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{variables('blobBronze')}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{variables('blobSilver')}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
+										"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
 						}
 					]
 				}
