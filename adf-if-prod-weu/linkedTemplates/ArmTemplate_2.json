@@ -4528,8 +4528,9 @@
 									"TransitUS": {},
 									"InOrderEU": {},
 									"InOrderUS": {},
-									"SaveGlobalSums": {},
-									"SaveGlobalItems": {}
+									"SaveGlobalItems": {},
+									"SaveGlobalInventorySum": {},
+									"SaveGlobalPurchases": {}
 								}
 							},
 							"staging": {},
