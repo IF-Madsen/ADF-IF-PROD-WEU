@@ -48,6 +48,20 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "TransitUS"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InOrderEU"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InOrderUS"
 				}
 			],
 			"sinks": [
@@ -240,6 +254,22 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: 'PurchItemSumUS.parquet',",
 				"     compressionCodec: 'snappy') ~> TransitUS",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: 'BlanketPurchItemSumEU.parquet',",
+				"     compressionCodec: 'snappy') ~> InOrderEU",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: 'BlanketPurchItemSumUS.parquet',",
+				"     compressionCodec: 'snappy') ~> InOrderUS",
 				"RemoveBOM select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
