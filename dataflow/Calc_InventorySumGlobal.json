@@ -137,6 +137,18 @@
 				},
 				{
 					"name": "addingItemsHash"
+				},
+				{
+					"name": "joinInOrderRegions"
+				},
+				{
+					"name": "selectInOrderFields"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "selectInOrderQty"
 				}
 			],
 			"scriptLines": [
@@ -254,7 +266,11 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: 'PurchItemSumUS.parquet',",
 				"     compressionCodec: 'snappy') ~> TransitUS",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          No as string,",
+				"          Quantity as decimal(38,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet',",
@@ -262,7 +278,11 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: 'BlanketPurchItemSumEU.parquet',",
 				"     compressionCodec: 'snappy') ~> InOrderEU",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          No as string,",
+				"          Quantity as decimal(38,18)",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet',",
@@ -379,6 +399,29 @@
 				"     asc(ItemNo, true)) ~> sortOnVendorItems",
 				"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll)) ~> addingSumsHash",
 				"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
+				"InOrderEU, InOrderUS join(InOrderEU@No == InOrderUS@No,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinInOrderRegions",
+				"joinInOrderRegions select(mapColumn(",
+				"          ItemNoEU = InOrderEU@No,",
+				"          QuantityEU = InOrderEU@Quantity,",
+				"          ItemNoUS = InOrderUS@No,",
+				"          QuantityUS = InOrderUS@Quantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInOrderFields",
+				"selectInOrderFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+				"          USInOrderSumQty = iifNull(QuantityUS,0),",
+				"          EUInOrderSumQty = iifNull(QuantityEU,0)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          ItemNo,",
+				"          USInOrderSumQty,",
+				"          EUInOrderSumQty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInOrderQty",
 				"addingSumsHash sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
