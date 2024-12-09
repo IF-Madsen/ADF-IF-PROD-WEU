@@ -1627,7 +1627,23 @@
 								"type": "ParquetSink",
 								"storeSettings": {
 									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
 								},
 								"formatSettings": {
 									"type": "ParquetWriteSettings"
@@ -2446,7 +2462,23 @@
 								"type": "ParquetSink",
 								"storeSettings": {
 									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
 								},
 								"formatSettings": {
 									"type": "ParquetWriteSettings"
@@ -2618,7 +2650,23 @@
 								"type": "ParquetSink",
 								"storeSettings": {
 									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
 								},
 								"formatSettings": {
 									"type": "ParquetWriteSettings"
@@ -2659,44 +2707,13 @@
 								}
 							}
 						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"parmRegion": {
-						"type": "string",
-						"defaultValue": "EU"
 					},
-					"parmLoaded": {
-						"type": "string",
-						"defaultValue": "@utcNow()"
-					}
-				},
-				"folder": {
-					"name": "InventoryForecast/ExtractData"
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-01-23T16:45:34Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_OData_EU')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ExtractDataEU_BPO')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Blamnket Purchase Orders",
-				"activities": [
 					{
-						"name": "BlanketPurchaseLines",
+						"name": "BlanketPurchaseOrders",
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "BlanketPurchaseOrders",
+								"activity": "Vendors",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2713,108 +2730,29 @@
 						"typeProperties": {
 							"source": {
 								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
 								"httpRequestTimeout": "00:05:00"
 							},
 							"sink": {
 								"type": "ParquetSink",
 								"storeSettings": {
 									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_EU",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_europe",
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "BlanketPurchaseOrders",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
 										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
+									]
 								},
 								"formatSettings": {
 									"type": "ParquetWriteSettings"
@@ -2848,10 +2786,93 @@
 										"value": "@pipeline().globalParameters.folder_d365bc",
 										"type": "Expression"
 									},
-									"filename": {
-										"value": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)",
+									"filename": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)"
+								}
+							}
+						]
+					},
+					{
+						"name": "BlanketPurchaseLines",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "BlanketPurchaseOrders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_EU",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_europe",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
 										"type": "Expression"
 									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)"
 								}
 							}
 						]
@@ -3395,6 +3416,180 @@
 									},
 									"filename": {
 										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "BlanketPurchaseOrders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Vendors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_US",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_america",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrders",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)"
+								}
+							}
+						]
+					},
+					{
+						"name": "BlanketPurchaseLines",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "BlanketPurchaseOrders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_US",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_america",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": {
+										"value": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)",
 										"type": "Expression"
 									}
 								}
@@ -4326,6 +4521,94 @@
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataEU')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataUS')]",
 				"[concat(variables('factoryId'), '/pipelines/ExtractPrimoAll')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RunBuildData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Extract Data",
+						"description": "Import data from sources to Bronze Layer",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "ExtractDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Calculate Data",
+						"description": "Calculate the data and save to Gold Layer",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Transform Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CalculateDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Transform Data",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Extract Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "TransformDataAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "InventoryForecast"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]"
 			]
 		}
 	]
