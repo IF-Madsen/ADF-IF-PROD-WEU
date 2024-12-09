@@ -46,7 +46,23 @@
 						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -865,7 +881,23 @@
 						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -1037,7 +1069,23 @@
 						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -1107,7 +1155,23 @@
 						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -1174,7 +1238,23 @@
 						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
