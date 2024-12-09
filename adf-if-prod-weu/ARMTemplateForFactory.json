@@ -409,7 +409,9 @@
 											},
 											"datasetParameters": {
 												"PurchLines": {},
-												"SavePurchItemSum": {}
+												"BlanketPurchLines": {},
+												"SavePurchItemSum": {},
+												"saveBlanketPurchSum": {}
 											}
 										},
 										"staging": {},
@@ -564,6 +566,8 @@
 									"ItemPrices": {},
 									"TransitEU": {},
 									"TransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
 									"SaveGlobalSums": {},
 									"SaveGlobalItems": {}
 								}
@@ -4276,6 +4280,128 @@
 										},
 										"traceLevel": "Fine"
 									}
+								},
+								{
+									"name": "Create BlanketPurch files",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Create BlanketPurchLine Files",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Transform_BlanketPurchaseOrderFiles",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmSourceBlob": {
+													"value": "'@{variables('blobBronze')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"ParmTargetBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+												"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+											},
+											"datasetParameters": {
+												"BlanketPurchOrders": {},
+												"SavePurchOrderFile": {}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Create BlanketPurchLine Files",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Create Filtered Items",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Transform_BlanketPurchLineFile",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobBronze')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+												"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+											},
+											"datasetParameters": {
+												"loadBlanketPurchaseLines": {},
+												"savePurchlines": {}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							]
 						}
@@ -4435,7 +4561,9 @@
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemsWithGroups')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_InventorySumPrEntryType')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_InventoryPrimo')]",
-				"[concat(variables('factoryId'), '/dataflows/Transform_ItemPrices')]"
+				"[concat(variables('factoryId'), '/dataflows/Transform_ItemPrices')]",
+				"[concat(variables('factoryId'), '/dataflows/Transform_BlanketPurchaseOrderFiles')]",
+				"[concat(variables('factoryId'), '/dataflows/Transform_BlanketPurchLineFile')]"
 			]
 		},
 		{
@@ -4580,7 +4708,9 @@
 											},
 											"datasetParameters": {
 												"PurchLines": {},
-												"SavePurchItemSum": {}
+												"BlanketPurchLines": {},
+												"SavePurchItemSum": {},
+												"saveBlanketPurchSum": {}
 											}
 										},
 										"staging": {},
@@ -5172,6 +5302,8 @@
 									"ItemPrices": {},
 									"TransitEU": {},
 									"TransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
 									"SaveGlobalSums": {},
 									"SaveGlobalItems": {}
 								}
@@ -6753,6 +6885,20 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "TransitUS"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "InOrderEU"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "InOrderUS"
 						}
 					],
 					"sinks": [
@@ -6791,7 +6937,7 @@
 							"name": "SumUpInstockAndSold"
 						},
 						{
-							"name": "joinTransitRegions"
+							"name": "InTransitSumJoin"
 						},
 						{
 							"name": "selectTransitFields"
@@ -6800,22 +6946,22 @@
 							"name": "allignTransitFields"
 						},
 						{
-							"name": "selectTransitQty"
+							"name": "PurchInTransitSum"
 						},
 						{
 							"name": "selectItemFields2"
 						},
 						{
-							"name": "selectSumFields"
+							"name": "selectInventorySumFields"
 						},
 						{
-							"name": "joinSumAndTransit"
+							"name": "joinPurchInTransit"
 						},
 						{
-							"name": "allignTransitToSum"
+							"name": "allignPurchInTransit"
 						},
 						{
-							"name": "selectAllFields"
+							"name": "selectInventorySumFields2"
 						},
 						{
 							"name": "SumUpAll"
@@ -6828,6 +6974,27 @@
 						},
 						{
 							"name": "addingItemsHash"
+						},
+						{
+							"name": "InOrderSumJoin"
+						},
+						{
+							"name": "selectInOrderFields"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "PurchInOrderSum"
+						},
+						{
+							"name": "joinPurchInOrderSum"
+						},
+						{
+							"name": "allignPurchInOrder"
+						},
+						{
+							"name": "selectInventorySumFields3"
 						}
 					],
 					"scriptLines": [
@@ -6945,6 +7112,30 @@
 						"     folderPath: ($parmSourceFolder),",
 						"     fileName: 'PurchItemSumUS.parquet',",
 						"     compressionCodec: 'snappy') ~> TransitUS",
+						"source(output(",
+						"          No as string,",
+						"          Quantity as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: 'BlanketPurchItemSumEU.parquet',",
+						"     compressionCodec: 'snappy') ~> InOrderEU",
+						"source(output(",
+						"          No as string,",
+						"          Quantity as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: 'BlanketPurchItemSumUS.parquet',",
+						"     compressionCodec: 'snappy') ~> InOrderUS",
 						"RemoveBOM select(mapColumn(",
 						"          VendorNo,",
 						"          Name,",
@@ -6978,13 +7169,14 @@
 						"          InStockUS = iifNull(InventorySumUS@InventorySum,0),",
 						"          SoldEU = iifNull(InventorySumEU@SalesQty+InventorySumEU@SalesQtyExtCust,0),",
 						"          SoldUS = iifNull(InventorySumUS@SalesQty,0),",
-						"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo)) ~> SumUpInstockAndSold",
+						"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo),",
+						"          ItemCategoryCode = iifNull(InventorySumEU@ItemCategoryCode, InventorySumUS@ItemCategoryCode)) ~> SumUpInstockAndSold",
 						"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
 						"     joinType:'outer',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
-						"     broadcast: 'both')~> joinTransitRegions",
-						"joinTransitRegions select(mapColumn(",
+						"     broadcast: 'both')~> InTransitSumJoin",
+						"InTransitSumJoin select(mapColumn(",
 						"          ItemNoEU = TransitEU@ItemNo,",
 						"          SumQtyEU = TransitEU@SumQty,",
 						"          ItemNoUS = TransitUS@ItemNo,",
@@ -7001,7 +7193,7 @@
 						"          EU_SumQty",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectTransitQty",
+						"     skipDuplicateMapOutputs: true) ~> PurchInTransitSum",
 						"join select(mapColumn(",
 						"          VendorNo,",
 						"          Name,",
@@ -7021,19 +7213,19 @@
 						"          InStockUS,",
 						"          SoldEU,",
 						"          SoldUS,",
-						"          ItemCategoryCode = InventorySumUS@ItemCategoryCode",
+						"          ItemCategoryCode",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectSumFields",
-						"selectSumFields, selectTransitQty join(selectSumFields@ItemNo == selectTransitQty@ItemNo,",
+						"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields",
+						"selectInventorySumFields, PurchInTransitSum join(selectInventorySumFields@ItemNo == PurchInTransitSum@ItemNo,",
 						"     joinType:'outer',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinSumAndTransit",
-						"joinSumAndTransit derive(TransitEU = iifNull(EU_SumQty,0),",
+						"     broadcast: 'auto')~> joinPurchInTransit",
+						"joinPurchInTransit derive(TransitEU = iifNull(EU_SumQty,0),",
 						"          TransitUS = iifNull(US_SumQty,0),",
-						"          ItemNo = iifNull(selectSumFields@ItemNo,selectTransitQty@ItemNo)) ~> allignTransitToSum",
-						"allignTransitToSum select(mapColumn(",
+						"          ItemNo = iifNull(selectInventorySumFields@ItemNo,PurchInTransitSum@ItemNo)) ~> allignPurchInTransit",
+						"allignPurchInTransit select(mapColumn(",
 						"          ItemNo,",
 						"          StartDate,",
 						"          EndDate,",
@@ -7046,16 +7238,112 @@
 						"          ItemCategoryCode",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectAllFields",
-						"selectAllFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
+						"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields2",
+						"selectInventorySumFields3 derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 						"          SoldAll = iifNull(add(SoldEU,SoldUS),0),",
-						"          TransitAll = iifNull(add(TransitEU,TransitUS),0)) ~> SumUpAll",
+						"          TransitAll = iifNull(add(TransitEU,TransitUS),0),",
+						"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0)) ~> SumUpAll",
 						"selectItemFields2 sort(asc(VendorNo, true),",
 						"     asc(ItemNo, true)) ~> sortOnVendorItems",
-						"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll)) ~> addingSumsHash",
+						"SumUpAll derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll,TransitAll,InOrderAll)) ~> addingSumsHash",
 						"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
+						"InOrderEU, InOrderUS join(InOrderEU@No == InOrderUS@No,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> InOrderSumJoin",
+						"InOrderSumJoin select(mapColumn(",
+						"          ItemNoEU = InOrderEU@No,",
+						"          QuantityEU = InOrderEU@Quantity,",
+						"          ItemNoUS = InOrderUS@No,",
+						"          QuantityUS = InOrderUS@Quantity",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectInOrderFields",
+						"selectInOrderFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+						"          USInOrderSumQty = iifNull(QuantityUS,0),",
+						"          EUInOrderSumQty = iifNull(QuantityEU,0)) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          ItemNo,",
+						"          USInOrderSumQty,",
+						"          EUInOrderSumQty",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> PurchInOrderSum",
+						"selectInventorySumFields2, PurchInOrderSum join(selectInventorySumFields2@ItemNo == PurchInOrderSum@ItemNo,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinPurchInOrderSum",
+						"joinPurchInOrderSum derive(ItemNo = iifNull(selectInventorySumFields2@ItemNo,PurchInOrderSum@ItemNo),",
+						"          InOrderQtyEU = iifNull(EUInOrderSumQty,0),",
+						"          InOrderQtyUS = iifNull(USInOrderSumQty,0)) ~> allignPurchInOrder",
+						"allignPurchInOrder select(mapColumn(",
+						"          ItemNo,",
+						"          StartDate,",
+						"          EndDate,",
+						"          InStockEU,",
+						"          InStockUS,",
+						"          SoldEU,",
+						"          SoldUS,",
+						"          TransitEU,",
+						"          InOrderEU = InOrderQtyEU,",
+						"          TransitUS,",
+						"          InOrderUS = InOrderQtyUS,",
+						"          ItemCategoryCode",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields3",
 						"addingSumsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          No as string,",
+						"          Quantity as decimal(38,18),",
+						"          ItemNo as string,",
+						"          InventorySum as double,",
+						"          PurchQty as double,",
+						"          SalesQty as double,",
+						"          SalesQtyExtCust as double,",
+						"          PosAdjustmentQty as double,",
+						"          NegAdjustmentQty as double,",
+						"          AssemblyOutput as double,",
+						"          AssemblyConsumption as double,",
+						"          StartDate as date,",
+						"          EndDate as date,",
+						"          Region as string,",
+						"          ItemCategoryCode as string,",
+						"          ItemNoAlt as string,",
+						"          Description as string,",
+						"          UnitPrice as decimal(38,18),",
+						"          StandardCost as decimal(38,18),",
+						"          Unit_Cost as decimal(38,18),",
+						"          ReorderInterval_EU as integer,",
+						"          ReorderInterval_US as integer,",
+						"          ReorderInterval as integer,",
+						"          SumQty as double,",
+						"          ItemDescription as string,",
+						"          GroupDescription as string,",
+						"          ItemCategoryGroup as string,",
+						"          AssemblyBOM as boolean,",
+						"          VendorNo as string,",
+						"          Name as string,",
+						"          Name_2 as string,",
+						"          Global_Dimension_1_Filter as string,",
+						"          Global_Dimension_2_Filter as string,",
+						"          Rank as short,",
+						"          UnitCostPrice as double,",
+						"          ItemCategoryDescription as string,",
+						"          Hash as long,",
+						"          InStockEU as double,",
+						"          InStockUS as double,",
+						"          SoldEU as double,",
+						"          SoldUS as double,",
+						"          TransitEU as double,",
+						"          TransitUS as double,",
+						"          InStockAll as double,",
+						"          SoldAll as double,",
+						"          TransitAll as double",
+						"     ),",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
 						"     folderPath: ($parmTargetFolder),",
@@ -7066,6 +7354,23 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ItemNo,",
+						"          StartDate,",
+						"          EndDate,",
+						"          ItemCategoryCode,",
+						"          Hash,",
+						"          InStockEU,",
+						"          InStockUS,",
+						"          SoldEU,",
+						"          SoldUS,",
+						"          TransitEU,",
+						"          TransitUS,",
+						"          InStockAll,",
+						"          SoldAll,",
+						"          TransitAll,",
+						"          InStockAll = InOrderAll",
+						"     ),",
 						"     partitionBy('hash', 1)) ~> SaveGlobalSums",
 						"addingItemsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -7105,6 +7410,13 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "PurchLines"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "BlanketPurchLines"
 						}
 					],
 					"sinks": [
@@ -7114,14 +7426,27 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "SavePurchItemSum"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "saveBlanketPurchSum"
 						}
 					],
 					"transformations": [
 						{
-							"name": "SumItemsQty"
+							"name": "SumTransitItemsQty"
 						},
 						{
-							"name": "removeBlanks"
+							"name": "RemoveBlanks"
+						},
+						{
+							"name": "SumInOrderItemsQty"
+						},
+						{
+							"name": "RemoveBlanks2"
 						}
 					],
 					"scriptLines": [
@@ -7259,11 +7584,78 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet'))) ~> PurchLines",
+						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')),",
+						"     compressionCodec: 'snappy') ~> PurchLines",
+						"source(output(",
+						"          Document_Type as string,",
+						"          Document_No as string,",
+						"          Line_No as integer,",
+						"          Type as string,",
+						"          No as string,",
+						"          Item_Reference_No as string,",
+						"          Variant_Code as string,",
+						"          Gen_Bus_Posting_Group as string,",
+						"          Gen_Prod_Posting_Group as string,",
+						"          VAT_Bus_Posting_Group as string,",
+						"          VAT_Prod_Posting_Group as string,",
+						"          Description as string,",
+						"          Description_2 as string,",
+						"          Location_Code as string,",
+						"          Quantity as decimal(38,18),",
+						"          Unit_of_Measure_Code as string,",
+						"          Unit_of_Measure as string,",
+						"          Direct_Unit_Cost as decimal(38,18),",
+						"          Indirect_Cost_Percent as decimal(38,18),",
+						"          Unit_Cost_LCY as decimal(38,18),",
+						"          Unit_Price_LCY as decimal(38,18),",
+						"          Tax_Liable as boolean,",
+						"          Tax_Area_Code as string,",
+						"          Tax_Group_Code as string,",
+						"          Use_Tax as boolean,",
+						"          Line_Discount_Percent as decimal(38,18),",
+						"          Line_Amount as decimal(38,18),",
+						"          Line_Discount_Amount as decimal(38,18),",
+						"          Allow_Invoice_Disc as boolean,",
+						"          Qty_to_Receive as decimal(38,18),",
+						"          Quantity_Received as decimal(38,18),",
+						"          Quantity_Invoiced as decimal(38,18),",
+						"          Expected_Receipt_Date as timestamp,",
+						"          Shortcut_Dimension_1_Code as string,",
+						"          Shortcut_Dimension_2_Code as string,",
+						"          ShortcutDimCode_x005B_3_x005D_ as string,",
+						"          ShortcutDimCode_x005B_4_x005D_ as string,",
+						"          ShortcutDimCode_x005B_5_x005D_ as string,",
+						"          ShortcutDimCode_x005B_6_x005D_ as string,",
+						"          ShortcutDimCode_x005B_7_x005D_ as string,",
+						"          ShortcutDimCode_x005B_8_x005D_ as string,",
+						"          Gross_Weight as decimal(38,18),",
+						"          Net_Weight as decimal(38,18),",
+						"          Unit_Volume as decimal(38,18),",
+						"          Units_per_Parcel as decimal(38,18),",
+						"          AmountBeforeDiscount as decimal(38,18),",
+						"          Invoice_Discount_Amount as decimal(38,18),",
+						"          Invoice_Disc_Pct as decimal(38,18),",
+						"          Total_Amount_Excl_VAT as decimal(38,18),",
+						"          Total_VAT_Amount as decimal(38,18),",
+						"          Total_Amount_Incl_VAT as decimal(38,18),",
+						"          GST_HST as string,",
+						"          Provincial_Tax_Area_Code as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
+						"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 						"PurchLines aggregate(groupBy(No),",
-						"     SumQty = sum(Quantity)) ~> SumItemsQty",
-						"SumItemsQty filter(No>'') ~> removeBlanks",
-						"removeBlanks sink(allowSchemaDrift: true,",
+						"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
+						"SumTransitItemsQty filter(No>'') ~> RemoveBlanks",
+						"BlanketPurchLines aggregate(groupBy(No),",
+						"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
+						"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
+						"RemoveBlanks sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
@@ -7279,7 +7671,20 @@
 						"          ItemNo = No,",
 						"          SumQty",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> SavePurchItemSum"
+						"     partitionBy('hash', 1)) ~> SavePurchItemSum",
+						"RemoveBlanks2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:[(concat('BlanketPurchItemSum',$parmRegion,'.parquet'))],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> saveBlanketPurchSum"
 					]
 				}
 			},
@@ -10526,7 +10931,7 @@
 						"     fileSystem: ($parmTargetBlob),",
 						"     folderPath: ($parmTargetFolder),",
 						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:[(concat('PurchaseLines',$parmRegion,'.parquet'))],",
+						"     partitionFileNames:[($parmTargetFilename)],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -11603,6 +12008,275 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Transform_BlanketPurchaseOrderFiles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "source : bronze\ntarget : silver",
+				"folder": {
+					"name": "2.Silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "BlanketPurchOrders"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SavePurchOrderFile"
+						}
+					],
+					"transformations": [
+						{
+							"name": "PurchOrderFields"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     parmSourceBlob as string,",
+						"     parmSourceFolder as string,",
+						"     ParmTargetBlob as string,",
+						"     parmTargetFolder as string,",
+						"     parmRegion as string,",
+						"     parmSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+						"     parmTargetFile as string (concat('BlanketPurchOrders',$parmRegion,'.parquet'))",
+						"}",
+						"source(output(",
+						"          Document_Type as string,",
+						"          No as string,",
+						"          Buy_from_Vendor_No as string,",
+						"          Order_Address_Code as string,",
+						"          Buy_from_Vendor_Name as string,",
+						"          Vendor_Authorization_No as string,",
+						"          Buy_from_Post_Code as string,",
+						"          Buy_from_Country_Region_Code as string,",
+						"          Buy_from_Contact as string,",
+						"          Pay_to_Vendor_No as string,",
+						"          Pay_to_Name as string,",
+						"          Pay_to_Post_Code as string,",
+						"          Pay_to_Country_Region_Code as string,",
+						"          Pay_to_Contact as string,",
+						"          Ship_to_Code as string,",
+						"          Ship_to_Name as string,",
+						"          Ship_to_Post_Code as string,",
+						"          Ship_to_Country_Region_Code as string,",
+						"          Ship_to_Contact as string,",
+						"          Posting_Date as timestamp,",
+						"          Shortcut_Dimension_1_Code as string,",
+						"          Shortcut_Dimension_2_Code as string,",
+						"          Location_Code as string,",
+						"          Purchaser_Code as string,",
+						"          Assigned_User_ID as string,",
+						"          Currency_Code as string,",
+						"          Status as string,",
+						"          CDO_Output_Profile as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSourceFile),",
+						"     compressionCodec: 'snappy') ~> BlanketPurchOrders",
+						"BlanketPurchOrders select(mapColumn(",
+						"          Document_Type,",
+						"          No,",
+						"          Buy_from_Vendor_No,",
+						"          Order_Address_Code,",
+						"          Buy_from_Vendor_Name,",
+						"          Vendor_Authorization_No,",
+						"          Buy_from_Post_Code,",
+						"          Buy_from_Country_Region_Code,",
+						"          Buy_from_Contact,",
+						"          Pay_to_Vendor_No,",
+						"          Pay_to_Name,",
+						"          Pay_to_Post_Code,",
+						"          Pay_to_Country_Region_Code,",
+						"          Pay_to_Contact,",
+						"          Ship_to_Code,",
+						"          Ship_to_Name,",
+						"          Ship_to_Post_Code,",
+						"          Ship_to_Country_Region_Code,",
+						"          Ship_to_Contact,",
+						"          Posting_Date,",
+						"          Shortcut_Dimension_1_Code,",
+						"          Shortcut_Dimension_2_Code,",
+						"          Location_Code,",
+						"          Purchaser_Code,",
+						"          Assigned_User_ID,",
+						"          Currency_Code,",
+						"          Status,",
+						"          CDO_Output_Profile",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> PurchOrderFields",
+						"PurchOrderFields sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($ParmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:[($parmTargetFile)],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> SavePurchOrderFile"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Transform_BlanketPurchLineFile')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "2.Silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "loadBlanketPurchaseLines"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "savePurchlines",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectFields"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     parmRegion as string,",
+						"     parmSourceBlob as string,",
+						"     parmSourceFolder as string,",
+						"     parmTargetBlob as string,",
+						"     parmTargetFolder as string,",
+						"     parmSourceFilename as string (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
+						"     parmTargetFilename as string (concat('BlanketPurchLines',$parmRegion,'.parquet'))",
+						"}",
+						"source(output(",
+						"          Document_Type as string,",
+						"          Document_No as string,",
+						"          Line_No as integer,",
+						"          Type as string,",
+						"          No as string,",
+						"          Item_Reference_No as string,",
+						"          Variant_Code as string,",
+						"          Gen_Bus_Posting_Group as string,",
+						"          Gen_Prod_Posting_Group as string,",
+						"          VAT_Bus_Posting_Group as string,",
+						"          VAT_Prod_Posting_Group as string,",
+						"          Description as string,",
+						"          Description_2 as string,",
+						"          Location_Code as string,",
+						"          Quantity as decimal(38,18),",
+						"          Unit_of_Measure_Code as string,",
+						"          Unit_of_Measure as string,",
+						"          Direct_Unit_Cost as decimal(38,18),",
+						"          Indirect_Cost_Percent as decimal(38,18),",
+						"          Unit_Cost_LCY as decimal(38,18),",
+						"          Unit_Price_LCY as decimal(38,18),",
+						"          Tax_Liable as boolean,",
+						"          Tax_Area_Code as string,",
+						"          Tax_Group_Code as string,",
+						"          Use_Tax as boolean,",
+						"          Line_Discount_Percent as decimal(38,18),",
+						"          Line_Amount as decimal(38,18),",
+						"          Line_Discount_Amount as decimal(38,18),",
+						"          Allow_Invoice_Disc as boolean,",
+						"          Qty_to_Receive as decimal(38,18),",
+						"          Quantity_Received as decimal(38,18),",
+						"          Quantity_Invoiced as decimal(38,18),",
+						"          Expected_Receipt_Date as timestamp,",
+						"          Shortcut_Dimension_1_Code as string,",
+						"          Shortcut_Dimension_2_Code as string,",
+						"          ShortcutDimCode_x005B_3_x005D_ as string,",
+						"          ShortcutDimCode_x005B_4_x005D_ as string,",
+						"          ShortcutDimCode_x005B_5_x005D_ as string,",
+						"          ShortcutDimCode_x005B_6_x005D_ as string,",
+						"          ShortcutDimCode_x005B_7_x005D_ as string,",
+						"          ShortcutDimCode_x005B_8_x005D_ as string,",
+						"          Gross_Weight as decimal(38,18),",
+						"          Net_Weight as decimal(38,18),",
+						"          Unit_Volume as decimal(38,18),",
+						"          Units_per_Parcel as decimal(38,18),",
+						"          AmountBeforeDiscount as decimal(38,18),",
+						"          Invoice_Discount_Amount as decimal(38,18),",
+						"          Invoice_Disc_Pct as decimal(38,18),",
+						"          Total_Amount_Excl_VAT as decimal(38,18),",
+						"          Total_VAT_Amount as decimal(38,18),",
+						"          Total_Amount_Incl_VAT as decimal(38,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSourceFilename),",
+						"     compressionCodec: 'snappy') ~> loadBlanketPurchaseLines",
+						"loadBlanketPurchaseLines select(mapColumn(",
+						"          each(match(/* All input columns */ true()),",
+						"               /* Input name */ $$ = $$)",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectFields",
+						"selectFields sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:[($parmTargetFilename)],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     partitionBy('hash', 1)) ~> savePurchlines"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/default')]",

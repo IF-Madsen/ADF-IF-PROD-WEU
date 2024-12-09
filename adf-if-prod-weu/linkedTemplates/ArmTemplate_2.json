@@ -57,6 +57,271 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Transform_BlanketPurchaseOrderFiles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "source : bronze\ntarget : silver",
+				"folder": {
+					"name": "2.Silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "BlanketPurchOrders"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SavePurchOrderFile"
+						}
+					],
+					"transformations": [
+						{
+							"name": "PurchOrderFields"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     parmSourceBlob as string,",
+						"     parmSourceFolder as string,",
+						"     ParmTargetBlob as string,",
+						"     parmTargetFolder as string,",
+						"     parmRegion as string,",
+						"     parmSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+						"     parmTargetFile as string (concat('BlanketPurchOrders',$parmRegion,'.parquet'))",
+						"}",
+						"source(output(",
+						"          Document_Type as string,",
+						"          No as string,",
+						"          Buy_from_Vendor_No as string,",
+						"          Order_Address_Code as string,",
+						"          Buy_from_Vendor_Name as string,",
+						"          Vendor_Authorization_No as string,",
+						"          Buy_from_Post_Code as string,",
+						"          Buy_from_Country_Region_Code as string,",
+						"          Buy_from_Contact as string,",
+						"          Pay_to_Vendor_No as string,",
+						"          Pay_to_Name as string,",
+						"          Pay_to_Post_Code as string,",
+						"          Pay_to_Country_Region_Code as string,",
+						"          Pay_to_Contact as string,",
+						"          Ship_to_Code as string,",
+						"          Ship_to_Name as string,",
+						"          Ship_to_Post_Code as string,",
+						"          Ship_to_Country_Region_Code as string,",
+						"          Ship_to_Contact as string,",
+						"          Posting_Date as timestamp,",
+						"          Shortcut_Dimension_1_Code as string,",
+						"          Shortcut_Dimension_2_Code as string,",
+						"          Location_Code as string,",
+						"          Purchaser_Code as string,",
+						"          Assigned_User_ID as string,",
+						"          Currency_Code as string,",
+						"          Status as string,",
+						"          CDO_Output_Profile as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSourceFile),",
+						"     compressionCodec: 'snappy') ~> BlanketPurchOrders",
+						"BlanketPurchOrders select(mapColumn(",
+						"          Document_Type,",
+						"          No,",
+						"          Buy_from_Vendor_No,",
+						"          Order_Address_Code,",
+						"          Buy_from_Vendor_Name,",
+						"          Vendor_Authorization_No,",
+						"          Buy_from_Post_Code,",
+						"          Buy_from_Country_Region_Code,",
+						"          Buy_from_Contact,",
+						"          Pay_to_Vendor_No,",
+						"          Pay_to_Name,",
+						"          Pay_to_Post_Code,",
+						"          Pay_to_Country_Region_Code,",
+						"          Pay_to_Contact,",
+						"          Ship_to_Code,",
+						"          Ship_to_Name,",
+						"          Ship_to_Post_Code,",
+						"          Ship_to_Country_Region_Code,",
+						"          Ship_to_Contact,",
+						"          Posting_Date,",
+						"          Shortcut_Dimension_1_Code,",
+						"          Shortcut_Dimension_2_Code,",
+						"          Location_Code,",
+						"          Purchaser_Code,",
+						"          Assigned_User_ID,",
+						"          Currency_Code,",
+						"          Status,",
+						"          CDO_Output_Profile",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> PurchOrderFields",
+						"PurchOrderFields sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($ParmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:[($parmTargetFile)],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> SavePurchOrderFile"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Transform_BlanketPurchLineFile')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "2.Silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "loadBlanketPurchaseLines"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "savePurchlines",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectFields"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     parmRegion as string,",
+						"     parmSourceBlob as string,",
+						"     parmSourceFolder as string,",
+						"     parmTargetBlob as string,",
+						"     parmTargetFolder as string,",
+						"     parmSourceFilename as string (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
+						"     parmTargetFilename as string (concat('BlanketPurchLines',$parmRegion,'.parquet'))",
+						"}",
+						"source(output(",
+						"          Document_Type as string,",
+						"          Document_No as string,",
+						"          Line_No as integer,",
+						"          Type as string,",
+						"          No as string,",
+						"          Item_Reference_No as string,",
+						"          Variant_Code as string,",
+						"          Gen_Bus_Posting_Group as string,",
+						"          Gen_Prod_Posting_Group as string,",
+						"          VAT_Bus_Posting_Group as string,",
+						"          VAT_Prod_Posting_Group as string,",
+						"          Description as string,",
+						"          Description_2 as string,",
+						"          Location_Code as string,",
+						"          Quantity as decimal(38,18),",
+						"          Unit_of_Measure_Code as string,",
+						"          Unit_of_Measure as string,",
+						"          Direct_Unit_Cost as decimal(38,18),",
+						"          Indirect_Cost_Percent as decimal(38,18),",
+						"          Unit_Cost_LCY as decimal(38,18),",
+						"          Unit_Price_LCY as decimal(38,18),",
+						"          Tax_Liable as boolean,",
+						"          Tax_Area_Code as string,",
+						"          Tax_Group_Code as string,",
+						"          Use_Tax as boolean,",
+						"          Line_Discount_Percent as decimal(38,18),",
+						"          Line_Amount as decimal(38,18),",
+						"          Line_Discount_Amount as decimal(38,18),",
+						"          Allow_Invoice_Disc as boolean,",
+						"          Qty_to_Receive as decimal(38,18),",
+						"          Quantity_Received as decimal(38,18),",
+						"          Quantity_Invoiced as decimal(38,18),",
+						"          Expected_Receipt_Date as timestamp,",
+						"          Shortcut_Dimension_1_Code as string,",
+						"          Shortcut_Dimension_2_Code as string,",
+						"          ShortcutDimCode_x005B_3_x005D_ as string,",
+						"          ShortcutDimCode_x005B_4_x005D_ as string,",
+						"          ShortcutDimCode_x005B_5_x005D_ as string,",
+						"          ShortcutDimCode_x005B_6_x005D_ as string,",
+						"          ShortcutDimCode_x005B_7_x005D_ as string,",
+						"          ShortcutDimCode_x005B_8_x005D_ as string,",
+						"          Gross_Weight as decimal(38,18),",
+						"          Net_Weight as decimal(38,18),",
+						"          Unit_Volume as decimal(38,18),",
+						"          Units_per_Parcel as decimal(38,18),",
+						"          AmountBeforeDiscount as decimal(38,18),",
+						"          Invoice_Discount_Amount as decimal(38,18),",
+						"          Invoice_Disc_Pct as decimal(38,18),",
+						"          Total_Amount_Excl_VAT as decimal(38,18),",
+						"          Total_VAT_Amount as decimal(38,18),",
+						"          Total_Amount_Incl_VAT as decimal(38,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSourceFilename),",
+						"     compressionCodec: 'snappy') ~> loadBlanketPurchaseLines",
+						"loadBlanketPurchaseLines select(mapColumn(",
+						"          each(match(/* All input columns */ true()),",
+						"               /* Input name */ $$ = $$)",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectFields",
+						"selectFields sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:[($parmTargetFilename)],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     partitionBy('hash', 1)) ~> savePurchlines"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CopyFilesfromMultipleContainers')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1232,6 +1497,128 @@
 										},
 										"traceLevel": "Fine"
 									}
+								},
+								{
+									"name": "Create BlanketPurch files",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Create BlanketPurchLine Files",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Transform_BlanketPurchaseOrderFiles",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmSourceBlob": {
+													"value": "'@{variables('blobBronze')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"ParmTargetBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+												"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+											},
+											"datasetParameters": {
+												"BlanketPurchOrders": {},
+												"SavePurchOrderFile": {}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Create BlanketPurchLine Files",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Create Filtered Items",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Transform_BlanketPurchLineFile",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobBronze')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+												"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+											},
+											"datasetParameters": {
+												"loadBlanketPurchaseLines": {},
+												"savePurchlines": {}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							]
 						}
@@ -1380,7 +1767,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Transform_BlanketPurchaseOrderFiles')]",
+				"[concat(variables('factoryId'), '/dataflows/Transform_BlanketPurchLineFile')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Dataverse_ItemForecastGlobalItems')]",
@@ -3979,7 +4369,9 @@
 											},
 											"datasetParameters": {
 												"PurchLines": {},
-												"SavePurchItemSum": {}
+												"BlanketPurchLines": {},
+												"SavePurchItemSum": {},
+												"saveBlanketPurchSum": {}
 											}
 										},
 										"staging": {},
@@ -4134,6 +4526,8 @@
 									"ItemPrices": {},
 									"TransitEU": {},
 									"TransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
 									"SaveGlobalSums": {},
 									"SaveGlobalItems": {}
 								}
@@ -4266,349 +4660,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ExtractDataAll')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Execute EU",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "DeleteParquetFiles",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [
-							{
-								"name": "company",
-								"value": "IFE"
-							},
-							{
-								"name": "application",
-								"value": "D365bc"
-							}
-						],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ExtractDataEU",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"parmRegion": {
-									"value": "@pipeline().globalParameters.Region_EU",
-									"type": "Expression"
-								},
-								"parmLoaded": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "Execute US",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "DeleteParquetFiles",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [
-							{
-								"name": "company",
-								"value": "IFA"
-							},
-							{
-								"name": "application",
-								"value": "D365bc"
-							}
-						],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ExtractDataUS",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"parmRegion": {
-									"value": "@pipeline().globalParameters.Region_US",
-									"type": "Expression"
-								},
-								"parmLoaded": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							}
-						}
-					},
-					{
-						"name": "DeleteParquetFiles",
-						"type": "Delete",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": "*"
-								}
-							},
-							"logStorageSettings": {
-								"linkedServiceName": {
-									"referenceName": "D365bcDataLakeProd",
-									"type": "LinkedServiceReference"
-								},
-								"path": {
-									"value": "@concat(pipeline().globalParameters.blob_bronze,'/',pipeline().globalParameters.folder_logs)",
-									"type": "Expression"
-								}
-							},
-							"enableLogging": true,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.parquet",
-								"enablePartitionDiscovery": false
-							}
-						}
-					},
-					{
-						"name": "CopyJsonfile",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "DeleteParquetFiles",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.folder_json",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*.json",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "PreserveHierarchy"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_Json_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"Cointainer": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Json_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"Cointainer": {
-										"value": "@concat(pipeline().globalParameters.blob_silver,'/',pipeline().globalParameters.folder_json)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Create Primo",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute EU",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Execute US",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ExtractPrimoAll",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "InventoryForecast"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ExtractDataEU')]",
-				"[concat(variables('factoryId'), '/pipelines/ExtractDataUS')]",
-				"[concat(variables('factoryId'), '/pipelines/ExtractPrimoAll')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RunBuildData')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Extract Data",
-						"description": "Import data from sources to Bronze Layer",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ExtractDataAll",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Calculate Data",
-						"description": "Calculate the data and save to Gold Layer",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Transform Data",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CalculateDataAll",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Transform Data",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Extract Data",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "TransformDataAll",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "InventoryForecast"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
-				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]",
-				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]"
 			]
 		}
 	]
