@@ -30,6 +30,13 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "SavePurchItemSum"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "saveBlanketPurchSum"
 				}
 			],
 			"transformations": [
@@ -37,10 +44,13 @@
 					"name": "SumTransitItemsQty"
 				},
 				{
-					"name": "removeBlanks"
+					"name": "RemoveBlanks"
 				},
 				{
 					"name": "SumInOrderItemsQty"
+				},
+				{
+					"name": "RemoveBlanks2"
 				}
 			],
 			"scriptLines": [
@@ -180,7 +190,62 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')),",
 				"     compressionCodec: 'snappy') ~> PurchLines",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Document_Type as string,",
+				"          Document_No as string,",
+				"          Line_No as integer,",
+				"          Type as string,",
+				"          No as string,",
+				"          Item_Reference_No as string,",
+				"          Variant_Code as string,",
+				"          Gen_Bus_Posting_Group as string,",
+				"          Gen_Prod_Posting_Group as string,",
+				"          VAT_Bus_Posting_Group as string,",
+				"          VAT_Prod_Posting_Group as string,",
+				"          Description as string,",
+				"          Description_2 as string,",
+				"          Location_Code as string,",
+				"          Quantity as decimal(38,18),",
+				"          Unit_of_Measure_Code as string,",
+				"          Unit_of_Measure as string,",
+				"          Direct_Unit_Cost as decimal(38,18),",
+				"          Indirect_Cost_Percent as decimal(38,18),",
+				"          Unit_Cost_LCY as decimal(38,18),",
+				"          Unit_Price_LCY as decimal(38,18),",
+				"          Tax_Liable as boolean,",
+				"          Tax_Area_Code as string,",
+				"          Tax_Group_Code as string,",
+				"          Use_Tax as boolean,",
+				"          Line_Discount_Percent as decimal(38,18),",
+				"          Line_Amount as decimal(38,18),",
+				"          Line_Discount_Amount as decimal(38,18),",
+				"          Allow_Invoice_Disc as boolean,",
+				"          Qty_to_Receive as decimal(38,18),",
+				"          Quantity_Received as decimal(38,18),",
+				"          Quantity_Invoiced as decimal(38,18),",
+				"          Expected_Receipt_Date as timestamp,",
+				"          Shortcut_Dimension_1_Code as string,",
+				"          Shortcut_Dimension_2_Code as string,",
+				"          ShortcutDimCode_x005B_3_x005D_ as string,",
+				"          ShortcutDimCode_x005B_4_x005D_ as string,",
+				"          ShortcutDimCode_x005B_5_x005D_ as string,",
+				"          ShortcutDimCode_x005B_6_x005D_ as string,",
+				"          ShortcutDimCode_x005B_7_x005D_ as string,",
+				"          ShortcutDimCode_x005B_8_x005D_ as string,",
+				"          Gross_Weight as decimal(38,18),",
+				"          Net_Weight as decimal(38,18),",
+				"          Unit_Volume as decimal(38,18),",
+				"          Units_per_Parcel as decimal(38,18),",
+				"          AmountBeforeDiscount as decimal(38,18),",
+				"          Invoice_Discount_Amount as decimal(38,18),",
+				"          Invoice_Disc_Pct as decimal(38,18),",
+				"          Total_Amount_Excl_VAT as decimal(38,18),",
+				"          Total_VAT_Amount as decimal(38,18),",
+				"          Total_Amount_Incl_VAT as decimal(38,18),",
+				"          GST_HST as string,",
+				"          Provincial_Tax_Area_Code as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet',",
@@ -190,9 +255,11 @@
 				"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 				"PurchLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
-				"SumTransitItemsQty filter(No>'') ~> removeBlanks",
-				"BlanketPurchLines aggregate(groupBy(No)) ~> SumInOrderItemsQty",
-				"removeBlanks sink(allowSchemaDrift: true,",
+				"SumTransitItemsQty filter(No>'') ~> RemoveBlanks",
+				"BlanketPurchLines aggregate(groupBy(No),",
+				"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
+				"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
+				"RemoveBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
@@ -208,7 +275,20 @@
 				"          ItemNo = No,",
 				"          SumQty",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> SavePurchItemSum"
+				"     partitionBy('hash', 1)) ~> SavePurchItemSum",
+				"RemoveBlanks2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[(concat('BlanketPurchItemSum',$parmRegion,'.parquet'))],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> saveBlanketPurchSum"
 			]
 		}
 	}
