@@ -1078,6 +1078,143 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "BlanketPurchaseOrders",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_OData_EU",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": "@pipeline().globalParameters.d365bc_company_europe",
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrders",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)"
+						}
+					}
+				]
+			},
+			{
+				"name": "BlanketPurchaseLines",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "BlanketPurchaseOrders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ODataSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_OData_EU",
+						"type": "DatasetReference",
+						"parameters": {
+							"company": {
+								"value": "@pipeline().globalParameters.d365bc_company_europe",
+								"type": "Expression"
+							},
+							"apipath": {
+								"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)"
+						}
+					}
+				]
 			}
 		],
 		"parameters": {
