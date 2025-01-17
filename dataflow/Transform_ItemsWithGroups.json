@@ -51,7 +51,7 @@
 					"description": "Creates an explicit mapping for each drifted column"
 				},
 				{
-					"name": "joinTop5Vendors"
+					"name": "joinXTopVendors"
 				}
 			],
 			"scriptLines": [
@@ -302,8 +302,8 @@
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinTop5Vendors",
-				"joinTop5Vendors sink(allowSchemaDrift: true,",
+				"     broadcast: 'auto')~> joinXTopVendors",
+				"joinXTopVendors sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
