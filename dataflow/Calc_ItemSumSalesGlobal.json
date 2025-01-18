@@ -1,5 +1,5 @@
 {
-	"name": "Transform_ItemSumSalesGlobal",
+	"name": "Calc_ItemSumSalesGlobal",
 	"properties": {
 		"folder": {
 			"name": "3.Gold"
@@ -22,21 +22,31 @@
 					"name": "SalesUS"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "joinSales"
+					"name": "unionSales"
 				},
 				{
-					"name": "select1"
+					"name": "sort1"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
 				"     parmSalesFileEU as string ('InventorySumSalesEU.parquet'),",
 				"     parmSalesFileUS as string ('InventorySumSalesUS.parquet'),",
-				"     parmSourceBlob as string,",
-				"     parmSourceFolder as string",
+				"     parmSourceBlob as string ('silver'),",
+				"     parmSourceFolder as string ('d365bc'),",
+				"     parmTargetBlob as string ('gold'),",
+				"     parmTargetFolder as string ('d365bc')",
 				"}",
 				"source(output(",
 				"          Region as string,",
@@ -64,20 +74,21 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ($parmSalesFileUS)) ~> SalesUS",
-				"SalesEU, SalesUS join(SalesEU@Item_No == SalesUS@Item_No,",
-				"     joinType:'outer',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinSales",
-				"joinSales select(mapColumn(",
-				"          Item_No = SalesEU@Item_No,",
-				"          EndDate = SalesEU@EndDate,",
-				"          SalesEU = SalesEU@Quantity,",
-				"          EndDate = SalesUS@EndDate,",
-				"          SalesUS = SalesUS@Quantity",
-				"     ),",
+				"SalesEU, SalesUS union(byName: false)~> unionSales",
+				"unionSales sort(asc(Item_No, true),",
+				"     asc(EndDate, true),",
+				"     asc(Region, true)) ~> sort1",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['\\'ItemSumSalesGlobal.parquet\\''],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
