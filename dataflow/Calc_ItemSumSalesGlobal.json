@@ -28,7 +28,7 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink1"
+					"name": "saveGlobalSales"
 				}
 			],
 			"transformations": [
@@ -36,7 +36,7 @@
 					"name": "unionSales"
 				},
 				{
-					"name": "sort1"
+					"name": "sortSales"
 				}
 			],
 			"scriptLines": [
@@ -77,10 +77,12 @@
 				"SalesEU, SalesUS union(byName: false)~> unionSales",
 				"unionSales sort(asc(Item_No, true),",
 				"     asc(EndDate, true),",
-				"     asc(Region, true)) ~> sort1",
-				"sort1 sink(allowSchemaDrift: true,",
+				"     asc(Region, true)) ~> sortSales",
+				"sortSales sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
 				"     partitionFileNames:['\\'ItemSumSalesGlobal.parquet\\''],",
 				"     umask: 0022,",
@@ -88,7 +90,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> saveGlobalSales"
 			]
 		}
 	}
