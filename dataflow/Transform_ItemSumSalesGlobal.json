@@ -1,0 +1,60 @@
+{
+	"name": "Transform_ItemSumSalesGlobal",
+	"properties": {
+		"folder": {
+			"name": "2.Silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SalesEU"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SalesUS"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "joinSales"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parmSalesFileEU as string ('InventorySumSalesEU.parquet'),",
+				"     parmSalesFileUS as string ('InventorySumSalesUS.parquet'),",
+				"     parmSourceBlob as string,",
+				"     parmSourceFolder as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSalesEU)) ~> SalesEU",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmSalesUS)) ~> SalesUS",
+				"SalesEU, SalesUS join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSales"
+			]
+		}
+	}
+}
