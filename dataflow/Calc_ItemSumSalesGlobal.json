@@ -81,7 +81,7 @@
 				"unionSales sort(asc(Item_No, true),",
 				"     asc(EndDate, true),",
 				"     asc(Region, true)) ~> sortSales",
-				"USSales, EUSales join(USSales@Item_No == EUSales@Item_No,",
+				"USSales, EUSales join(USSales@EndDate == EUSales@EndDate,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
