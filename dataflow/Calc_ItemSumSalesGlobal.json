@@ -12,14 +12,14 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SalesEU"
+					"name": "EUSales"
 				},
 				{
 					"linkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SalesUS"
+					"name": "USSales"
 				}
 			],
 			"sinks": [
@@ -37,6 +37,9 @@
 				},
 				{
 					"name": "sortSales"
+				},
+				{
+					"name": "joinSales"
 				}
 			],
 			"scriptLines": [
@@ -60,7 +63,7 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: ($parmSalesFileEU)) ~> SalesEU",
+				"     fileName: ($parmSalesFileEU)) ~> EUSales",
 				"source(output(",
 				"          Region as string,",
 				"          Item_No as string,",
@@ -73,11 +76,16 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: ($parmSalesFileUS)) ~> SalesUS",
-				"SalesEU, SalesUS union(byName: false)~> unionSales",
+				"     fileName: ($parmSalesFileUS)) ~> USSales",
+				"EUSales, USSales union(byName: false)~> unionSales",
 				"unionSales sort(asc(Item_No, true),",
 				"     asc(EndDate, true),",
 				"     asc(Region, true)) ~> sortSales",
+				"USSales, EUSales join(USSales@Item_No == EUSales@Item_No,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSales",
 				"sortSales sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
