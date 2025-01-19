@@ -678,7 +678,10 @@
 											"value": "'@{variables('blobSilver')}'",
 											"type": "Expression"
 										},
-										"parmTargetFolder": "@variables('folderD365bc')",
+										"parmTargetFolder": {
+											"value": "'@{variables('folderD365bc')}'",
+											"type": "Expression"
+										},
 										"parmRegion": {
 											"value": "'@{item()}'",
 											"type": "Expression"
