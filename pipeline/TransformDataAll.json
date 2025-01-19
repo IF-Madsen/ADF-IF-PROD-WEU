@@ -678,10 +678,7 @@
 											"value": "'@{variables('blobSilver')}'",
 											"type": "Expression"
 										},
-										"parmTargetFolder": {
-											"value": "'@{variables('blobSilver')}'",
-											"type": "Expression"
-										},
+										"parmTargetFolder": "@variables('folderD365bc')",
 										"parmRegion": {
 											"value": "'@{item()}'",
 											"type": "Expression"
@@ -892,7 +889,7 @@
 			}
 		},
 		"folder": {
-			"name": "InventoryForecast"
+			"name": "ItemForecast"
 		},
 		"annotations": []
 	}
