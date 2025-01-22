@@ -1,5 +1,5 @@
 {
-	"name": "RunBuildData",
+	"name": "RunItemForecast",
 	"properties": {
 		"activities": [
 			{
@@ -68,7 +68,7 @@
 			}
 		],
 		"folder": {
-			"name": "InventoryForecast"
+			"name": "ItemForecast"
 		},
 		"annotations": []
 	}
