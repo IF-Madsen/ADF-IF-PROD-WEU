@@ -134,6 +134,22 @@
 			"type": "string",
 			"defaultValue": "ADF_BlanketPurchaseOrderlines"
 		},
+		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrderLines"
+		},
+		"default_properties_Filename_BlanketPurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrders"
+		},
+		"default_properties_Filename_PurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrderLines"
+		},
+		"default_properties_FileName_PurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrders"
+		},
 		"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-adf-if-weu.vault.azure.net/"
@@ -315,6 +331,22 @@
 				"d365bc_ds_BlanketPurchaseOrderLines": {
 					"type": "string",
 					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
+				},
+				"Filename_BlanketPurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrderLines_value')]"
+				},
+				"Filename_BlanketPurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrders_value')]"
+				},
+				"Filename_PurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_PurchaseOrderLines_value')]"
+				},
+				"FileName_PurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_FileName_PurchaseOrders_value')]"
 				}
 			},
 			"dependsOn": []

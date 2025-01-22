@@ -125,5 +125,21 @@
 	"d365bc_ds_BlanketPurchaseOrderLines": {
 		"type": "string",
 		"value": "ADF_BlanketPurchaseOrderlines"
+	},
+	"Filename_BlanketPurchaseOrderLines": {
+		"type": "string",
+		"value": "BlanketPurchaseOrderLines"
+	},
+	"Filename_BlanketPurchaseOrders": {
+		"type": "string",
+		"value": "BlanketPurchaseOrders"
+	},
+	"Filename_PurchaseOrderLines": {
+		"type": "string",
+		"value": "PurchaseOrderLines"
+	},
+	"FileName_PurchaseOrders": {
+		"type": "string",
+		"value": "PurchaseOrders"
 	}
 }

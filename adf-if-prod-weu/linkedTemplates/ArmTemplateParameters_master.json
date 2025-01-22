@@ -140,6 +140,18 @@
 		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
 			"value": "ADF_BlanketPurchaseOrderlines"
 		},
+		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
+			"value": "BlanketPurchaseOrderLines"
+		},
+		"default_properties_Filename_BlanketPurchaseOrders_value": {
+			"value": "BlanketPurchaseOrders"
+		},
+		"default_properties_Filename_PurchaseOrderLines_value": {
+			"value": "PurchaseOrderLines"
+		},
+		"default_properties_FileName_PurchaseOrders_value": {
+			"value": "PurchaseOrders"
+		},
 		"containerUri": {
 			"value": ""
 		},

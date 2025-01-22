@@ -186,6 +186,22 @@
 			"type": "string",
 			"defaultValue": "ADF_BlanketPurchaseOrderlines"
 		},
+		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrderLines"
+		},
+		"default_properties_Filename_BlanketPurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrders"
+		},
+		"default_properties_Filename_PurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrderLines"
+		},
+		"default_properties_FileName_PurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrders"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -305,6 +321,18 @@
 					},
 					"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
 						"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
+					},
+					"default_properties_Filename_BlanketPurchaseOrderLines_value": {
+						"value": "[parameters('default_properties_Filename_BlanketPurchaseOrderLines_value')]"
+					},
+					"default_properties_Filename_BlanketPurchaseOrders_value": {
+						"value": "[parameters('default_properties_Filename_BlanketPurchaseOrders_value')]"
+					},
+					"default_properties_Filename_PurchaseOrderLines_value": {
+						"value": "[parameters('default_properties_Filename_PurchaseOrderLines_value')]"
+					},
+					"default_properties_FileName_PurchaseOrders_value": {
+						"value": "[parameters('default_properties_FileName_PurchaseOrders_value')]"
 					},
 					"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"

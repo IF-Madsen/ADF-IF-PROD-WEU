@@ -54,7 +54,7 @@
 						"     parmTargetFolder as string,",
 						"     parmRegion as string,",
 						"     parmSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('PurchOrders',$parmRegion,'.parquet'))",
+						"     parmTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
@@ -1304,7 +1304,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -1384,7 +1384,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -1516,7 +1516,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -4017,7 +4017,7 @@
 					}
 				},
 				"folder": {
-					"name": "Development"
+					"name": "ItemForecast"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -4734,7 +4734,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast/ExtractData"
+					"name": "ItemForecast"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -5341,7 +5341,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},

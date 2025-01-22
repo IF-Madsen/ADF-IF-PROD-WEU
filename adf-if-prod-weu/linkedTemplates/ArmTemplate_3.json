@@ -303,14 +303,14 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RunBuildData')]",
+			"name": "[concat(parameters('factoryName'), '/RunItemForecast')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -387,7 +387,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -1222,7 +1222,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "RunBuildData",
+							"referenceName": "RunItemForecast",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -1245,7 +1245,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/RunBuildData')]"
+				"[concat(variables('factoryId'), '/pipelines/RunItemForecast')]"
 			]
 		}
 	]

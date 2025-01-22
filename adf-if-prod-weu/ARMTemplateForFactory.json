@@ -185,6 +185,22 @@
 		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
 			"type": "string",
 			"defaultValue": "ADF_BlanketPurchaseOrderlines"
+		},
+		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrderLines"
+		},
+		"default_properties_Filename_BlanketPurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "BlanketPurchaseOrders"
+		},
+		"default_properties_Filename_PurchaseOrderLines_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrderLines"
+		},
+		"default_properties_FileName_PurchaseOrders_value": {
+			"type": "string",
+			"defaultValue": "PurchaseOrders"
 		}
 	},
 	"variables": {
@@ -646,7 +662,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -1122,7 +1138,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -2450,7 +2466,7 @@
 					}
 				},
 				"folder": {
-					"name": "Development"
+					"name": "ItemForecast"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -3168,7 +3184,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast/ExtractData"
+					"name": "ItemForecast"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-01-23T16:45:34Z"
@@ -3257,7 +3273,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -3266,7 +3282,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RunBuildData')]",
+			"name": "[concat(parameters('factoryName'), '/RunItemForecast')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3343,7 +3359,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -3427,7 +3443,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -3561,7 +3577,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -6180,7 +6196,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "RunBuildData",
+							"referenceName": "RunItemForecast",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -6203,7 +6219,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/RunBuildData')]"
+				"[concat(variables('factoryId'), '/pipelines/RunItemForecast')]"
 			]
 		},
 		{
@@ -7653,7 +7669,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('PurchOrderLines',$parmRegion,'.parquet')\r",
+						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')\r",
 						"),",
 						"     compressionCodec: 'snappy') ~> PurchLines",
 						"source(output(",
@@ -7717,7 +7733,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
+						"     fileName: (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 						"PurchLines aggregate(groupBy(No),",
 						"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
@@ -11327,7 +11343,7 @@
 						"     parmTargetFolder as string,",
 						"     parmRegion as string,",
 						"     parmSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('PurchOrders',$parmRegion,'.parquet'))",
+						"     parmTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
@@ -12476,6 +12492,22 @@
 				"d365bc_ds_BlanketPurchaseOrderLines": {
 					"type": "string",
 					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
+				},
+				"Filename_BlanketPurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrderLines_value')]"
+				},
+				"Filename_BlanketPurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrders_value')]"
+				},
+				"Filename_PurchaseOrderLines": {
+					"type": "string",
+					"value": "[parameters('default_properties_Filename_PurchaseOrderLines_value')]"
+				},
+				"FileName_PurchaseOrders": {
+					"type": "string",
+					"value": "[parameters('default_properties_FileName_PurchaseOrders_value')]"
 				}
 			},
 			"dependsOn": []
