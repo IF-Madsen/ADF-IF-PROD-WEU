@@ -4319,7 +4319,7 @@
 													"type": "Expression"
 												},
 												"parmTargetFolder": {
-													"value": "'@{variables('blobSilver')}'",
+													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
 												"parmRegion": {
@@ -4545,7 +4545,7 @@
 					}
 				},
 				"folder": {
-					"name": "InventoryForecast"
+					"name": "ItemForecast"
 				},
 				"annotations": []
 			},
@@ -7352,6 +7352,116 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Calc_ItemSumSalesGlobal')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "3.Gold"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "EUSales"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "USSales"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "saveGlobalSales"
+						}
+					],
+					"transformations": [
+						{
+							"name": "unionSales"
+						},
+						{
+							"name": "sortSales"
+						},
+						{
+							"name": "joinSales"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     parmSalesFileEU as string ('InventorySumSalesEU.parquet'),",
+						"     parmSalesFileUS as string ('InventorySumSalesUS.parquet'),",
+						"     parmSourceBlob as string ('silver'),",
+						"     parmSourceFolder as string ('d365bc'),",
+						"     parmTargetBlob as string ('gold'),",
+						"     parmTargetFolder as string ('d365bc')",
+						"}",
+						"source(output(",
+						"          Region as string,",
+						"          Item_No as string,",
+						"          EndDate as date,",
+						"          Quantity as decimal(38,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSalesFileEU)) ~> EUSales",
+						"source(output(",
+						"          Region as string,",
+						"          Item_No as string,",
+						"          EndDate as date,",
+						"          Quantity as decimal(38,18)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmSourceBlob),",
+						"     folderPath: ($parmSourceFolder),",
+						"     fileName: ($parmSalesFileUS)) ~> USSales",
+						"EUSales, USSales union(byName: false)~> unionSales",
+						"unionSales sort(asc(Item_No, true),",
+						"     asc(EndDate, true),",
+						"     asc(Region, true)) ~> sortSales",
+						"USSales, EUSales join(USSales@EndDate == EUSales@EndDate,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinSales",
+						"sortSales sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     compressionCodec: 'snappy',",
+						"     partitionFileNames:['\\'ItemSumSalesGlobal.parquet\\''],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> saveGlobalSales"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Calc_PurchItemsSum')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -7543,7 +7653,8 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')),",
+						"     fileName: (concat('PurchOrderLines',$parmRegion,'.parquet')\r",
+						"),",
 						"     compressionCodec: 'snappy') ~> PurchLines",
 						"source(output(",
 						"          Document_Type as string,",
@@ -12236,116 +12347,6 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Calc_ItemSumSalesGlobal')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "3.Gold"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "EUSales"
-						},
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "USSales"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "saveGlobalSales"
-						}
-					],
-					"transformations": [
-						{
-							"name": "unionSales"
-						},
-						{
-							"name": "sortSales"
-						},
-						{
-							"name": "joinSales"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSalesFileEU as string ('InventorySumSalesEU.parquet'),",
-						"     parmSalesFileUS as string ('InventorySumSalesUS.parquet'),",
-						"     parmSourceBlob as string ('silver'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('gold'),",
-						"     parmTargetFolder as string ('d365bc')",
-						"}",
-						"source(output(",
-						"          Region as string,",
-						"          Item_No as string,",
-						"          EndDate as date,",
-						"          Quantity as decimal(38,18)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSalesFileEU)) ~> EUSales",
-						"source(output(",
-						"          Region as string,",
-						"          Item_No as string,",
-						"          EndDate as date,",
-						"          Quantity as decimal(38,18)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSalesFileUS)) ~> USSales",
-						"EUSales, USSales union(byName: false)~> unionSales",
-						"unionSales sort(asc(Item_No, true),",
-						"     asc(EndDate, true),",
-						"     asc(Region, true)) ~> sortSales",
-						"USSales, EUSales join(USSales@EndDate == EUSales@EndDate,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinSales",
-						"sortSales sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'snappy',",
-						"     partitionFileNames:['\\'ItemSumSalesGlobal.parquet\\''],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> saveGlobalSales"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/default')]",
