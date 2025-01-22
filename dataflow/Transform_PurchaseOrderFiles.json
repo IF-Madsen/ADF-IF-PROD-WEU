@@ -38,7 +38,7 @@
 				"     parmTargetFolder as string,",
 				"     parmRegion as string,",
 				"     parmSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
-				"     parmTargetFile as string (concat('PurchOrders',$parmRegion,'.parquet'))",
+				"     parmTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          Document_Type as string,",
