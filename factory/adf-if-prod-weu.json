@@ -136,6 +136,10 @@
 			"Filename_BlanketPurchaseOrders": {
 				"type": "string",
 				"value": "BlanketPurchaseOrders"
+			},
+			"Filename_PurchaseOrderLines": {
+				"type": "string",
+				"value": "PurchaseOrderLines"
 			}
 		}
 	},
