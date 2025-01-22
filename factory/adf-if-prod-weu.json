@@ -140,6 +140,10 @@
 			"Filename_PurchaseOrderLines": {
 				"type": "string",
 				"value": "PurchaseOrderLines"
+			},
+			"FileName_PurchaseOrders": {
+				"type": "string",
+				"value": "PurchaseOrders"
 			}
 		}
 	},
