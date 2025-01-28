@@ -3282,6 +3282,88 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "CalculateInventSum",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_InventorySum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": "'silver'",
+												"parmSourceFolder": "'d365bc'",
+												"parmTargetBlob": "'gold'",
+												"parmTargetFolder": "'d365bc'",
+												"parmSourceFolderJson": "'json'"
+											},
+											"datasetParameters": {
+												"GetAllLedgerPeriods": {},
+												"GetItems": {},
+												"GetInventSumSales": {},
+												"GetInventSumPurch": {},
+												"GetInventSumAdjustPos": {},
+												"GetInventSumAdjustNeg": {},
+												"GetPrimoDate": {},
+												"GetInventoryAssOut": {},
+												"GetInventoryAccCon": {},
+												"GetInventorySumSalesExtCust": {},
+												"saveInventorySum2File": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "ItemForecast"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RunItemForecast')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -3367,88 +3449,6 @@
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
 				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]",
 				"[concat(variables('factoryId'), '/pipelines/TransformDataAll')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "CalculateInventSum",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "Calc_InventorySum",
-											"type": "DataFlowReference",
-											"parameters": {
-												"parmRegion": {
-													"value": "'@{item()}'",
-													"type": "Expression"
-												},
-												"parmSourceBlob": "'silver'",
-												"parmSourceFolder": "'d365bc'",
-												"parmTargetBlob": "'gold'",
-												"parmTargetFolder": "'d365bc'",
-												"parmSourceFolderJson": "'json'"
-											},
-											"datasetParameters": {
-												"GetAllLedgerPeriods": {},
-												"GetItems": {},
-												"GetInventSumSales": {},
-												"GetInventSumPurch": {},
-												"GetInventSumAdjustPos": {},
-												"GetInventSumAdjustNeg": {},
-												"GetPrimoDate": {},
-												"GetInventoryAssOut": {},
-												"GetInventoryAccCon": {},
-												"GetInventorySumSalesExtCust": {},
-												"saveInventorySum2File": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "ItemForecast"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]"
 			]
 		},
 		{
@@ -4343,12 +4343,13 @@
 													"type": "Expression"
 												},
 												"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-												"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+												"parmTargetFile": "concat('BlanketPurchseOrders',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"BlanketPurchOrders": {},
 												"SavePurchOrderFile": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -4403,12 +4404,13 @@
 													"type": "Expression"
 												},
 												"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-												"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+												"parmTargetFilename": "concat('BlanketPurchseLines',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"loadBlanketPurchaseLines": {},
 												"savePurchlines": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -7669,8 +7671,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('PurchaseLines',$parmRegion,'.parquet')\r",
-						"),",
+						"     fileName: (concat('PurchOrderLines',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> PurchLines",
 						"source(output(",
 						"          Document_Type as string,",
@@ -7733,7 +7734,7 @@
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
+						"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 						"PurchLines aggregate(groupBy(No),",
 						"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
@@ -11143,7 +11144,7 @@
 						"     parmTargetBlob as string,",
 						"     parmTargetFolder as string,",
 						"     parmSourceFilename as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
-						"     parmTargetFilename as string (concat('PurchaseLines',$parmRegion,'.parquet'))",
+						"     parmTargetFilename as string (concat('PurchOrderLines',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
@@ -11343,7 +11344,7 @@
 						"     parmTargetFolder as string,",
 						"     parmRegion as string,",
 						"     parmSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
+						"     parmTargetFile as string (concat('PurchOrders',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",

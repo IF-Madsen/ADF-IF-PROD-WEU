@@ -54,7 +54,7 @@
 						"     parmTargetFolder as string,",
 						"     parmRegion as string,",
 						"     parmSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
+						"     parmTargetFile as string (concat('PurchOrders',$parmRegion,'.parquet'))",
 						"}",
 						"source(output(",
 						"          Document_Type as string,",
@@ -2280,12 +2280,13 @@
 													"type": "Expression"
 												},
 												"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-												"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+												"parmTargetFile": "concat('BlanketPurchseOrders',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"BlanketPurchOrders": {},
 												"SavePurchOrderFile": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -2340,12 +2341,13 @@
 													"type": "Expression"
 												},
 												"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-												"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+												"parmTargetFilename": "concat('BlanketPurchseLines',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"loadBlanketPurchaseLines": {},
 												"savePurchlines": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
