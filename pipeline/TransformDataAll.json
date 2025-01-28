@@ -687,7 +687,7 @@
 											"type": "Expression"
 										},
 										"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('BlanketPurchOrders',$parmRegion,'.parquet')"
+										"parmTargetFile": "concat('BlanketPurchseOrders',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -742,7 +742,7 @@
 											"type": "Expression"
 										},
 										"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-										"parmTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+										"parmTargetFilename": "concat('BlanketPurchseLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
