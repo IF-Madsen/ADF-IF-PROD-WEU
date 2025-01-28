@@ -41,7 +41,7 @@
 				"     parmTargetBlob as string,",
 				"     parmTargetFolder as string,",
 				"     parmSourceFilename as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
-				"     parmTargetFilename as string (concat('PurchaseLines',$parmRegion,'.parquet'))",
+				"     parmTargetFilename as string (concat('PurchOrderLines',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          Document_Type as string,",
