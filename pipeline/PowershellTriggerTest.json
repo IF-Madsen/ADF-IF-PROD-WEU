@@ -1,0 +1,30 @@
+{
+	"name": "PowershellTriggerTest",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "TEST",
+					"value": "Ok"
+				}
+			}
+		],
+		"variables": {
+			"TEST": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Development"
+		},
+		"annotations": []
+	}
+}
