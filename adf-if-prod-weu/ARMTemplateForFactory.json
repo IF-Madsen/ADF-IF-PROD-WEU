@@ -3354,6 +3354,11 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"variables": {
+					"TEST": {
+						"type": "String"
+					}
+				},
 				"folder": {
 					"name": "ItemForecast"
 				},
@@ -3439,6 +3444,11 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"TEST": {
+						"type": "String"
+					}
 				},
 				"folder": {
 					"name": "ItemForecast"
@@ -4348,8 +4358,7 @@
 											"datasetParameters": {
 												"BlanketPurchOrders": {},
 												"SavePurchOrderFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -4409,8 +4418,7 @@
 											"datasetParameters": {
 												"loadBlanketPurchaseLines": {},
 												"savePurchlines": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -5393,6 +5401,11 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"variables": {
+					"TEST": {
+						"type": "String"
+					}
+				},
 				"folder": {
 					"name": "Development"
 				},
@@ -6189,7 +6202,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Every week')]",
+			"name": "[concat(parameters('factoryName'), '/Sunday - Every week')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -6213,7 +6226,6 @@
 						"timeZone": "Romance Standard Time",
 						"schedule": {
 							"weekDays": [
-								"Saturday",
 								"Sunday"
 							]
 						}
@@ -12363,6 +12375,42 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PowershellTriggerTest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "TEST",
+							"value": "Ok"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"TEST": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Development"
+				},
+				"annotations": []
+			},
 			"dependsOn": []
 		},
 		{

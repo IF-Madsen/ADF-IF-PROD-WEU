@@ -366,9 +366,6 @@
 					},
 					"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId')]"
-					},
-					"Dataverse_properties_typeProperties_servicePrincipalId": {
-						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},
@@ -387,6 +384,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"Dataverse_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
 					},
 					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"
