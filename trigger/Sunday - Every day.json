@@ -1,5 +1,5 @@
 {
-	"name": "Sunday - Every week",
+	"name": "Sunday - Every day",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
@@ -14,15 +14,10 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Week",
+				"frequency": "Day",
 				"interval": 1,
-				"startTime": "2024-09-05T04:00:00",
-				"timeZone": "Romance Standard Time",
-				"schedule": {
-					"weekDays": [
-						"Sunday"
-					]
-				}
+				"startTime": "2024-09-05T01:00:00",
+				"timeZone": "Romance Standard Time"
 			}
 		}
 	}
