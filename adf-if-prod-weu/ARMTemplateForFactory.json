@@ -3282,6 +3282,42 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PowershellTriggerTest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "TEST",
+							"value": "Ok"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"TEST": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Development"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RunInventSum')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -3353,11 +3389,6 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
 				},
 				"folder": {
 					"name": "ItemForecast"
@@ -3444,11 +3475,6 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
 				},
 				"folder": {
 					"name": "ItemForecast"
@@ -5401,11 +5427,6 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "Development"
 				},
@@ -6202,7 +6223,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Sunday - Every week')]",
+			"name": "[concat(parameters('factoryName'), '/Every day')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -6220,15 +6241,10 @@
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
-						"frequency": "Week",
+						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-09-05T04:00:00",
-						"timeZone": "Romance Standard Time",
-						"schedule": {
-							"weekDays": [
-								"Sunday"
-							]
-						}
+						"startTime": "2024-09-05T01:00:00",
+						"timeZone": "Romance Standard Time"
 					}
 				}
 			},
@@ -10615,7 +10631,9 @@
 						"&& !startsWith(No, \"PREBOX\") ",
 						"&& !startsWith(No, \"ZIP\") ",
 						"&& !startsWith(No, \"FREIGHT\") ",
-						"&& !startsWith(No, \"SQ\")) ~> RemoveTypesBlocked",
+						"&& !startsWith(No, \"SQ\")",
+						"&& !startsWith(Description, \"XX\")",
+						"&& !startsWith(Description, \"ZZ\")) ~> RemoveTypesBlocked",
 						"RemoveTypesBlocked sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
@@ -12375,42 +12393,6 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PowershellTriggerTest')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Set variable1",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"policy": {
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "TEST",
-							"value": "Ok"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Development"
-				},
-				"annotations": []
-			},
 			"dependsOn": []
 		},
 		{

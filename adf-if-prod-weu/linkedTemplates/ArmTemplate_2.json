@@ -1584,11 +1584,6 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "ItemForecast"
 				},

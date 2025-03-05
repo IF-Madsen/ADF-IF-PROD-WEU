@@ -847,11 +847,6 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "ItemForecast"
 				},
@@ -1672,11 +1667,6 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"TEST": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "Development"
 				},
@@ -1687,7 +1677,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Sunday - Every week')]",
+			"name": "[concat(parameters('factoryName'), '/Every day')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1705,15 +1695,10 @@
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
-						"frequency": "Week",
+						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-09-05T04:00:00",
-						"timeZone": "Romance Standard Time",
-						"schedule": {
-							"weekDays": [
-								"Sunday"
-							]
-						}
+						"startTime": "2024-09-05T01:00:00",
+						"timeZone": "Romance Standard Time"
 					}
 				}
 			},
