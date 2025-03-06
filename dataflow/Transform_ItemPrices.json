@@ -86,7 +86,7 @@
 				"          Qty_in_Transit as decimal(38,18),",
 				"          Costing_Method as string,",
 				"          Standard_Cost as double,",
-				"          Unit_Cost as decimal(38,18),",
+				"          Unit_Cost as double,",
 				"          Indirect_Cost_Percent as decimal(38,18),",
 				"          Last_Direct_Cost as decimal(38,18),",
 				"          Net_Invoiced_Qty as decimal(38,18),",
