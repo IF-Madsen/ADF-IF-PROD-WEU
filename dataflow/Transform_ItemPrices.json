@@ -28,9 +28,6 @@
 			"transformations": [
 				{
 					"name": "selectPriceFields"
-				},
-				{
-					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -206,8 +203,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
-				"selectPriceFields filter(ItemNo == 'A6977') ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"selectPriceFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
