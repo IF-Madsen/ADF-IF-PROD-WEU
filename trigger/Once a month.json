@@ -1,5 +1,5 @@
 {
-	"name": "Every day",
+	"name": "Once a month",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
@@ -14,10 +14,18 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Day",
+				"frequency": "Month",
 				"interval": 1,
 				"startTime": "2024-09-05T01:00:00",
-				"timeZone": "Romance Standard Time"
+				"timeZone": "Romance Standard Time",
+				"schedule": {
+					"hours": [
+						4
+					],
+					"monthDays": [
+						20
+					]
+				}
 			}
 		}
 	}
