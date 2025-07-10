@@ -704,6 +704,8 @@
 		"folder": {
 			"name": "Development"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-18T12:38:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

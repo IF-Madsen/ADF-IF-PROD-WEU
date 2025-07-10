@@ -70,6 +70,8 @@
 		"folder": {
 			"name": "ItemForecast"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-22T17:55:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

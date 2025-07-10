@@ -11,5 +11,6 @@
 		"typeProperties": {
 			"entityName": "cr171_itemforecastglobalsums"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

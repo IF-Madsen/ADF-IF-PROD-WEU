@@ -150,7 +150,7 @@
 	"location": "westeurope",
 	"identity": {
 		"type": "SystemAssigned",
-		"principalId": "e1d92bc7-5206-405b-a11f-82de6ca079aa",
+		"principalId": "2a2320ce-556c-4ad4-b7e6-b4ec745b55de",
 		"tenantId": "d4894685-0807-4578-a538-77143ab48788"
 	}
 }

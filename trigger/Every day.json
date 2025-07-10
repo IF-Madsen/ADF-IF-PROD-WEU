@@ -1,0 +1,24 @@
+{
+	"name": "Every day",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "RunItemForecast",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-09-05T01:00:00",
+				"timeZone": "Romance Standard Time"
+			}
+		}
+	}
+}

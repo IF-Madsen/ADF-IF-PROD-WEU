@@ -704,7 +704,7 @@
 			"name": "ItemForecast"
 		},
 		"annotations": [],
-		"lastPublishTime": "2024-01-23T16:45:34Z"
+		"lastPublishTime": "2025-01-22T17:55:18Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

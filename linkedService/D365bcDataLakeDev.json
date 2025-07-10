@@ -1,5 +1,6 @@
 {
 	"name": "D365bcDataLakeDev",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"description": "Datalake for Development",
 		"annotations": [],
