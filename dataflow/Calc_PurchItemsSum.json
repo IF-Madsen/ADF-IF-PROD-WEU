@@ -251,7 +251,7 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
+				"     fileName: (concat('BlanketPurchseLines',$parmRegion,'.parquet')),",
 				"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 				"PurchLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
