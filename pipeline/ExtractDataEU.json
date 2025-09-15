@@ -1459,6 +1459,10 @@
 							"folder": {
 								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
+							},
+							"filename": {
+								"value": "@concat('PostedPurchaseLines',pipeline().parameters.parmRegion)",
+								"type": "Expression"
 							}
 						}
 					}
