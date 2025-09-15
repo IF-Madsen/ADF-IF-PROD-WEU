@@ -43,7 +43,11 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SavePostedPOFile"
+					"name": "SavePostedPOFile",
+					"rejectedDataLinkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"linkedService": {
@@ -114,16 +118,24 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: ($parmSourceFile),",
+				"     fileName: ($parmBlanketPOSourceFile),",
 				"     compressionCodec: 'snappy') ~> BlanketPurchaseOrders",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> PostedPurchaseOrders",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: '$parmSourceFolder',",
+				"     fileName: ($parmPostedPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PostedPurchaseOrders",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> PurchaseOrders",
+				"     format: 'parquet',",
+				"     fileSystem: '$parmSourceBlob',",
+				"     folderPath: '$parmSourceFolder',",
+				"     fileName: ($parmPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PurchaseOrders",
 				"BlanketPurchaseOrders select(mapColumn(",
 				"          Document_Type,",
 				"          No,",
