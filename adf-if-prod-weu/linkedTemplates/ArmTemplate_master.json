@@ -59,149 +59,6 @@
 			"type": "string",
 			"defaultValue": "@{linkedService().ServicePrincipalID}"
 		},
-		"default_properties_ServicePrincipalID_value": {
-			"type": "string",
-			"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
-		},
-		"default_properties_d365bc_Instance_europe_value": {
-			"type": "string",
-			"defaultValue": "ProductionDK"
-		},
-		"default_properties_d365bc_instance_america_value": {
-			"type": "string",
-			"defaultValue": "ProductionUS"
-		},
-		"default_properties_d365bc_apiurl_value": {
-			"type": "string",
-			"defaultValue": "https://api.businesscentral.dynamics.com/"
-		},
-		"default_properties_d365bc_company_europe_value": {
-			"type": "string",
-			"defaultValue": "Company('Iron%20Fortress%20ApS')"
-		},
-		"default_properties_d365bc_company_america_value": {
-			"type": "string",
-			"defaultValue": "Company('My%20Company')"
-		},
-		"default_properties_TenantID_value": {
-			"type": "string",
-			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
-		},
-		"default_properties_d365bc_ds_ItemCard_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemCard"
-		},
-		"default_properties_d365bc_ds_ItemCategories_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemCategories"
-		},
-		"default_properties_d365bc_ds_Vendors_value": {
-			"type": "string",
-			"defaultValue": "ADF_Vendors"
-		},
-		"default_properties_d365bc_ds_PurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "ADF_PurchaseOrders"
-		},
-		"default_properties_d365bc_ds_PurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "ADF_PurchaseOrderLines"
-		},
-		"default_properties_d365bc_ds_VendorPostingGroups_value": {
-			"type": "string",
-			"defaultValue": "ADF_VendorPostingGroups"
-		},
-		"default_properties_d365bc_ds_ItemLedgerEntries_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemLedgerEntries"
-		},
-		"default_properties_blob_bronze_value": {
-			"type": "string",
-			"defaultValue": "bronze"
-		},
-		"default_properties_blob_silver_value": {
-			"type": "string",
-			"defaultValue": "silver"
-		},
-		"default_properties_blob_gold_value": {
-			"type": "string",
-			"defaultValue": "gold"
-		},
-		"default_properties_folder_d365bc_value": {
-			"type": "string",
-			"defaultValue": "d365bc"
-		},
-		"default_properties_folder_json_value": {
-			"type": "string",
-			"defaultValue": "json"
-		},
-		"default_properties_folder_logs_value": {
-			"type": "string",
-			"defaultValue": "logs"
-		},
-		"default_properties_d365bc_vendor_rank_value": {
-			"type": "int",
-			"defaultValue": 30
-		},
-		"default_properties_Region_EU_value": {
-			"type": "string",
-			"defaultValue": "EU"
-		},
-		"default_properties_Region_US_value": {
-			"type": "string",
-			"defaultValue": "US"
-		},
-		"default_properties_d365bc_regions_value": {
-			"type": "string",
-			"defaultValue": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
-		},
-		"default_properties_ExcludeEU_value": {
-			"type": "array",
-			"defaultValue": [
-				"CA",
-				"US"
-			]
-		},
-		"default_properties_ServiceURL_EU_value": {
-			"type": "string",
-			"defaultValue": "https://ironfortressapsdefault.crm4.dynamics.com/"
-		},
-		"default_properties_ServiceURL_US_value": {
-			"type": "string",
-			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
-		},
-		"default_properties_d365bc_ExtCustomer1_value": {
-			"type": "string",
-			"defaultValue": "D00482"
-		},
-		"default_properties_folderExcel_value": {
-			"type": "string",
-			"defaultValue": "excel"
-		},
-		"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "ADF_BlanketPurchaseOrders"
-		},
-		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "ADF_BlanketPurchaseOrderlines"
-		},
-		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "BlanketPurchaseOrderLines"
-		},
-		"default_properties_Filename_BlanketPurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "BlanketPurchaseOrders"
-		},
-		"default_properties_Filename_PurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "PurchaseOrderLines"
-		},
-		"default_properties_FileName_PurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "PurchaseOrders"
-		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -228,111 +85,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"default_properties_ServicePrincipalID_value": {
-						"value": "[parameters('default_properties_ServicePrincipalID_value')]"
-					},
-					"default_properties_d365bc_Instance_europe_value": {
-						"value": "[parameters('default_properties_d365bc_Instance_europe_value')]"
-					},
-					"default_properties_d365bc_instance_america_value": {
-						"value": "[parameters('default_properties_d365bc_instance_america_value')]"
-					},
-					"default_properties_d365bc_apiurl_value": {
-						"value": "[parameters('default_properties_d365bc_apiurl_value')]"
-					},
-					"default_properties_d365bc_company_europe_value": {
-						"value": "[parameters('default_properties_d365bc_company_europe_value')]"
-					},
-					"default_properties_d365bc_company_america_value": {
-						"value": "[parameters('default_properties_d365bc_company_america_value')]"
-					},
-					"default_properties_TenantID_value": {
-						"value": "[parameters('default_properties_TenantID_value')]"
-					},
-					"default_properties_d365bc_ds_ItemCard_value": {
-						"value": "[parameters('default_properties_d365bc_ds_ItemCard_value')]"
-					},
-					"default_properties_d365bc_ds_ItemCategories_value": {
-						"value": "[parameters('default_properties_d365bc_ds_ItemCategories_value')]"
-					},
-					"default_properties_d365bc_ds_Vendors_value": {
-						"value": "[parameters('default_properties_d365bc_ds_Vendors_value')]"
-					},
-					"default_properties_d365bc_ds_PurchaseOrders_value": {
-						"value": "[parameters('default_properties_d365bc_ds_PurchaseOrders_value')]"
-					},
-					"default_properties_d365bc_ds_PurchaseOrderLines_value": {
-						"value": "[parameters('default_properties_d365bc_ds_PurchaseOrderLines_value')]"
-					},
-					"default_properties_d365bc_ds_VendorPostingGroups_value": {
-						"value": "[parameters('default_properties_d365bc_ds_VendorPostingGroups_value')]"
-					},
-					"default_properties_d365bc_ds_ItemLedgerEntries_value": {
-						"value": "[parameters('default_properties_d365bc_ds_ItemLedgerEntries_value')]"
-					},
-					"default_properties_blob_bronze_value": {
-						"value": "[parameters('default_properties_blob_bronze_value')]"
-					},
-					"default_properties_blob_silver_value": {
-						"value": "[parameters('default_properties_blob_silver_value')]"
-					},
-					"default_properties_blob_gold_value": {
-						"value": "[parameters('default_properties_blob_gold_value')]"
-					},
-					"default_properties_folder_d365bc_value": {
-						"value": "[parameters('default_properties_folder_d365bc_value')]"
-					},
-					"default_properties_folder_json_value": {
-						"value": "[parameters('default_properties_folder_json_value')]"
-					},
-					"default_properties_folder_logs_value": {
-						"value": "[parameters('default_properties_folder_logs_value')]"
-					},
-					"default_properties_d365bc_vendor_rank_value": {
-						"value": "[parameters('default_properties_d365bc_vendor_rank_value')]"
-					},
-					"default_properties_Region_EU_value": {
-						"value": "[parameters('default_properties_Region_EU_value')]"
-					},
-					"default_properties_Region_US_value": {
-						"value": "[parameters('default_properties_Region_US_value')]"
-					},
-					"default_properties_d365bc_regions_value": {
-						"value": "[parameters('default_properties_d365bc_regions_value')]"
-					},
-					"default_properties_ExcludeEU_value": {
-						"value": "[parameters('default_properties_ExcludeEU_value')]"
-					},
-					"default_properties_ServiceURL_EU_value": {
-						"value": "[parameters('default_properties_ServiceURL_EU_value')]"
-					},
-					"default_properties_ServiceURL_US_value": {
-						"value": "[parameters('default_properties_ServiceURL_US_value')]"
-					},
-					"default_properties_d365bc_ExtCustomer1_value": {
-						"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
-					},
-					"default_properties_folderExcel_value": {
-						"value": "[parameters('default_properties_folderExcel_value')]"
-					},
-					"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
-						"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrders_value')]"
-					},
-					"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
-						"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
-					},
-					"default_properties_Filename_BlanketPurchaseOrderLines_value": {
-						"value": "[parameters('default_properties_Filename_BlanketPurchaseOrderLines_value')]"
-					},
-					"default_properties_Filename_BlanketPurchaseOrders_value": {
-						"value": "[parameters('default_properties_Filename_BlanketPurchaseOrders_value')]"
-					},
-					"default_properties_Filename_PurchaseOrderLines_value": {
-						"value": "[parameters('default_properties_Filename_PurchaseOrderLines_value')]"
-					},
-					"default_properties_FileName_PurchaseOrders_value": {
-						"value": "[parameters('default_properties_FileName_PurchaseOrders_value')]"
 					},
 					"AzureKeyVaultProd_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultProd_properties_typeProperties_baseUrl')]"
@@ -366,6 +118,9 @@
 					},
 					"D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('D365bcConnector_IFE_PROD_properties_typeProperties_servicePrincipalId')]"
+					},
+					"Dataverse_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},
@@ -384,9 +139,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"Dataverse_properties_typeProperties_servicePrincipalId": {
-						"value": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]"
 					},
 					"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId')]"

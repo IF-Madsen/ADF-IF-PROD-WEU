@@ -58,149 +58,6 @@
 		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "@{linkedService().ServicePrincipalID}"
-		},
-		"default_properties_ServicePrincipalID_value": {
-			"type": "string",
-			"defaultValue": "7b1647b5-d439-422d-ad72-779b8d13fa50"
-		},
-		"default_properties_d365bc_Instance_europe_value": {
-			"type": "string",
-			"defaultValue": "ProductionDK"
-		},
-		"default_properties_d365bc_instance_america_value": {
-			"type": "string",
-			"defaultValue": "ProductionUS"
-		},
-		"default_properties_d365bc_apiurl_value": {
-			"type": "string",
-			"defaultValue": "https://api.businesscentral.dynamics.com/"
-		},
-		"default_properties_d365bc_company_europe_value": {
-			"type": "string",
-			"defaultValue": "Company('Iron%20Fortress%20ApS')"
-		},
-		"default_properties_d365bc_company_america_value": {
-			"type": "string",
-			"defaultValue": "Company('My%20Company')"
-		},
-		"default_properties_TenantID_value": {
-			"type": "string",
-			"defaultValue": "d4894685-0807-4578-a538-77143ab48788"
-		},
-		"default_properties_d365bc_ds_ItemCard_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemCard"
-		},
-		"default_properties_d365bc_ds_ItemCategories_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemCategories"
-		},
-		"default_properties_d365bc_ds_Vendors_value": {
-			"type": "string",
-			"defaultValue": "ADF_Vendors"
-		},
-		"default_properties_d365bc_ds_PurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "ADF_PurchaseOrders"
-		},
-		"default_properties_d365bc_ds_PurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "ADF_PurchaseOrderLines"
-		},
-		"default_properties_d365bc_ds_VendorPostingGroups_value": {
-			"type": "string",
-			"defaultValue": "ADF_VendorPostingGroups"
-		},
-		"default_properties_d365bc_ds_ItemLedgerEntries_value": {
-			"type": "string",
-			"defaultValue": "ADF_ItemLedgerEntries"
-		},
-		"default_properties_blob_bronze_value": {
-			"type": "string",
-			"defaultValue": "bronze"
-		},
-		"default_properties_blob_silver_value": {
-			"type": "string",
-			"defaultValue": "silver"
-		},
-		"default_properties_blob_gold_value": {
-			"type": "string",
-			"defaultValue": "gold"
-		},
-		"default_properties_folder_d365bc_value": {
-			"type": "string",
-			"defaultValue": "d365bc"
-		},
-		"default_properties_folder_json_value": {
-			"type": "string",
-			"defaultValue": "json"
-		},
-		"default_properties_folder_logs_value": {
-			"type": "string",
-			"defaultValue": "logs"
-		},
-		"default_properties_d365bc_vendor_rank_value": {
-			"type": "int",
-			"defaultValue": 30
-		},
-		"default_properties_Region_EU_value": {
-			"type": "string",
-			"defaultValue": "EU"
-		},
-		"default_properties_Region_US_value": {
-			"type": "string",
-			"defaultValue": "US"
-		},
-		"default_properties_d365bc_regions_value": {
-			"type": "string",
-			"defaultValue": "pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US"
-		},
-		"default_properties_ExcludeEU_value": {
-			"type": "array",
-			"defaultValue": [
-				"CA",
-				"US"
-			]
-		},
-		"default_properties_ServiceURL_EU_value": {
-			"type": "string",
-			"defaultValue": "https://ironfortressapsdefault.crm4.dynamics.com/"
-		},
-		"default_properties_ServiceURL_US_value": {
-			"type": "string",
-			"defaultValue": "'https://ironfortressinc.crm4.dynamics.com/'"
-		},
-		"default_properties_d365bc_ExtCustomer1_value": {
-			"type": "string",
-			"defaultValue": "D00482"
-		},
-		"default_properties_folderExcel_value": {
-			"type": "string",
-			"defaultValue": "excel"
-		},
-		"default_properties_d365bc_ds_BlanketPurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "ADF_BlanketPurchaseOrders"
-		},
-		"default_properties_d365bc_ds_BlanketPurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "ADF_BlanketPurchaseOrderlines"
-		},
-		"default_properties_Filename_BlanketPurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "BlanketPurchaseOrderLines"
-		},
-		"default_properties_Filename_BlanketPurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "BlanketPurchaseOrders"
-		},
-		"default_properties_Filename_PurchaseOrderLines_value": {
-			"type": "string",
-			"defaultValue": "PurchaseOrderLines"
-		},
-		"default_properties_FileName_PurchaseOrders_value": {
-			"type": "string",
-			"defaultValue": "PurchaseOrders"
 		}
 	},
 	"variables": {
@@ -664,7 +521,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
@@ -717,7 +575,8 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2024-11-07T15:59:31Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]"
@@ -886,7 +745,8 @@
 				"annotations": [
 					"copyFiles",
 					"dev"
-				]
+				],
+				"lastPublishTime": "2024-10-07T16:57:40Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/BinarySourceFileStore')]",
@@ -1140,7 +1000,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataEU')]",
@@ -2450,6 +2311,178 @@
 								}
 							}
 						]
+					},
+					{
+						"name": "PostedPuchaseOrders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Vendors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_EU",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": "@pipeline().globalParameters.d365bc_company_europe",
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_PostedPurchaseOrders",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": "@pipeline().globalParameters.blob_bronze",
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": {
+										"value": "@concat('PostedPurchaseOrders',pipeline().parameters.parmRegion)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "PostedPurcahseLines",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "PostedPuchaseOrders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_EU",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_europe",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": {
+										"value": "@concat('PostedPurchaseLines',pipeline().parameters.parmRegion)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -2469,7 +2502,7 @@
 					"name": "ItemForecast"
 				},
 				"annotations": [],
-				"lastPublishTime": "2024-01-23T16:45:34Z"
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_OData_EU')]",
@@ -3170,6 +3203,169 @@
 								}
 							}
 						]
+					},
+					{
+						"name": "Posted Purchase Orders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Vendors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": "@pipeline().parameters.parmRegion"
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_US",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": {
+										"value": "@pipeline().globalParameters.d365bc_company_america",
+										"type": "Expression"
+									},
+									"apipath": {
+										"value": "@pipeline().globalParameters.d365bc_ds_PostedPurchaseOrders",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "@concat('PostedPurchaseOrders',pipeline().parameters.parmRegion)"
+								}
+							}
+						]
+					},
+					{
+						"name": "PostedPurchaseOrders",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Posted Purchase Orders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ODataSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy",
+									"metadata": [
+										{
+											"name": "Region",
+											"value": "@pipeline().parameters.parmRegion"
+										},
+										{
+											"name": "Loaded",
+											"value": {
+												"value": "@pipeline().parameters.parmLoaded",
+												"type": "Expression"
+											}
+										}
+									]
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_OData_US",
+								"type": "DatasetReference",
+								"parameters": {
+									"company": "@pipeline().globalParameters.d365bc_company_america",
+									"apipath": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": {
+										"value": "@concat('PostedPurchaseLines',pipeline().parameters.parmRegion)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -3187,7 +3383,7 @@
 					"name": "ItemForecast"
 				},
 				"annotations": [],
-				"lastPublishTime": "2024-01-23T16:45:34Z"
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_OData_US')]",
@@ -3275,7 +3471,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Extract_PrimoDate')]"
@@ -3313,7 +3510,8 @@
 				"folder": {
 					"name": "Development"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-29T08:47:59Z"
 			},
 			"dependsOn": []
 		},
@@ -3393,7 +3591,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]"
@@ -3479,7 +3678,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:19Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
@@ -3615,7 +3815,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Merge_RegionInventories')]"
@@ -4599,7 +4800,8 @@
 				"folder": {
 					"name": "ItemForecast"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-28T12:05:04Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Transform_ItemReorderInterval')]",
@@ -5430,7 +5632,8 @@
 				"folder": {
 					"name": "Development"
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-01-18T12:38:11Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
@@ -6245,6 +6448,44 @@
 						"interval": 1,
 						"startTime": "2024-09-05T01:00:00",
 						"timeZone": "Romance Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/RunItemForecast')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Once a month')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "RunItemForecast",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Month",
+						"interval": 1,
+						"startTime": "2024-09-05T01:00:00",
+						"timeZone": "Romance Standard Time",
+						"schedule": {
+							"hours": [
+								4
+							],
+							"monthDays": [
+								20
+							]
+						}
 					}
 				}
 			},
@@ -7758,11 +7999,11 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
+						"     ignoreNoFilesFound: true,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmSourceBlob),",
 						"     folderPath: ($parmSourceFolder),",
-						"     fileName: (concat('BlanketPurchLines',$parmRegion,'.parquet')),",
+						"     fileName: (concat('BlanketPurchseLines',$parmRegion,'.parquet')),",
 						"     compressionCodec: 'snappy') ~> BlanketPurchLines",
 						"PurchLines aggregate(groupBy(No),",
 						"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
@@ -12393,154 +12634,6 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default')]",
-			"type": "Microsoft.DataFactory/factories/globalparameters",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"ServicePrincipalID": {
-					"type": "string",
-					"value": "[parameters('default_properties_ServicePrincipalID_value')]"
-				},
-				"d365bc_Instance_europe": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_Instance_europe_value')]"
-				},
-				"d365bc_instance_america": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_instance_america_value')]"
-				},
-				"d365bc_apiurl": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_apiurl_value')]"
-				},
-				"d365bc_company_europe": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_company_europe_value')]"
-				},
-				"d365bc_company_america": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_company_america_value')]"
-				},
-				"TenantID": {
-					"type": "string",
-					"value": "[parameters('default_properties_TenantID_value')]"
-				},
-				"d365bc_ds_ItemCard": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_ItemCard_value')]"
-				},
-				"d365bc_ds_ItemCategories": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_ItemCategories_value')]"
-				},
-				"d365bc_ds_Vendors": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_Vendors_value')]"
-				},
-				"d365bc_ds_PurchaseOrders": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrders_value')]"
-				},
-				"d365bc_ds_PurchaseOrderLines": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_PurchaseOrderLines_value')]"
-				},
-				"d365bc_ds_VendorPostingGroups": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_VendorPostingGroups_value')]"
-				},
-				"d365bc_ds_ItemLedgerEntries": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_ItemLedgerEntries_value')]"
-				},
-				"blob_bronze": {
-					"type": "string",
-					"value": "[parameters('default_properties_blob_bronze_value')]"
-				},
-				"blob_silver": {
-					"type": "string",
-					"value": "[parameters('default_properties_blob_silver_value')]"
-				},
-				"blob_gold": {
-					"type": "string",
-					"value": "[parameters('default_properties_blob_gold_value')]"
-				},
-				"folder_d365bc": {
-					"type": "string",
-					"value": "[parameters('default_properties_folder_d365bc_value')]"
-				},
-				"folder_json": {
-					"type": "string",
-					"value": "[parameters('default_properties_folder_json_value')]"
-				},
-				"folder_logs": {
-					"type": "string",
-					"value": "[parameters('default_properties_folder_logs_value')]"
-				},
-				"d365bc_vendor_rank": {
-					"type": "int",
-					"value": "[parameters('default_properties_d365bc_vendor_rank_value')]"
-				},
-				"Region_EU": {
-					"type": "string",
-					"value": "[parameters('default_properties_Region_EU_value')]"
-				},
-				"Region_US": {
-					"type": "string",
-					"value": "[parameters('default_properties_Region_US_value')]"
-				},
-				"d365bc_regions": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_regions_value')]"
-				},
-				"ExcludeEU": {
-					"type": "array",
-					"value": "[parameters('default_properties_ExcludeEU_value')]"
-				},
-				"ServiceURL_EU": {
-					"type": "string",
-					"value": "[parameters('default_properties_ServiceURL_EU_value')]"
-				},
-				"ServiceURL_US": {
-					"type": "string",
-					"value": "[parameters('default_properties_ServiceURL_US_value')]"
-				},
-				"d365bc_ExtCustomer1": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ExtCustomer1_value')]"
-				},
-				"folderExcel": {
-					"type": "string",
-					"value": "[parameters('default_properties_folderExcel_value')]"
-				},
-				"d365bc_ds_BlanketPurchaseOrders": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrders_value')]"
-				},
-				"d365bc_ds_BlanketPurchaseOrderLines": {
-					"type": "string",
-					"value": "[parameters('default_properties_d365bc_ds_BlanketPurchaseOrderLines_value')]"
-				},
-				"Filename_BlanketPurchaseOrderLines": {
-					"type": "string",
-					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrderLines_value')]"
-				},
-				"Filename_BlanketPurchaseOrders": {
-					"type": "string",
-					"value": "[parameters('default_properties_Filename_BlanketPurchaseOrders_value')]"
-				},
-				"Filename_PurchaseOrderLines": {
-					"type": "string",
-					"value": "[parameters('default_properties_Filename_PurchaseOrderLines_value')]"
-				},
-				"FileName_PurchaseOrders": {
-					"type": "string",
-					"value": "[parameters('default_properties_FileName_PurchaseOrders_value')]"
-				}
-			},
 			"dependsOn": []
 		}
 	]
