@@ -13,7 +13,21 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "BlanketPurchOrders"
+					"name": "BlanketPurchaseOrders"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "PostedPurchaseOrders"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "PurchaseOrders"
 				}
 			],
 			"sinks": [
@@ -22,12 +36,32 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SavePurchOrderFile"
+					"name": "SaveBlanketPOFile"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePostedPOFile"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePOFile"
 				}
 			],
 			"transformations": [
 				{
-					"name": "PurchOrderFields"
+					"name": "BlanketPOFields"
+				},
+				{
+					"name": "PostedPOFields"
+				},
+				{
+					"name": "POFields"
 				}
 			],
 			"scriptLines": [
@@ -37,8 +71,12 @@
 				"     ParmTargetBlob as string,",
 				"     parmTargetFolder as string,",
 				"     parmRegion as string,",
-				"     parmSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
-				"     parmTargetFile as string (concat('BlanketPurchOrders',$parmRegion,'.parquet'))",
+				"     parmBlanketPOSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmBlanketPOTargetFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPostedPOSourceFile as string (concat('PostedPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPostedPOTargetFile as string (concat('PostedPurchOrders',$parmRegion,'.parquet')),",
+				"     parmPOSourceFile as string (concat('PurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPOTargetFile as string (concat('PurchaseOrders',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          Document_Type as string,",
@@ -77,8 +115,16 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ($parmSourceFile),",
-				"     compressionCodec: 'snappy') ~> BlanketPurchOrders",
-				"BlanketPurchOrders select(mapColumn(",
+				"     compressionCodec: 'snappy') ~> BlanketPurchaseOrders",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> PostedPurchaseOrders",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> PurchaseOrders",
+				"BlanketPurchaseOrders select(mapColumn(",
 				"          Document_Type,",
 				"          No,",
 				"          Buy_from_Vendor_No,",
@@ -109,20 +155,50 @@
 				"          CDO_Output_Profile",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> PurchOrderFields",
-				"PurchOrderFields sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> BlanketPOFields",
+				"PostedPurchaseOrders select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> PostedPOFields",
+				"PurchaseOrders select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> POFields",
+				"BlanketPOFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($ParmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[($parmTargetFile)],",
+				"     partitionFileNames:[($parmBlanketPOTargetFile)],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SavePurchOrderFile"
+				"     partitionBy('hash', 1)) ~> SaveBlanketPOFile",
+				"PostedPOFields sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: '$ParmTargetBlob',",
+				"     folderPath: '$parmTargetFolder',",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['$parmPostedPOTargetFile'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePostedPOFile",
+				"POFields sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: '$ParmTargetBlob',",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[($parmPOTargetFile)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePOFile"
 			]
 		}
 	}
