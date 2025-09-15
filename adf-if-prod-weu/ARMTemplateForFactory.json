@@ -3236,7 +3236,10 @@
 									"metadata": [
 										{
 											"name": "Region",
-											"value": "@pipeline().parameters.parmRegion"
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
 										},
 										{
 											"name": "Loaded",
@@ -3319,7 +3322,10 @@
 									"metadata": [
 										{
 											"name": "Region",
-											"value": "@pipeline().parameters.parmRegion"
+											"value": {
+												"value": "@pipeline().parameters.parmRegion",
+												"type": "Expression"
+											}
 										},
 										{
 											"name": "Loaded",
