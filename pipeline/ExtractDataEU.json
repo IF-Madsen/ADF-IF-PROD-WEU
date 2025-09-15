@@ -1297,7 +1297,7 @@
 				]
 			},
 			{
-				"name": "Posted Puchase Orders",
+				"name": "PostedPuchaseOrders",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -1323,7 +1323,24 @@
 					"sink": {
 						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -1363,11 +1380,11 @@
 				]
 			},
 			{
-				"name": "Posted Purcahse Lines",
+				"name": "PostedPurcahseLines",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Posted Puchase Orders",
+						"activity": "PostedPuchaseOrders",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1386,6 +1403,32 @@
 						"type": "ODataSource",
 						"httpRequestTimeout": "00:05:00"
 					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy",
+							"metadata": [
+								{
+									"name": "Region",
+									"value": {
+										"value": "@pipeline().parameters.parmRegion",
+										"type": "Expression"
+									}
+								},
+								{
+									"name": "Loaded",
+									"value": {
+										"value": "@pipeline().parameters.parmLoaded",
+										"type": "Expression"
+									}
+								}
+							]
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
 					"enableStaging": false
 				},
 				"inputs": [
@@ -1399,6 +1442,22 @@
 							},
 							"apipath": {
 								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_bronze",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
 								"type": "Expression"
 							}
 						}

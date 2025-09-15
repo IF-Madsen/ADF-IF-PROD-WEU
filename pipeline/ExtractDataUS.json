@@ -847,7 +847,7 @@
 								"type": "Expression"
 							},
 							"filename": {
-								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"value": "@concat('PostedPurchaseLines',pipeline().parameters.parmRegion)",
 								"type": "Expression"
 							}
 						}
