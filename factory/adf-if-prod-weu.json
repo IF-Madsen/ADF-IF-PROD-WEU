@@ -144,6 +144,10 @@
 			"FileName_PurchaseOrders": {
 				"type": "string",
 				"value": "PurchaseOrders"
+			},
+			"d365bc_ds_PostedPurchaseOrders": {
+				"type": "string",
+				"value": "ADF_PostedPurcahseOrders"
 			}
 		}
 	},
