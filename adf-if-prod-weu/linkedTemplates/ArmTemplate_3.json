@@ -13,6 +13,610 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/TransferGlobal2Dataverse')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "3.Gold"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GlobalItemParquet"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GlobalSumsParquet"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Dataverse_ItemForecastGlobalItems",
+								"type": "DatasetReference"
+							},
+							"name": "GlobalItemDataverse",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "Dataverse_ItemForecastGlobalSum",
+								"type": "DatasetReference"
+							},
+							"name": "GlobalSumDataverse"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorNo as string,",
+						"          Name as string,",
+						"          ItemNo as string,",
+						"          ItemDescription as string,",
+						"          UnitCostPrice as double,",
+						"          ItemCategoryDescription as string,",
+						"          ItemCategoryCode as string,",
+						"          Hash as long",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'gold',",
+						"     folderPath: 'd365bc',",
+						"     fileName: 'globalItemsAll.parquet',",
+						"     compressionCodec: 'snappy') ~> GlobalItemParquet",
+						"source(output(",
+						"          ItemNo as string,",
+						"          StartDate as date,",
+						"          EndDate as date,",
+						"          InStockEU as double,",
+						"          InStockUS as double,",
+						"          SoldEU as double,",
+						"          SoldUS as double,",
+						"          TransitEU as double,",
+						"          TransitUS as double,",
+						"          ItemCategoryCode as string,",
+						"          InStockAll as double,",
+						"          SoldAll as double,",
+						"          TransitAll as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'gold',",
+						"     folderPath: 'd365bc',",
+						"     fileName: 'globalSummesAll.parquet') ~> GlobalSumsParquet",
+						"GlobalItemParquet alterRow() ~> AlterRow1",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          cr171_vendorno = VendorNo,",
+						"          cr171_name = Name,",
+						"          cr171_itemno = ItemNo,",
+						"          cr171_itemdescription = ItemDescription,",
+						"          cr171_unitcostprice = UnitCostPrice,",
+						"          cr171_itemcategorydescription = ItemCategoryDescription,",
+						"          cr171_itemcategorycode = ItemCategoryCode",
+						"     )) ~> GlobalItemDataverse",
+						"GlobalSumsParquet sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
+						"     mapColumn(",
+						"          cr171_itemno = ItemNo,",
+						"          cr171_startdate = StartDate,",
+						"          cr171_enddate = EndDate,",
+						"          cr171_instockeu = InStockEU,",
+						"          cr171_instockus = InStockUS,",
+						"          cr171_soldeu = SoldEU,",
+						"          cr171_soldus = SoldUS,",
+						"          cr171_transiteu = TransitEU,",
+						"          cr171_transitus = TransitUS,",
+						"          cr171_itemcategorycode = ItemCategoryCode,",
+						"          cr171_instockall = InStockAll,",
+						"          cr171_soldall = SoldAll,",
+						"          cr171_transitall = TransitAll",
+						"     )) ~> GlobalSumDataverse"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CalculateDataAll')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Region",
+						"description": "",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Set folder Json",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set folder d365bc",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set blob Gold",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set blob Silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Calculate Inventory Sum",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_InventorySum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolderJson": {
+													"value": "'@{variables('folderJson')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"GetAllLedgerPeriods": {},
+												"GetItems": {},
+												"GetInventSumSales": {},
+												"GetInventSumPurch": {},
+												"GetInventSumAdjustPos": {},
+												"GetInventSumAdjustNeg": {},
+												"GetPrimoDate": {},
+												"GetInventoryAssOut": {},
+												"GetInventoryAccCon": {},
+												"GetInventorySumSalesExtCust": {},
+												"saveInventorySum2File": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Calculate Vendor Items",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Calculate Inventory Sum",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_VendorsItemsFiltered",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceJsonFolder": {
+													"value": "'@{variables('folderJson')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"LoadItems": {},
+												"ItemCategoriesGroups": {},
+												"TopRankVendors": {},
+												"saveFile": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Calculate Purchase Orders",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Calculate Vendor Items",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_PurchItemsSum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"PurchLines": {},
+												"BlanketPurchLines": {},
+												"SavePurchItemSum": {},
+												"saveBlanketPurchSum": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set blob Silver",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "blobSilver",
+							"value": {
+								"value": "@pipeline().globalParameters.blob_silver",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set folder d365bc",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "folderD365bc",
+							"value": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set blob Gold",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "blobGold",
+							"value": {
+								"value": "@pipeline().globalParameters.blob_gold",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set folder Json",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "folderJson",
+							"value": {
+								"value": "@pipeline().globalParameters.folder_json",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Execute Merge",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Region",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "RunMergeRegions",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Calc_GlobalData",
+						"description": "Calculate ",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Execute Merge",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Calc_InventorySumGlobal",
+								"type": "DataFlowReference",
+								"parameters": {
+									"parmSourceBlob": {
+										"value": "'@{variables('blobGold')}'",
+										"type": "Expression"
+									},
+									"parmSourceFolder": {
+										"value": "'@{variables('folderD365bc')}'",
+										"type": "Expression"
+									},
+									"parmTargetBlob": {
+										"value": "'@{variables('blobGold')}'",
+										"type": "Expression"
+									},
+									"parmTargetFolder": {
+										"value": "'@{variables('folderD365bc')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"InventorySumEU": {},
+									"InventorySumUS": {},
+									"Items": {},
+									"ItemPrices": {},
+									"TransitEU": {},
+									"TransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
+									"SaveGlobalItems": {},
+									"SaveGlobalInventorySum": {},
+									"SaveGlobalPurchases": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Copy2Dataverse",
+						"description": "Copy Global Data to Dataverse",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [
+							{
+								"activity": "Calc_GlobalData",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransferGlobal2Dataverse",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"GlobalItemParquet": {},
+									"GlobalSumsParquet": {},
+									"GlobalItemDataverse": {},
+									"GlobalSumDataverse": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"blobSilver": {
+						"type": "String",
+						"defaultValue": "'silver'"
+					},
+					"blobGold": {
+						"type": "String",
+						"defaultValue": "'gold'"
+					},
+					"folderD365bc": {
+						"type": "String",
+						"defaultValue": "'d365bc'"
+					},
+					"folderJson": {
+						"type": "String",
+						"defaultValue": "'json'"
+					}
+				},
+				"folder": {
+					"name": "ItemForecast"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CopyDataToDataverse_TEST')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -57,7 +661,9 @@
 				"annotations": [],
 				"lastPublishTime": "2024-11-07T15:59:31Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ExtractDataAll')]",
@@ -395,7 +1001,8 @@
 				"lastPublishTime": "2025-01-22T17:55:19Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]"
+				"[concat(variables('factoryId'), '/pipelines/ExtractDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]"
 			]
 		},
 		{
@@ -1214,7 +1821,10 @@
 				"annotations": [],
 				"lastPublishTime": "2025-01-18T12:38:11Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]",
+				"[concat(variables('factoryId'), '/pipelines/CalculateDataAll')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Every day')]",
