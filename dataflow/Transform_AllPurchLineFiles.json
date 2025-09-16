@@ -42,10 +42,26 @@
 					}
 				},
 				{
-					"name": "SavePostedPOLinesFile"
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePostedPOLinesFile",
+					"rejectedDataLinkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
-					"name": "SavePOLinesFile"
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePOLinesFile",
+					"rejectedDataLinkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -136,16 +152,20 @@
 				"     compressionCodec: 'snappy') ~> BlanketPurchaseLines",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
+				"     ignoreNoFilesFound: true,",
 				"     format: 'parquet',",
 				"     fileSystem: '$parmSourceBlob',",
-				"     folderPath: '$parmSourceFolder') ~> PostedPurchaseLines",
+				"     folderPath: '$parmSourceFolder',",
+				"     fileName: ($parmPostedPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PostedPurchaseLines",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
+				"     ignoreNoFilesFound: true,",
 				"     format: 'parquet',",
 				"     fileSystem: '$parmSourceBlob',",
-				"     folderPath: '$parmSourceFolder') ~> PurchaseLines",
+				"     folderPath: '$parmSourceFolder',",
+				"     fileName: ($parmPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PurchaseLines",
 				"BlanketPurchaseLines select(mapColumn(",
 				"          each(match(/* All input columns */true()),",
 				"               /* Input name */$$ = $$)",
@@ -172,12 +192,30 @@
 				"     partitionBy('hash', 1)) ~> SaveBlanketPOLinesFile",
 				"selectPostedFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[($parmPOTargetFile)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SavePostedPOLinesFile",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePostedPOLinesFile",
 				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[($parmPOTargetFile)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SavePOLinesFile"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePOLinesFile"
 			]
 		}
 	}
