@@ -43,7 +43,14 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "saveBlanketPurchSum"
+					"name": "SaveBlanketPurchSum"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SavePostedPurchItemSum"
 				}
 			],
 			"transformations": [
@@ -314,7 +321,20 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> saveBlanketPurchSum"
+				"     partitionBy('hash', 1)) ~> SaveBlanketPurchSum",
+				"SumPostedItemsQty sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:[(concat('PostedPurchItemSum',$parmRegion,'.parquet'))],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SavePostedPurchItemSum"
 			]
 		}
 	}
