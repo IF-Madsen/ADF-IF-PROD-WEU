@@ -2524,7 +2524,8 @@
 												"SaveBlanketPOFile": {},
 												"SavePostedPOFile": {},
 												"SavePOFile": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -2539,7 +2540,7 @@
 									"type": "ExecuteDataFlow",
 									"dependsOn": [
 										{
-											"activity": "All Purchase Orders",
+											"activity": "Create Top Rank Vendors",
 											"dependencyConditions": [
 												"Succeeded"
 											]

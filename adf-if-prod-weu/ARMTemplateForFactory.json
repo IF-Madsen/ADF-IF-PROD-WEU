@@ -4482,7 +4482,8 @@
 												"SaveBlanketPOFile": {},
 												"SavePostedPOFile": {},
 												"SavePOFile": {}
-											}
+											},
+											"linkedServiceParameters": {}
 										},
 										"staging": {},
 										"compute": {
@@ -4497,7 +4498,7 @@
 									"type": "ExecuteDataFlow",
 									"dependsOn": [
 										{
-											"activity": "All Purchase Orders",
+											"activity": "Create Top Rank Vendors",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -10084,7 +10085,7 @@
 						"POFields sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
-						"     fileSystem: '$ParmTargetBlob',",
+						"     fileSystem: ($ParmTargetBlob),",
 						"     folderPath: ($parmTargetFolder),",
 						"     compressionCodec: 'snappy',",
 						"     partitionFileNames:[($parmPOTargetFile)],",
