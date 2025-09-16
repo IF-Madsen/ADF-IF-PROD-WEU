@@ -13,14 +13,21 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "PurchLines"
+					"name": "PurchaseLines"
 				},
 				{
 					"linkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "BlanketPurchLines"
+					"name": "BlanketPurchaseLines"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "PostedPurchaseLines"
 				}
 			],
 			"sinks": [
@@ -59,7 +66,13 @@
 				"     parmSourceBlob as string,",
 				"     parmSourceFolder as string,",
 				"     parmTargetBlob as string,",
-				"     parmTargetFolder as string",
+				"     parmTargetFolder as string,",
+				"     parmBlanketPOSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmBlanketPOTargetFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPostedPOSourceFile as string (concat('PostedPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPostedPOTargetFile as string (concat('PostedPurchaseOrders',$parmRegion,'.parquet')),",
+				"     parmPOSourceFile as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
+				"     parmPOTargetFile as string (concat('PurchaseLines',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          Document_Type as string,",
@@ -188,8 +201,8 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: (concat('PurchOrderLines',$parmRegion,'.parquet')),",
-				"     compressionCodec: 'snappy') ~> PurchLines",
+				"     fileName: ($parmPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PurchaseLines",
 				"source(output(",
 				"          Document_Type as string,",
 				"          Document_No as string,",
@@ -252,11 +265,19 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: (concat('BlanketPurchseLines',$parmRegion,'.parquet')),",
-				"     compressionCodec: 'snappy') ~> BlanketPurchLines",
-				"PurchLines aggregate(groupBy(No),",
+				"     compressionCodec: 'snappy') ~> BlanketPurchaseLines",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: ($parmPostedPOSourceFile),",
+				"     compressionCodec: 'snappy') ~> PostedPurchaseLines",
+				"PurchaseLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
 				"SumTransitItemsQty filter(No>'') ~> RemoveBlanks",
-				"BlanketPurchLines aggregate(groupBy(No),",
+				"BlanketPurchaseLines aggregate(groupBy(No),",
 				"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
 				"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
 				"RemoveBlanks sink(allowSchemaDrift: true,",
