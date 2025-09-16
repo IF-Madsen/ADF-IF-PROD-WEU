@@ -562,15 +562,15 @@
 											"type": "Expression"
 										},
 										"parmSourceFolder": {
-											"value": "'@{variables('folderD365bc')}'",
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 											"type": "Expression"
 										},
 										"ParmTargetBlob": {
-											"value": "'@{variables('blobSilver')}'",
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
 											"type": "Expression"
 										},
 										"parmTargetFolder": {
-											"value": "'@{variables('folderD365bc')}'",
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 											"type": "Expression"
 										},
 										"parmRegion": {
@@ -579,8 +579,8 @@
 										},
 										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
 										"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchOrders',$parmRegion,'.parquet')",
 										"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
 										"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
 									}
@@ -636,12 +636,12 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-										"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
 										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-										"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
-										"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
