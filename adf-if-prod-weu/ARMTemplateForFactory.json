@@ -4470,8 +4470,8 @@
 												},
 												"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
 												"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-												"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-												"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+												"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+												"parmPostedPOTargetFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
 												"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
 												"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
 											},
@@ -4482,8 +4482,7 @@
 												"SaveBlanketPOFile": {},
 												"SavePostedPOFile": {},
 												"SavePOFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -4537,12 +4536,12 @@
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
-												"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-												"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+												"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+												"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 												"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
 												"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-												"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
-												"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
+												"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+												"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
 											},
 											"datasetParameters": {
 												"BlanketPurchaseLines": {},
@@ -4551,8 +4550,7 @@
 												"SaveBlanketPOLinesFile": {},
 												"SavePostedPOLinesFile": {},
 												"SavePOLinesFile": {}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
