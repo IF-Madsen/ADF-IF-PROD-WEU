@@ -2491,19 +2491,19 @@
 											"type": "DataFlowReference",
 											"parameters": {
 												"parmSourceBlob": {
-													"value": "'@{pipeline().globalParameters.blob_bronze}'",
+													"value": "'@{variables('blobBronze')}'",
 													"type": "Expression"
 												},
 												"parmSourceFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
 												"ParmTargetBlob": {
-													"value": "'@{pipeline().globalParameters.blob_silver}'",
+													"value": "'@{variables('blobSilver')}'",
 													"type": "Expression"
 												},
 												"parmTargetFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
 												"parmRegion": {
@@ -2558,19 +2558,19 @@
 													"type": "Expression"
 												},
 												"parmSourceBlob": {
-													"value": "'@{pipeline().globalParameters.blob_bronze}'",
+													"value": "'@{variables('blobBronze')}'",
 													"type": "Expression"
 												},
 												"parmSourceFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
 												"parmTargetBlob": {
-													"value": "'@{pipeline().globalParameters.blob_silver}'",
+													"value": "'@{variables('blobSilver')}'",
 													"type": "Expression"
 												},
 												"parmTargetFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												}
 											},
