@@ -390,7 +390,7 @@
 				"POFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
-				"     fileSystem: '$ParmTargetBlob',",
+				"     fileSystem: ($ParmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
 				"     partitionFileNames:[($parmPOTargetFile)],",
