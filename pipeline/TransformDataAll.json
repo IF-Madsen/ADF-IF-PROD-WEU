@@ -636,8 +636,12 @@
 											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 											"type": "Expression"
 										},
-										"parmBlanketSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-										"parmBlanketTargetFilename": "concat('BlanketPurchLines',$parmRegion,'.parquet')"
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
