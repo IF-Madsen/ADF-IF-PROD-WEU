@@ -58,6 +58,10 @@
 				},
 				{
 					"name": "RemoveBlanks2"
+				},
+				{
+					"name": "SumPostedItemsQty",
+					"description": "Received Items"
 				}
 			],
 			"scriptLines": [
@@ -197,7 +201,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
+				"     ignoreNoFilesFound: true,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
@@ -264,7 +268,7 @@
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
-				"     fileName: (concat('BlanketPurchseLines',$parmRegion,'.parquet')),",
+				"     fileName: ($parmBlanketPOSourceFile),",
 				"     compressionCodec: 'snappy') ~> BlanketPurchaseLines",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -280,6 +284,7 @@
 				"BlanketPurchaseLines aggregate(groupBy(No),",
 				"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
 				"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
+				"PostedPurchaseLines aggregate() ~> SumPostedItemsQty",
 				"RemoveBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
