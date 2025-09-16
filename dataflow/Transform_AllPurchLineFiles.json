@@ -12,7 +12,21 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "loadBlanketPurchaseLines"
+					"name": "BlanketPurchaseLines"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "PostedPurchaseLines"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "PurchaseLines"
 				}
 			],
 			"sinks": [
@@ -26,11 +40,23 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
 				}
 			],
 			"transformations": [
 				{
 					"name": "selectFields"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -40,8 +66,8 @@
 				"     parmSourceFolder as string,",
 				"     parmTargetBlob as string,",
 				"     parmTargetFolder as string,",
-				"     parmSourceFilename as string (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
-				"     parmTargetFilename as string (concat('BlanketPurchLines',$parmRegion,'.parquet'))",
+				"     parmBlanketSourceFilename as string (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
+				"     parmBlanketTargetFilename as string (concat('BlanketPurchLines',$parmRegion,'.parquet'))",
 				"}",
 				"source(output(",
 				"          Document_Type as string,",
@@ -103,27 +129,51 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: ($parmSourceFilename),",
-				"     compressionCodec: 'snappy') ~> loadBlanketPurchaseLines",
-				"loadBlanketPurchaseLines select(mapColumn(",
+				"     compressionCodec: 'snappy') ~> BlanketPurchaseLines",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: '$parmSourceBlob',",
+				"     folderPath: '$parmSourceFolder') ~> PostedPurchaseLines",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: '$parmSourceBlob',",
+				"     folderPath: '$parmSourceFolder') ~> PurchaseLines",
+				"BlanketPurchaseLines select(mapColumn(",
 				"          each(match(/* All input columns */true()),",
 				"               /* Input name */$$ = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectFields",
+				"PostedPurchaseLines select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"PurchaseLines select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"selectFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[($parmTargetFilename)],",
+				"     partitionFileNames:[($parmBlanketTargetFilename)],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
-				"     partitionBy('hash', 1)) ~> savePurchlines"
+				"     partitionBy('hash', 1)) ~> savePurchlines",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
