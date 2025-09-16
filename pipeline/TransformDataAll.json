@@ -636,30 +636,12 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmBlanketPOSourceFile": {
-											"value": "'@{concat('BlanketPurchaseOrders',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										},
-										"parmBlanketPOTargetFile": {
-											"value": "'@{concat('BlanketPurchaseOrders',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										},
-										"parmPostedPOSourceFile": {
-											"value": "'@{concat('PostedPurchaseLines',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										},
-										"parmPostedPOTargetFile": {
-											"value": "'@{concat('PostedPurchaseLines',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										},
-										"parmPOSourceFile": {
-											"value": "'@{concat('PurchaseOrders',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										},
-										"parmPOTargetFile": {
-											"value": "'@{concat('PurchaseOrders',$parmRegion,'.parquet')}'",
-											"type": "Expression"
-										}
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
