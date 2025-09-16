@@ -369,10 +369,12 @@
 												}
 											},
 											"datasetParameters": {
-												"PurchLines": {},
-												"BlanketPurchLines": {},
+												"PurchaseLines": {},
+												"BlanketPurchaseLines": {},
+												"PostedPurchaseLines": {},
 												"SavePurchItemSum": {},
-												"saveBlanketPurchSum": {}
+												"SaveBlanketPurchSum": {},
+												"SavePostedPurchItemSum": {}
 											}
 										},
 										"staging": {},
@@ -1146,10 +1148,12 @@
 												}
 											},
 											"datasetParameters": {
-												"PurchLines": {},
-												"BlanketPurchLines": {},
+												"PurchaseLines": {},
+												"BlanketPurchaseLines": {},
+												"PostedPurchaseLines": {},
 												"SavePurchItemSum": {},
-												"saveBlanketPurchSum": {}
+												"SaveBlanketPurchSum": {},
+												"SavePostedPurchItemSum": {}
 											}
 										},
 										"staging": {},
