@@ -7727,6 +7727,9 @@
 						{
 							"name": "SumPostedItemsQty",
 							"description": "Received Items"
+						},
+						{
+							"name": "RemoveBlanks3"
 						}
 					],
 					"scriptLines": [
@@ -8075,6 +8078,7 @@
 						"PostedPurchaseLines aggregate(groupBy(Document_No,",
 						"          No),",
 						"     Quantity = sum(Quantity)) ~> SumPostedItemsQty",
+						"SumPostedItemsQty filter(No != '') ~> RemoveBlanks3",
 						"RemoveBlanks sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
@@ -8105,7 +8109,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> SaveBlanketPurchSum",
-						"SumPostedItemsQty sink(allowSchemaDrift: true,",
+						"RemoveBlanks3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     fileSystem: ($parmTargetBlob),",
