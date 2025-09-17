@@ -744,6 +744,20 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "InOrderUS"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "ReceivedEU"
+						},
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "ReceivedUS"
 						}
 					],
 					"sinks": [
@@ -825,7 +839,7 @@
 							"name": "PurchInOrderSum"
 						},
 						{
-							"name": "joinPurchases"
+							"name": "JoinInOrderSum"
 						},
 						{
 							"name": "SumupInventory"
@@ -838,6 +852,21 @@
 						},
 						{
 							"name": "SumupPurchasesAll"
+						},
+						{
+							"name": "ReceivedSumJoin"
+						},
+						{
+							"name": "selectReceivedFields"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "PurchReceivedSum"
+						},
+						{
+							"name": "JoinReceivedSum"
 						}
 					],
 					"scriptLines": [
@@ -979,6 +1008,28 @@
 						"     folderPath: ($parmSourceFolder),",
 						"     fileName: 'BlanketPurchItemSumUS.parquet',",
 						"     compressionCodec: 'snappy') ~> InOrderUS",
+						"source(output(",
+						"          ItemNo as string,",
+						"          SumQty as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     fileName: (concat('PostedPurchItemSumEU','.parquet'))) ~> ReceivedEU",
+						"source(output(",
+						"          ItemNo as string,",
+						"          SumQty as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: ($parmTargetBlob),",
+						"     folderPath: ($parmTargetFolder),",
+						"     fileName: (concat('PostedPurchItemSumUS','.parquet'))) ~> ReceivedUS",
 						"RemoveBOM select(mapColumn(",
 						"          VendorNo,",
 						"          Name,",
@@ -1090,17 +1141,48 @@
 						"     joinType:'outer',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> joinPurchases",
+						"     broadcast: 'auto')~> JoinInOrderSum",
 						"selectInventorySumFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 						"          SoldAll = iifNull(add(SoldEU,SoldUS),0)) ~> SumupInventory",
 						"SumupInventory derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll)) ~> AddingHashkey",
-						"joinPurchases derive(ItemNo = iifNull(PurchInTransitSum@ItemNo,PurchInOrderSum@ItemNo),",
+						"JoinReceivedSum derive(ItemNo = iifNull(PurchInTransitSum@ItemNo,PurchInOrderSum@ItemNo,PurchReceivedSum@ItemNo),",
 						"          InOrderEU = iifNull(InOrderEU,0),",
 						"          InOrderUS = iifNull(InOrderUS,0),",
 						"          InTransitEU = iifNull(InTransitEU,0),",
-						"          InTransitUS = iifNull(InTransitUS,0)) ~> allignPurchases",
+						"          InTransitUS = iifNull(InTransitUS,0),",
+						"          ReceivedEU = iifNull(ReceivedEU,0),",
+						"          ReceivedUS = iifNull(ReceivedUS,0)) ~> allignPurchases",
 						"allignPurchases derive(InTransitAll = iifNull(add(InTransitEU,InTransitUS),0),",
-						"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0)) ~> SumupPurchasesAll",
+						"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0),",
+						"          ReceivedAll = iifNull(ReceivedEU, ReceivedUS,0)) ~> SumupPurchasesAll",
+						"ReceivedEU, ReceivedUS join(ReceivedEU@ItemNo == ReceivedUS@ItemNo,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> ReceivedSumJoin",
+						"ReceivedSumJoin select(mapColumn(",
+						"          ItemNoEU = ReceivedEU@ItemNo,",
+						"          QuantityEU = ReceivedEU@SumQty,",
+						"          ItemNoUS = ReceivedUS@ItemNo,",
+						"          QuantityUS = ReceivedUS@SumQty",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectReceivedFields",
+						"selectReceivedFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+						"          ReceivedEU = iifNull(QuantityEU,0),",
+						"          ReceivedUS = iifNull(QuantityUS,0)) ~> derivedColumn2",
+						"derivedColumn2 select(mapColumn(",
+						"          ItemNo,",
+						"          ReceivedEU,",
+						"          ReceivedUS",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> PurchReceivedSum",
+						"JoinInOrderSum, PurchReceivedSum join(PurchInOrderSum@ItemNo == PurchReceivedSum@ItemNo,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinReceivedSum",
 						"addingItemsHash sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",

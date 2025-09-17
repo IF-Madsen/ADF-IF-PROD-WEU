@@ -531,6 +531,8 @@
 									"TransitUS": {},
 									"InOrderEU": {},
 									"InOrderUS": {},
+									"ReceivedEU": {},
+									"ReceivedUS": {},
 									"SaveGlobalItems": {},
 									"SaveGlobalInventorySum": {},
 									"SaveGlobalPurchases": {}
@@ -1747,6 +1749,8 @@
 									"TransitUS": {},
 									"InOrderEU": {},
 									"InOrderUS": {},
+									"ReceivedEU": {},
+									"ReceivedUS": {},
 									"SaveGlobalItems": {},
 									"SaveGlobalInventorySum": {},
 									"SaveGlobalPurchases": {}
