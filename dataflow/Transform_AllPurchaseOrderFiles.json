@@ -66,6 +66,12 @@
 				},
 				{
 					"name": "POFields"
+				},
+				{
+					"name": "JoinPOOnly"
+				},
+				{
+					"name": "PostedPOFields2"
 				}
 			],
 			"scriptLines": [
@@ -361,6 +367,24 @@
 				"     skipDuplicateMapOutputs: true) ~> PostedPOFields",
 				"PurchaseOrders select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> POFields",
+				"PostedPOFields, PurchaseOrders join(Order_No == PurchaseOrders@No,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinPOOnly",
+				"JoinPOOnly select(mapColumn(",
+				"          No = PostedPOFields@No,",
+				"          Posting_Date = PostedPOFields@Posting_Date,",
+				"          Document_Date = PostedPOFields@Document_Date,",
+				"          Requested_Receipt_Date = PostedPOFields@Requested_Receipt_Date,",
+				"          Promised_Receipt_Date = PostedPOFields@Promised_Receipt_Date,",
+				"          Quote_No = PostedPOFields@Quote_No,",
+				"          Order_No,",
+				"          Region,",
+				"          Loaded",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> PostedPOFields2",
 				"BlanketPOFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -373,8 +397,9 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
 				"     partitionBy('hash', 1)) ~> SaveBlanketPOFile",
-				"PostedPOFields sink(allowSchemaDrift: true,",
+				"PostedPOFields2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($ParmTargetBlob),",
@@ -386,6 +411,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 3,",
 				"     partitionBy('hash', 1)) ~> SavePostedPOFile",
 				"POFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -399,6 +425,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
 				"     partitionBy('hash', 1)) ~> SavePOFile"
 			]
 		}
