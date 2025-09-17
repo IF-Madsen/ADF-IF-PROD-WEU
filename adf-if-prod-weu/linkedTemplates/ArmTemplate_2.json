@@ -2952,6 +2952,432 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/CalculateDataAll')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Region",
+						"description": "",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Set folder Json",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set folder d365bc",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set blob Gold",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set blob Silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@createArray(pipeline().globalParameters.Region_EU,pipeline().globalParameters.Region_US)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Calculate Inventory Sum",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_InventorySum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolderJson": {
+													"value": "'@{variables('folderJson')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"GetAllLedgerPeriods": {},
+												"GetItems": {},
+												"GetInventSumSales": {},
+												"GetInventSumPurch": {},
+												"GetInventSumAdjustPos": {},
+												"GetInventSumAdjustNeg": {},
+												"GetPrimoDate": {},
+												"GetInventoryAssOut": {},
+												"GetInventoryAccCon": {},
+												"GetInventorySumSalesExtCust": {},
+												"saveInventorySum2File": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Calculate Vendor Items",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Calculate Inventory Sum",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_VendorsItemsFiltered",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmSourceJsonFolder": {
+													"value": "'@{variables('folderJson')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"LoadItems": {},
+												"ItemCategoriesGroups": {},
+												"TopRankVendors": {},
+												"saveFile": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "Calculate Purchase Orders",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Calculate Vendor Items",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "Calc_PurchItemsSum",
+											"type": "DataFlowReference",
+											"parameters": {
+												"parmRegion": {
+													"value": "'@{item()}'",
+													"type": "Expression"
+												},
+												"parmSourceBlob": {
+													"value": "'@{variables('blobSilver')}'",
+													"type": "Expression"
+												},
+												"parmSourceFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												},
+												"parmTargetBlob": {
+													"value": "'@{variables('blobGold')}'",
+													"type": "Expression"
+												},
+												"parmTargetFolder": {
+													"value": "'@{variables('folderD365bc')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"PurchaseLines": {},
+												"BlanketPurchaseLines": {},
+												"PostedPurchaseLines": {},
+												"SavePurchItemSum": {},
+												"SaveBlanketPurchSum": {},
+												"SavePostedPurchItemSum": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set blob Silver",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "blobSilver",
+							"value": {
+								"value": "@pipeline().globalParameters.blob_silver",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set folder d365bc",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "folderD365bc",
+							"value": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set blob Gold",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "blobGold",
+							"value": {
+								"value": "@pipeline().globalParameters.blob_gold",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set folder Json",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "folderJson",
+							"value": {
+								"value": "@pipeline().globalParameters.folder_json",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Execute Merge",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Region",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "RunMergeRegions",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Calc_GlobalData",
+						"description": "Calculate ",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Execute Merge",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Calc_InventorySumGlobal",
+								"type": "DataFlowReference",
+								"parameters": {
+									"parmSourceBlob": {
+										"value": "'@{variables('blobGold')}'",
+										"type": "Expression"
+									},
+									"parmSourceFolder": {
+										"value": "'@{variables('folderD365bc')}'",
+										"type": "Expression"
+									},
+									"parmTargetBlob": {
+										"value": "'@{variables('blobGold')}'",
+										"type": "Expression"
+									},
+									"parmTargetFolder": {
+										"value": "'@{variables('folderD365bc')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"InventorySumEU": {},
+									"InventorySumUS": {},
+									"Items": {},
+									"ItemPrices": {},
+									"TransitEU": {},
+									"TransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
+									"ReceivedEU": {},
+									"ReceivedUS": {},
+									"SaveGlobalItems": {},
+									"SaveGlobalInventorySum": {},
+									"SaveGlobalPurchases": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"blobSilver": {
+						"type": "String",
+						"defaultValue": "'silver'"
+					},
+					"blobGold": {
+						"type": "String",
+						"defaultValue": "'gold'"
+					},
+					"folderD365bc": {
+						"type": "String",
+						"defaultValue": "'d365bc'"
+					},
+					"folderJson": {
+						"type": "String",
+						"defaultValue": "'json'"
+					}
+				},
+				"folder": {
+					"name": "ItemForecast"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ExtractDataEU')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4445,892 +4871,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_OData_EU')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ExtractDataUS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Items",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Vendors",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": {
-										"value": "@pipeline().globalParameters.d365bc_company_america",
-										"type": "Expression"
-									},
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_ItemCard",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('Items',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Vendors",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": {
-										"value": "@pipeline().globalParameters.d365bc_company_america",
-										"type": "Expression"
-									},
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_Vendors",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('Vendors',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "ItemCategories",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Items",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_america",
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_ItemCategories",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('ItemsCategories',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "ItemLedgerEntries",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "ItemCategories",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:15:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_america",
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_ItemLedgerEntries",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('ItemsLedgerEntries',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "PurchaseOrders",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Vendors",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_america",
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrders",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('PurchaseOrders',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "PurchaseLines",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "PurchaseOrders",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"additionalColumns": [
-									{
-										"name": "Region",
-										"value": {
-											"value": "@pipeline().parameters.parmRegion",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Loaded",
-										"value": {
-											"value": "@pipeline().parameters.parmLoaded",
-											"type": "Expression"
-										}
-									}
-								],
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_america",
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('PurchaseLines',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "BlanketPurchaseOrders",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Vendors",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"metadata": [
-										{
-											"name": "Region",
-											"value": {
-												"value": "@pipeline().parameters.parmRegion",
-												"type": "Expression"
-											}
-										},
-										{
-											"name": "Loaded",
-											"value": {
-												"value": "@pipeline().parameters.parmLoaded",
-												"type": "Expression"
-											}
-										}
-									]
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": {
-										"value": "@pipeline().globalParameters.d365bc_company_america",
-										"type": "Expression"
-									},
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrders",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": "@concat('BlanketPurchaseOrders',pipeline().parameters.parmRegion)"
-								}
-							}
-						]
-					},
-					{
-						"name": "BlanketPurchaseLines",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "BlanketPurchaseOrders",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy",
-									"metadata": [
-										{
-											"name": "Region",
-											"value": {
-												"value": "@pipeline().parameters.parmRegion",
-												"type": "Expression"
-											}
-										},
-										{
-											"name": "Loaded",
-											"value": {
-												"value": "@pipeline().parameters.parmLoaded",
-												"type": "Expression"
-											}
-										}
-									]
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": {
-										"value": "@pipeline().globalParameters.d365bc_company_america",
-										"type": "Expression"
-									},
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_BlanketPurchaseOrderLines",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('BlanketPurchaseLines',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Posted Purchase Orders",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Vendors",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy",
-									"metadata": [
-										{
-											"name": "Region",
-											"value": {
-												"value": "@pipeline().parameters.parmRegion",
-												"type": "Expression"
-											}
-										},
-										{
-											"name": "Loaded",
-											"value": {
-												"value": "@pipeline().parameters.parmLoaded",
-												"type": "Expression"
-											}
-										}
-									]
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": {
-										"value": "@pipeline().globalParameters.d365bc_company_america",
-										"type": "Expression"
-									},
-									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_PostedPurchaseOrders",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": "@concat('PostedPurchaseOrders',pipeline().parameters.parmRegion)"
-								}
-							}
-						]
-					},
-					{
-						"name": "PostedPurchaseOrders",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Posted Purchase Orders",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ODataSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy",
-									"metadata": [
-										{
-											"name": "Region",
-											"value": {
-												"value": "@pipeline().parameters.parmRegion",
-												"type": "Expression"
-											}
-										},
-										{
-											"name": "Loaded",
-											"value": {
-												"value": "@pipeline().parameters.parmLoaded",
-												"type": "Expression"
-											}
-										}
-									]
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_OData_US",
-								"type": "DatasetReference",
-								"parameters": {
-									"company": "@pipeline().globalParameters.d365bc_company_america",
-									"apipath": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": {
-										"value": "@concat('PostedPurchaseLines',pipeline().parameters.parmRegion)",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"parmRegion": {
-						"type": "string"
-					},
-					"parmLoaded": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "ItemForecast"
-				},
-				"annotations": [],
-				"lastPublishTime": "2025-01-22T17:55:18Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_OData_US')]"
 			]
 		}
 	]

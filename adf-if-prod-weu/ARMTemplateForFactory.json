@@ -457,48 +457,6 @@
 							},
 							"traceLevel": "Fine"
 						}
-					},
-					{
-						"name": "Copy2Dataverse",
-						"description": "Copy Global Data to Dataverse",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "Calc_GlobalData",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "TransferGlobal2Dataverse",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"GlobalItemParquet": {},
-									"GlobalSumsParquet": {},
-									"GlobalItemDataverse": {},
-									"GlobalSumDataverse": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
 					}
 				],
 				"policy": {
@@ -531,7 +489,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/RunMergeRegions')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySumGlobal')]",
-				"[concat(variables('factoryId'), '/dataflows/TransferGlobal2Dataverse')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySum')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_VendorsItemsFiltered')]",
 				"[concat(variables('factoryId'), '/dataflows/Calc_PurchItemsSum')]"
