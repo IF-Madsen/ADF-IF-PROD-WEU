@@ -2513,7 +2513,6 @@
 												"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
 												"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
 												"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
-												"parmPostedPOTargetFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
 												"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
 												"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')"
 											},
