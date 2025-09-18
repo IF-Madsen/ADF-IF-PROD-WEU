@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "RunItemForecast",
+					"referenceName": "0-RunItemForecast",
 					"type": "PipelineReference"
 				}
 			}

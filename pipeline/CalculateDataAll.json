@@ -42,6 +42,8 @@
 						{
 							"name": "Calculate Inventory Sum",
 							"type": "ExecuteDataFlow",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
@@ -92,6 +94,8 @@
 						{
 							"name": "Calculate Vendor Items",
 							"type": "ExecuteDataFlow",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [
 								{
 									"activity": "Calculate Inventory Sum",
@@ -189,7 +193,13 @@
 										"parmTargetFolder": {
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
-										}
+										},
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchItemSum',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchItemSum',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchItemSum',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
