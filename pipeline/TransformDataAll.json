@@ -12,6 +12,30 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Set folder d365bc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"userProperties": [],
@@ -683,7 +707,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Bronze",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -707,7 +731,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Gold",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -731,7 +755,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set folder d365bc",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -755,7 +779,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Silver",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
