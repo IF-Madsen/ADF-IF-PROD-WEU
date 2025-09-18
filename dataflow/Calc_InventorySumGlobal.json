@@ -40,14 +40,14 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "TransitEU"
+					"name": "InTransitEU"
 				},
 				{
 					"linkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "TransitUS"
+					"name": "InTransitUS"
 				},
 				{
 					"linkedService": {
@@ -124,13 +124,13 @@
 					"name": "InTransitSumJoin"
 				},
 				{
-					"name": "selectTransitFields"
+					"name": "selectInTransitFields"
 				},
 				{
-					"name": "allignTransitFields"
+					"name": "allignInTransitFields"
 				},
 				{
-					"name": "PurchInTransitSum"
+					"name": "InTransitSum"
 				},
 				{
 					"name": "selectItemFields2"
@@ -151,10 +151,10 @@
 					"name": "selectInOrderFields"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "allignInOrderFields"
 				},
 				{
-					"name": "PurchInOrderSum"
+					"name": "InOrderSum"
 				},
 				{
 					"name": "JoinInOrderSum"
@@ -178,10 +178,10 @@
 					"name": "selectReceivedFields"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "allignReceivedFields"
 				},
 				{
-					"name": "PurchReceivedSum"
+					"name": "ReceivedSum"
 				},
 				{
 					"name": "JoinReceivedSum"
@@ -289,7 +289,7 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: (concat(\"PurchItemSumEU\",\".parquet\")),",
-				"     compressionCodec: 'snappy') ~> TransitEU",
+				"     compressionCodec: 'snappy') ~> InTransitEU",
 				"source(output(",
 				"          ItemNo as string,",
 				"          SumQty as double",
@@ -301,7 +301,7 @@
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: (concat(\"PurchItemSumUS\",\".parquet\")),",
-				"     compressionCodec: 'snappy') ~> TransitUS",
+				"     compressionCodec: 'snappy') ~> InTransitUS",
 				"source(output(",
 				"          No as string,",
 				"          Quantity as double",
@@ -320,7 +320,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
+				"     ignoreNoFilesFound: true,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmSourceBlob),",
 				"     folderPath: ($parmSourceFolder),",
@@ -332,7 +332,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
+				"     ignoreNoFilesFound: true,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
@@ -384,29 +384,29 @@
 				"          SoldUS = iifNull(InventorySumUS@SalesQty,0),",
 				"          ItemNo = iifNull(InventorySumEU@ItemNo, InventorySumUS@ItemNo),",
 				"          ItemCategoryCode = iifNull(InventorySumEU@ItemCategoryCode, InventorySumUS@ItemCategoryCode)) ~> SumUpInstockAndSold",
-				"TransitEU, TransitUS join(TransitEU@ItemNo == TransitUS@ItemNo,",
+				"InTransitEU, InTransitUS join(InTransitEU@ItemNo == InTransitUS@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'both')~> InTransitSumJoin",
 				"InTransitSumJoin select(mapColumn(",
-				"          ItemNoEU = TransitEU@ItemNo,",
-				"          SumQtyEU = TransitEU@SumQty,",
-				"          ItemNoUS = TransitUS@ItemNo,",
-				"          SumQtyUS = TransitUS@SumQty",
+				"          ItemNoEU = InTransitEU@ItemNo,",
+				"          SumQtyEU = InTransitEU@SumQty,",
+				"          ItemNoUS = InTransitUS@ItemNo,",
+				"          SumQtyUS = InTransitUS@SumQty",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> selectTransitFields",
-				"selectTransitFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+				"     skipDuplicateMapOutputs: false) ~> selectInTransitFields",
+				"selectInTransitFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
 				"          InTransitUS = iifNull(SumQtyUS,0),",
-				"          InTransitEU = iifNull(SumQtyEU,0)) ~> allignTransitFields",
-				"allignTransitFields select(mapColumn(",
+				"          InTransitEU = iifNull(SumQtyEU,0)) ~> allignInTransitFields",
+				"allignInTransitFields select(mapColumn(",
 				"          ItemNo,",
 				"          InTransitUS,",
 				"          InTransitEU",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> PurchInTransitSum",
+				"     skipDuplicateMapOutputs: true) ~> InTransitSum",
 				"join select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
@@ -448,15 +448,15 @@
 				"     skipDuplicateMapOutputs: true) ~> selectInOrderFields",
 				"selectInOrderFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
 				"          InOrderEU = iifNull(QuantityEU,0),",
-				"          InOrderUS = iifNull(QuantityUS,0)) ~> derivedColumn1",
-				"derivedColumn1 select(mapColumn(",
+				"          InOrderUS = iifNull(QuantityUS,0)) ~> allignInOrderFields",
+				"allignInOrderFields select(mapColumn(",
 				"          ItemNo,",
 				"          InOrderEU,",
 				"          InOrderUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> PurchInOrderSum",
-				"PurchInTransitSum, PurchInOrderSum join(PurchInTransitSum@ItemNo == PurchInOrderSum@ItemNo,",
+				"     skipDuplicateMapOutputs: true) ~> InOrderSum",
+				"InTransitSum, InOrderSum join(InTransitSum@ItemNo == InOrderSum@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -464,7 +464,7 @@
 				"selectInventorySumFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0)) ~> SumupInventory",
 				"SumupInventory derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll)) ~> AddingHashkey",
-				"JoinReceivedSum derive(ItemNo = iifNull(PurchInTransitSum@ItemNo,PurchInOrderSum@ItemNo,PurchReceivedSum@ItemNo),",
+				"JoinReceivedSum derive(ItemNo = iifNull(InTransitSum@ItemNo,InOrderSum@ItemNo,ReceivedSum@ItemNo),",
 				"          InOrderEU = iifNull(InOrderEU,0),",
 				"          InOrderUS = iifNull(InOrderUS,0),",
 				"          InTransitEU = iifNull(InTransitEU,0),",
@@ -489,15 +489,15 @@
 				"     skipDuplicateMapOutputs: true) ~> selectReceivedFields",
 				"selectReceivedFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
 				"          ReceivedEU = iifNull(QuantityEU,0),",
-				"          ReceivedUS = iifNull(QuantityUS,0)) ~> derivedColumn2",
-				"derivedColumn2 select(mapColumn(",
+				"          ReceivedUS = iifNull(QuantityUS,0)) ~> allignReceivedFields",
+				"allignReceivedFields select(mapColumn(",
 				"          ItemNo,",
 				"          ReceivedEU,",
 				"          ReceivedUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> PurchReceivedSum",
-				"JoinInOrderSum, PurchReceivedSum join(PurchInOrderSum@ItemNo == PurchReceivedSum@ItemNo,",
+				"     skipDuplicateMapOutputs: true) ~> ReceivedSum",
+				"JoinInOrderSum, ReceivedSum join(InOrderSum@ItemNo == ReceivedSum@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
