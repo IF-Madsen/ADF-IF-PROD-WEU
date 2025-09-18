@@ -29,10 +29,6 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "RunMergeRegions",
-								"type": "PipelineReference"
-							},
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
@@ -588,7 +584,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "CalculateDataAll",
+								"referenceName": "30-CalculateDataAll",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -838,7 +834,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RunItemForecast')]",
+			"name": "[concat(parameters('factoryName'), '/00-RunItemForecast')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -854,7 +850,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "ExtractDataAll",
+								"referenceName": "10-ExtractDataAll",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -879,7 +875,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "CalculateDataAll",
+								"referenceName": "30-CalculateDataAll",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -903,7 +899,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "TransformDataAll",
+								"referenceName": "20-TransformDataAll",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -932,7 +928,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "RunItemForecast",
+							"referenceName": "00-RunItemForecast",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -949,7 +945,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/RunItemForecast')]"
+				"[concat(variables('factoryId'), '/pipelines/00-RunItemForecast')]"
 			]
 		},
 		{
@@ -962,7 +958,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "RunItemForecast",
+							"referenceName": "00-RunItemForecast",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -987,7 +983,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/RunItemForecast')]"
+				"[concat(variables('factoryId'), '/pipelines/00-RunItemForecast')]"
 			]
 		}
 	]
