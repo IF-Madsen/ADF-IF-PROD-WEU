@@ -281,7 +281,7 @@
 				}
 			},
 			{
-				"name": "Execute Merge",
+				"name": "Merge Inventory",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
@@ -309,7 +309,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Execute Merge",
+						"activity": "Merge Inventory",
 						"dependencyConditions": [
 							"Succeeded"
 						]
