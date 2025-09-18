@@ -1,5 +1,5 @@
 {
-	"name": "0-RunItemForecast",
+	"name": "00-RunItemForecast",
 	"properties": {
 		"activities": [
 			{
@@ -13,7 +13,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "1-ExtractDataAll",
+						"referenceName": "10-ExtractDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -37,7 +37,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "CalculateDataAll",
+						"referenceName": "30-CalculateDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -60,7 +60,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "TransformDataAll",
+						"referenceName": "20-TransformDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true

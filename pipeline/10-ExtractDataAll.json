@@ -1,5 +1,5 @@
 {
-	"name": "1-ExtractDataAll",
+	"name": "10-ExtractDataAll",
 	"properties": {
 		"activities": [
 			{
@@ -28,7 +28,7 @@
 				],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "ExtractDataEU",
+						"referenceName": "11-ExtractDataEU",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,
@@ -70,7 +70,7 @@
 				],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "ExtractDataUS",
+						"referenceName": "12-ExtractDataUS",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,
@@ -229,7 +229,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "ExtractPrimoAll",
+						"referenceName": "13-ExtractPrimoAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
