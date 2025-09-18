@@ -14,10 +14,15 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Day",
+				"frequency": "Week",
 				"interval": 1,
 				"startTime": "2024-09-05T01:00:00",
-				"timeZone": "Romance Standard Time"
+				"timeZone": "Romance Standard Time",
+				"schedule": {
+					"weekDays": [
+						"Thursday"
+					]
+				}
 			}
 		}
 	}
