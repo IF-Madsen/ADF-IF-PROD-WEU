@@ -42,7 +42,7 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SaveBlanketPOLinesFile",
+					"name": "SaveInOrderFile",
 					"rejectedDataLinkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
@@ -53,7 +53,7 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SavePostedPOLinesFile",
+					"name": "SaveReceivedFile",
 					"rejectedDataLinkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
@@ -64,11 +64,18 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SavePOLinesFile",
+					"name": "SaveInTransitFile",
 					"rejectedDataLinkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -404,7 +411,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
-				"     partitionBy('hash', 1)) ~> SaveBlanketPOLinesFile",
+				"     partitionBy('hash', 1)) ~> SaveInOrderFile",
 				"selectPostedFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -417,7 +424,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SavePostedPOLinesFile",
+				"     partitionBy('hash', 1)) ~> SaveReceivedFile",
 				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -430,7 +437,19 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SavePOLinesFile"
+				"     partitionBy('hash', 1)) ~> SaveInTransitFile",
+				"selectBlanketFields sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'json',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     partitionFileNames:[(concat('BlanketPurchaseLines',$parmRegion,'.json'))],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
