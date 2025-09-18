@@ -1485,7 +1485,10 @@
 												"PostedPurchaseLines": {},
 												"SavePurchItemSum": {},
 												"SaveBlanketPurchSum": {},
-												"SavePostedPurchItemSum": {}
+												"SavePostedPurchItemSum": {},
+												"InTransitJson": {},
+												"sink1": {},
+												"sink2": {}
 											}
 										},
 										"staging": {},
