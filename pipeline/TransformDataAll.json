@@ -657,7 +657,14 @@
 			{
 				"name": "Set Layer Bronze",
 				"type": "SetVariable",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DeleteSilverFolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -764,6 +771,42 @@
 					"value": {
 						"value": "@pipeline().globalParameters.blob_gold",
 						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "DeleteSilverFolder",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_silver",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.parquet",
+						"enablePartitionDiscovery": false
 					}
 				}
 			}
