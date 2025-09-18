@@ -621,7 +621,7 @@
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "Create Top Rank Vendors",
+									"activity": "All Purchase Orders",
 									"dependencyConditions": [
 										"Succeeded"
 									]
