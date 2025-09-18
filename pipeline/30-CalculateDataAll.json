@@ -297,7 +297,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "RunMergeRegions",
+						"referenceName": "31-RunMergeRegions",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
