@@ -13,10 +13,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pipeline": {
-						"referenceName": "RunMergeRegions",
-						"type": "PipelineReference"
-					},
 					"waitOnCompletion": true
 				}
 			},
@@ -629,7 +625,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Calc_InventorySumGlobal",
+						"referenceName": "Calc_ItemAndPrices",
 						"type": "DataFlowReference",
 						"parameters": {
 							"parmSourceBlob": "'gold'",
