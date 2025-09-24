@@ -1,5 +1,5 @@
 {
-	"name": "Calc_InventorySumGlobal_2",
+	"name": "Calc_InventorySumGlobal",
 	"properties": {
 		"folder": {
 			"name": "3.Gold"
@@ -20,6 +20,20 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "InventorySumUS"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Items"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
+					"name": "ItemPrices"
 				},
 				{
 					"linkedService": {
@@ -70,6 +84,13 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
+					"name": "SaveGlobalItems"
+				},
+				{
+					"linkedService": {
+						"referenceName": "D365bcDataLakeProd",
+						"type": "LinkedServiceReference"
+					},
 					"name": "SaveGlobalInventorySum"
 				},
 				{
@@ -81,6 +102,18 @@
 				}
 			],
 			"transformations": [
+				{
+					"name": "selectItemFields1"
+				},
+				{
+					"name": "RemoveBOM"
+				},
+				{
+					"name": "selectPriceFields"
+				},
+				{
+					"name": "join"
+				},
 				{
 					"name": "joinSummes"
 				},
@@ -100,7 +133,16 @@
 					"name": "InTransitSum"
 				},
 				{
+					"name": "selectItemFields2"
+				},
+				{
 					"name": "selectInventorySumFields"
+				},
+				{
+					"name": "sortOnVendorItems"
+				},
+				{
+					"name": "addingItemsHash"
 				},
 				{
 					"name": "InOrderSumJoin"
@@ -127,6 +169,9 @@
 					"name": "allignPurchases"
 				},
 				{
+					"name": "SumupPurchasesAll"
+				},
+				{
 					"name": "ReceivedSumJoin"
 				},
 				{
@@ -140,15 +185,6 @@
 				},
 				{
 					"name": "JoinReceivedSum"
-				},
-				{
-					"name": "SelectInTransitandOrder2"
-				},
-				{
-					"name": "select2"
-				},
-				{
-					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -204,6 +240,44 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: 'InventorySumUS.parquet',",
 				"     compressionCodec: 'snappy') ~> InventorySumUS",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ItemDescription as string,",
+				"          GroupDescription as string,",
+				"          ItemCategoryGroup as string,",
+				"          ItemCategoryCode as string,",
+				"          AssemblyBOM as boolean,",
+				"          VendorNo as string,",
+				"          Name as string,",
+				"          Name_2 as string,",
+				"          Global_Dimension_1_Filter as string,",
+				"          Global_Dimension_2_Filter as string,",
+				"          Rank as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: 'VendorsItemsWithGroupsAll.parquet',",
+				"     compressionCodec: 'snappy') ~> Items",
+				"source(output(",
+				"          ItemNo as string,",
+				"          ItemNoAlt as string,",
+				"          Description as string,",
+				"          UnitPrice as decimal(38,18),",
+				"          StandardCost as decimal(38,18),",
+				"          Unit_Cost as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmSourceBlob),",
+				"     folderPath: ($parmSourceFolder),",
+				"     fileName: 'ItemPrices.parquet',",
+				"     compressionCodec: 'snappy') ~> ItemPrices",
 				"source(output(",
 				"          ItemNo as string,",
 				"          SumQty as double",
@@ -275,6 +349,28 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     fileName: (concat(\"PostedPurchItemSumUS\",\".parquet\"))) ~> ReceivedUS",
+				"RemoveBOM select(mapColumn(",
+				"          VendorNo,",
+				"          Name,",
+				"          ItemNo,",
+				"          ItemDescription,",
+				"          ItemCategoryDescription = GroupDescription,",
+				"          ItemCategoryCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectItemFields1",
+				"Items filter(!AssemblyBOM) ~> RemoveBOM",
+				"ItemPrices select(mapColumn(",
+				"          ItemNo,",
+				"          UnitCostPrice = Unit_Cost",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPriceFields",
+				"selectItemFields1, selectPriceFields join(selectItemFields1@ItemNo == selectPriceFields@ItemNo,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
 				"InventorySumEU, InventorySumUS join(InventorySumEU@ItemNo == InventorySumUS@ItemNo",
 				"     && InventorySumEU@StartDate == InventorySumUS@StartDate",
 				"     && InventorySumEU@EndDate == InventorySumUS@EndDate,",
@@ -305,12 +401,23 @@
 				"          InTransitUS = iifNull(SumQtyUS,0),",
 				"          InTransitEU = iifNull(SumQtyEU,0)) ~> allignInTransitFields",
 				"allignInTransitFields select(mapColumn(",
-				"          ItemNoInTransit = ItemNo,",
+				"          ItemNo,",
 				"          InTransitUS,",
 				"          InTransitEU",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> InTransitSum",
+				"join select(mapColumn(",
+				"          VendorNo,",
+				"          Name,",
+				"          ItemNo = selectItemFields1@ItemNo,",
+				"          ItemDescription,",
+				"          UnitCostPrice,",
+				"          ItemCategoryDescription,",
+				"          ItemCategoryCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectItemFields2",
 				"SumUpInstockAndSold select(mapColumn(",
 				"          ItemNo,",
 				"          StartDate = InventorySumEU@StartDate,",
@@ -323,6 +430,9 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields",
+				"selectItemFields2 sort(asc(VendorNo, true),",
+				"     asc(ItemNo, true)) ~> sortOnVendorItems",
+				"sortOnVendorItems derive(Hash = crc32(VendorNo,Name,ItemNo,ItemDescription,UnitCostPrice,ItemCategoryDescription,ItemCategoryCode)) ~> addingItemsHash",
 				"InOrderEU, InOrderUS join(InOrderEU@No == InOrderUS@No,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
@@ -340,27 +450,30 @@
 				"          InOrderEU = iifNull(QuantityEU,0),",
 				"          InOrderUS = iifNull(QuantityUS,0)) ~> allignInOrderFields",
 				"allignInOrderFields select(mapColumn(",
-				"          ItemNoInOrder = ItemNo,",
+				"          ItemNo,",
 				"          InOrderEU,",
 				"          InOrderUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> InOrderSum",
-				"InTransitSum, InOrderSum join(ItemNoInTransit == ItemNoInOrder,",
-				"     joinType:'inner',",
+				"InTransitSum, InOrderSum join(InTransitSum@ItemNo == InOrderSum@ItemNo,",
+				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinInOrderSum",
 				"selectInventorySumFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0)) ~> SumupInventory",
 				"SumupInventory derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll)) ~> AddingHashkey",
-				"JoinReceivedSum derive(ItemNo = iifNull(ItemNo,ItemNoReceived),",
+				"JoinReceivedSum derive(ItemNo = iifNull(InTransitSum@ItemNo,InOrderSum@ItemNo,ReceivedSum@ItemNo),",
 				"          InOrderEU = iifNull(InOrderEU,0),",
 				"          InOrderUS = iifNull(InOrderUS,0),",
 				"          InTransitEU = iifNull(InTransitEU,0),",
 				"          InTransitUS = iifNull(InTransitUS,0),",
 				"          ReceivedEU = iifNull(ReceivedEU,0),",
 				"          ReceivedUS = iifNull(ReceivedUS,0)) ~> allignPurchases",
+				"allignPurchases derive(InTransitAll = iifNull(add(InTransitEU,InTransitUS),0),",
+				"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0),",
+				"          ReceivedAll = iifNull(ReceivedEU, ReceivedUS,0)) ~> SumupPurchasesAll",
 				"ReceivedEU, ReceivedUS join(ReceivedEU@ItemNo == ReceivedUS@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
@@ -378,33 +491,30 @@
 				"          ReceivedEU = iifNull(QuantityEU,0),",
 				"          ReceivedUS = iifNull(QuantityUS,0)) ~> allignReceivedFields",
 				"allignReceivedFields select(mapColumn(",
-				"          ItemNoReceived = ItemNo,",
+				"          ItemNo,",
 				"          ReceivedEU,",
 				"          ReceivedUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> ReceivedSum",
-				"select2, ReceivedSum join(ItemNo == ItemNoReceived,",
+				"JoinInOrderSum, ReceivedSum join(InOrderSum@ItemNo == ReceivedSum@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinReceivedSum",
-				"JoinInOrderSum select(skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> SelectInTransitandOrder2",
-				"derivedColumn1 select(mapColumn(",
-				"          ItemNo,",
-				"          InTransitUS,",
-				"          InTransitEU,",
-				"          InOrderEU,",
-				"          InOrderUS",
-				"     ),",
+				"addingItemsHash sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: ($parmTargetBlob),",
+				"     folderPath: ($parmTargetFolder),",
+				"     compressionCodec: 'snappy',",
+				"     partitionFileNames:['globalItemsAll.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"SelectInTransitandOrder2 derive(ItemNo = iifNull(ItemNoInTransit, ItemNoInOrder),",
-				"          InTransitEU = iifNull(InTransitEU, 0),",
-				"          InTransitUS = iifNull(InTransitUS, 0),",
-				"          InOrderEU = iifNull(InOrderEU, 0),",
-				"          InOrderUS = iifNull(InOrderUS, 0)) ~> derivedColumn1",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SaveGlobalItems",
 				"AddingHashkey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -466,7 +576,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SaveGlobalInventorySum",
-				"allignPurchases sink(allowSchemaDrift: true,",
+				"SumupPurchasesAll sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
@@ -478,15 +588,6 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          ItemNo,",
-				"          InTransitUS,",
-				"          InTransitEU,",
-				"          InOrderEU,",
-				"          InOrderUS,",
-				"          ReceivedEU,",
-				"          ReceivedUS",
-				"     ),",
 				"     partitionBy('hash', 1)) ~> SaveGlobalPurchases"
 			]
 		}
