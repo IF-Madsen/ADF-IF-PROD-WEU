@@ -127,9 +127,6 @@
 					"name": "allignPurchases"
 				},
 				{
-					"name": "SumupPurchasesAll"
-				},
-				{
 					"name": "ReceivedSumJoin"
 				},
 				{
@@ -145,7 +142,7 @@
 					"name": "JoinReceivedSum"
 				},
 				{
-					"name": "selectInTransitandOrder"
+					"name": "SelectInTransitandOrder2"
 				},
 				{
 					"name": "select2"
@@ -357,16 +354,13 @@
 				"selectInventorySumFields derive(InStockAll = iifNull(add(InStockEU,InStockUS),0),",
 				"          SoldAll = iifNull(add(SoldEU,SoldUS),0)) ~> SumupInventory",
 				"SumupInventory derive(Hash = crc32(ItemNo,ItemCategoryCode,toString(StartDate),toString(EndDate),InStockAll,SoldAll)) ~> AddingHashkey",
-				"JoinReceivedSum derive(ItemNo = iifNull(InTransitSum@ItemNo,InOrderSum@ItemNo,ReceivedSum@ItemNo),",
+				"JoinReceivedSum derive(ItemNo = iifNull(ItemNo,ItemNoReceived),",
 				"          InOrderEU = iifNull(InOrderEU,0),",
 				"          InOrderUS = iifNull(InOrderUS,0),",
 				"          InTransitEU = iifNull(InTransitEU,0),",
 				"          InTransitUS = iifNull(InTransitUS,0),",
 				"          ReceivedEU = iifNull(ReceivedEU,0),",
 				"          ReceivedUS = iifNull(ReceivedUS,0)) ~> allignPurchases",
-				"allignPurchases derive(InTransitAll = iifNull(add(InTransitEU,InTransitUS),0),",
-				"          InOrderAll = iifNull(add(InOrderEU,InOrderUS),0),",
-				"          ReceivedAll = iifNull(ReceivedEU, ReceivedUS,0)) ~> SumupPurchasesAll",
 				"ReceivedEU, ReceivedUS join(ReceivedEU@ItemNo == ReceivedUS@ItemNo,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
@@ -384,27 +378,19 @@
 				"          ReceivedEU = iifNull(QuantityEU,0),",
 				"          ReceivedUS = iifNull(QuantityUS,0)) ~> allignReceivedFields",
 				"allignReceivedFields select(mapColumn(",
-				"          ItemNo,",
+				"          ItemNoReceived = ItemNo,",
 				"          ReceivedEU,",
 				"          ReceivedUS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> ReceivedSum",
-				"select2, ReceivedSum join(InOrderSum@ItemNo == ReceivedSum@ItemNo,",
+				"select2, ReceivedSum join(ItemNo == ItemNoReceived,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinReceivedSum",
-				"JoinInOrderSum select(mapColumn(",
-				"          ItemNoInTransit = InTransitSum@ItemNoInTransit,",
-				"          InTransitUS,",
-				"          InTransitEU,",
-				"          ItemNoInOrder = InOrderSum@ItemNoInOrder,",
-				"          InOrderEU,",
-				"          InOrderUS",
-				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> selectInTransitandOrder",
+				"JoinInOrderSum select(skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SelectInTransitandOrder2",
 				"derivedColumn1 select(mapColumn(",
 				"          ItemNo,",
 				"          InTransitUS,",
@@ -414,7 +400,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"selectInTransitandOrder derive() ~> derivedColumn1",
+				"SelectInTransitandOrder2 derive(ItemNo = iifNull(ItemNoInTransit, ItemNoInOrder),",
+				"          InTransitEU = iifNull(InTransitEU, 0),",
+				"          InTransitUS = iifNull(InTransitUS, 0),",
+				"          InOrderEU = iifNull(InOrderEU, 0),",
+				"          InOrderUS = iifNull(InOrderUS, 0)) ~> derivedColumn1",
 				"AddingHashkey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -476,7 +466,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SaveGlobalInventorySum",
-				"SumupPurchasesAll sink(allowSchemaDrift: true,",
+				"allignPurchases sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
@@ -488,6 +478,15 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ItemNo,",
+				"          InTransitUS,",
+				"          InTransitEU,",
+				"          InOrderEU,",
+				"          InOrderUS,",
+				"          ReceivedEU,",
+				"          ReceivedUS",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> SaveGlobalPurchases"
 			]
 		}
