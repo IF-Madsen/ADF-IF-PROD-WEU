@@ -1,5 +1,5 @@
 {
-	"name": "Once a month",
+	"name": "Once a Week  - Thursday",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
@@ -14,16 +14,13 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Month",
+				"frequency": "Week",
 				"interval": 1,
 				"startTime": "2024-09-05T01:00:00",
 				"timeZone": "Romance Standard Time",
 				"schedule": {
-					"hours": [
-						4
-					],
-					"monthDays": [
-						20
+					"weekDays": [
+						"Thursday"
 					]
 				}
 			}

@@ -25,6 +25,8 @@
 		"folder": {
 			"name": "Development"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-29T08:47:59Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

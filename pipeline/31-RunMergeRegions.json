@@ -1,5 +1,5 @@
 {
-	"name": "RunMergeRegions",
+	"name": "31-RunMergeRegions",
 	"properties": {
 		"activities": [
 			{
@@ -106,6 +106,8 @@
 		"folder": {
 			"name": "ItemForecast"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-22T17:55:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

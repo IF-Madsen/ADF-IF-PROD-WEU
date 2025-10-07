@@ -1,5 +1,6 @@
 {
 	"name": "Dynamics365BusinessCentral",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"description": "Direct access to D365bc",
 		"parameters": {

@@ -1,5 +1,5 @@
 {
-	"name": "TransformDataAll",
+	"name": "20-TransformDataAll",
 	"properties": {
 		"activities": [
 			{
@@ -9,6 +9,30 @@
 				"dependsOn": [
 					{
 						"activity": "Set folder Json",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set folder d365bc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Layer Bronze",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -231,116 +255,6 @@
 										"parmSourceFileItems": "concat('Items',$parmRegion,'.parquet')",
 										"parmSourceFileVendors": "concat('Vendors',$parmRegion,'.parquet')",
 										"parmTargetFile": "concat('TopRankVendors',$parmRegion,'.json')"
-									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
-						},
-						{
-							"name": "Create Purchaseorder files",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "Create Filtered Items",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "Transform_PurchaseOrderFiles",
-									"type": "DataFlowReference",
-									"parameters": {
-										"parmSourceBlob": {
-											"value": "'@{variables('blobBronze')}'",
-											"type": "Expression"
-										},
-										"parmSourceFolder": {
-											"value": "'@{variables('folderD365bc')}'",
-											"type": "Expression"
-										},
-										"ParmTargetBlob": {
-											"value": "'@{variables('blobSilver')}'",
-											"type": "Expression"
-										},
-										"parmTargetFolder": {
-											"value": "'@{variables('folderD365bc')}'",
-											"type": "Expression"
-										},
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										},
-										"parmSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('PurchOrders',$parmRegion,'.parquet')"
-									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
-						},
-						{
-							"name": "Create Purchline files",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "Create Purchaseorder files",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "Transform_PurchLineFile",
-									"type": "DataFlowReference",
-									"parameters": {
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										},
-										"parmSourceBlob": {
-											"value": "'@{variables('blobBronze')}'",
-											"type": "Expression"
-										},
-										"parmSourceFolder": {
-											"value": "'@{variables('folderD365bc')}'",
-											"type": "Expression"
-										},
-										"parmTargetBlob": {
-											"value": "'@{variables('blobSilver')}'",
-											"type": "Expression"
-										},
-										"parmTargetFolder": {
-											"value": "'@{variables('folderD365bc')}'",
-											"type": "Expression"
-										},
-										"parmSourceFilename": "concat('PurchaseLines',$parmRegion,'.parquet')",
-										"parmTargetFilename": "concat('PurchOrderLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -578,7 +492,8 @@
 										},
 										"parmSourceFile": "concat('InventorySumPosAdj',$parmRegion,'.parquet')",
 										"parmTargetFile": "concat('InitialInventory',$parmRegion,'.parquet')",
-										"parmSourceFolderJson": "'json'"
+										"parmSourceFolderJson": "'json'",
+										"ParmSourceJsonFile": "concat('primodate',$parmRegion,'.json')"
 									}
 								},
 								"compute": {
@@ -643,11 +558,11 @@
 							}
 						},
 						{
-							"name": "Create BlanketPurch files",
+							"name": "All Purchase Orders",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "Create BlanketPurchLine Files",
+									"activity": "Create Top Rank Vendors",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -663,7 +578,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Transform_BlanketPurchaseOrderFiles",
+									"referenceName": "Transform_AllPurchaseOrderFiles",
 									"type": "DataFlowReference",
 									"parameters": {
 										"parmSourceBlob": {
@@ -686,8 +601,12 @@
 											"value": "'@{item()}'",
 											"type": "Expression"
 										},
-										"parmSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
-										"parmTargetFile": "concat('BlanketPurchseOrders',$parmRegion,'.parquet')"
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchOrders',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -698,11 +617,11 @@
 							}
 						},
 						{
-							"name": "Create BlanketPurchLine Files",
+							"name": "All Purchaselines",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "Create Filtered Items",
+									"activity": "All Purchase Orders",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -718,7 +637,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Transform_BlanketPurchLineFile",
+									"referenceName": "Transform_AllPurchLineFiles",
 									"type": "DataFlowReference",
 									"parameters": {
 										"parmRegion": {
@@ -741,8 +660,12 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmSourceFilename": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-										"parmTargetFilename": "concat('BlanketPurchseLines',$parmRegion,'.parquet')"
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
@@ -758,7 +681,14 @@
 			{
 				"name": "Set Layer Bronze",
 				"type": "SetVariable",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DeleteSilverFolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -777,7 +707,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Bronze",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -801,7 +731,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Gold",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -825,7 +755,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set folder d365bc",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -849,7 +779,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Layer Silver",
+						"activity": "DeleteSilverFolder",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -865,6 +795,43 @@
 					"value": {
 						"value": "@pipeline().globalParameters.blob_gold",
 						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "DeleteSilverFolder",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_Parquet_Prod",
+						"type": "DatasetReference",
+						"parameters": {
+							"blob": {
+								"value": "@pipeline().globalParameters.blob_silver",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().globalParameters.folder_d365bc",
+								"type": "Expression"
+							},
+							"filename": "*"
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.parquet",
+						"enablePartitionDiscovery": false
 					}
 				}
 			}
@@ -894,6 +861,8 @@
 		"folder": {
 			"name": "ItemForecast"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-28T12:05:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

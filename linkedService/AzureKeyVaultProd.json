@@ -1,5 +1,6 @@
 {
 	"name": "AzureKeyVaultProd",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"description": "KeyVault for Azure Data Factory Prod",
 		"annotations": [],

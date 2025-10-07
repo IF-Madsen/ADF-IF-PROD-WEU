@@ -1,5 +1,5 @@
 {
-	"name": "RunItemForecast",
+	"name": "00-RunItemForecast",
 	"properties": {
 		"activities": [
 			{
@@ -13,7 +13,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "ExtractDataAll",
+						"referenceName": "10-ExtractDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -37,7 +37,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "CalculateDataAll",
+						"referenceName": "30-CalculateDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -60,7 +60,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "TransformDataAll",
+						"referenceName": "20-TransformDataAll",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -70,6 +70,8 @@
 		"folder": {
 			"name": "ItemForecast"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2025-01-22T17:55:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }
