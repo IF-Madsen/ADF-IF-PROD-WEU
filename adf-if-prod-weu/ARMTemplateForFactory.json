@@ -1857,7 +1857,7 @@
 										"type": "Expression"
 									},
 									"apipath": {
-										"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+										"value": "@pipeline().globalParameters.d365bc_ds_PostedPurchaseLines",
 										"type": "Expression"
 									}
 								}
@@ -4656,49 +4656,26 @@
 									"userProperties": [],
 									"typeProperties": {
 										"dataflow": {
-											"referenceName": "Transform_AllPurchLineFiles",
+											"referenceName": "Calc_InventorySumGlobal",
 											"type": "DataFlowReference",
 											"parameters": {
-												"parmRegion": {
-													"value": "'@{item()}'",
-													"type": "Expression"
-												},
-												"parmSourceBlob": {
-													"value": "'@{pipeline().globalParameters.blob_bronze}'",
-													"type": "Expression"
-												},
-												"parmSourceFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-													"type": "Expression"
-												},
-												"parmTargetBlob": {
-													"value": "'@{pipeline().globalParameters.blob_silver}'",
-													"type": "Expression"
-												},
-												"parmTargetFolder": {
-													"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-													"type": "Expression"
-												},
-												"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-												"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-												"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-												"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-												"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
-												"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
+												"parmSourceBlob": "'gold'",
+												"parmSourceFolder": "'d365bc'",
+												"parmTargetBlob": "'gold'",
+												"parmTargetFolder": "'d365bc'"
 											},
 											"datasetParameters": {
-												"BlanketPurchaseLines": {},
-												"PostedPurchaseLines": {},
-												"PurchaseLines": {},
-												"FilteredPostedPurchaseOrders": {},
-												"SaveInOrderFile": {},
-												"SaveReceivedFile": {},
-												"SaveInTransitFile": {},
-												"SaveJSONBlanket": {},
-												"SaveJSONPosted": {},
-												"SaveJSONPurchase": {}
-											},
-											"linkedServiceParameters": {}
+												"InventorySumEU": {},
+												"InventorySumUS": {},
+												"InTransitEU": {},
+												"InTransitUS": {},
+												"InOrderEU": {},
+												"InOrderUS": {},
+												"ReceivedEU": {},
+												"ReceivedUS": {},
+												"SaveGlobalInventorySum": {},
+												"SaveGlobalPurchases": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -4722,7 +4699,7 @@
 				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Transform_AllPurchLineFiles')]"
+				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySumGlobal')]"
 			]
 		},
 		{
@@ -9486,6 +9463,15 @@
 						},
 						{
 							"name": "FilterValidItems"
+						},
+						{
+							"name": "PurchaseReceivedOrders"
+						},
+						{
+							"name": "SelectFields"
+						},
+						{
+							"name": "filter1"
 						}
 					],
 					"scriptLines": [
@@ -9776,21 +9762,36 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectBlanketFields",
 						"SelectOnlyPOlines select(mapColumn(",
-						"          PostedPONumber = Document_No,",
-						"          No = PostedPurchaseLines@No,",
-						"          Quantity",
+						"          Document_No = SelectFields@DocumentNo,",
+						"          ItemNo,",
+						"          Qty_to_Invoice",
 						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectPostedFields",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> selectPostedFields",
 						"PurchaseLines select(skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectPurchaseLinesFields",
-						"FilterValidItems, FilteredPostedPurchaseOrders join(Document_No == Order_No,",
-						"     joinType:'inner',",
+						"SelectFields, PurchaseReceivedOrders join(SelectFields@DocumentNo == PurchaseReceivedOrders@DocumentNo,",
+						"     joinType:'outer',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> SelectOnlyPOlines",
 						"PostedPurchaseLines filter(Type=='Item' &&",
-						"No != \"FREIGHT\") ~> FilterValidItems",
+						"No != \"FREIGHT\" ",
+						") ~> FilterValidItems",
+						"filter1 select(mapColumn(",
+						"          PurchaseOrderNo = Order_No,",
+						"          DocumentNo = No",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> PurchaseReceivedOrders",
+						"FilterValidItems select(mapColumn(",
+						"          DocumentNo = Document_No,",
+						"          ItemNo = No,",
+						"          Qty_to_Invoice",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> SelectFields",
+						"FilteredPostedPurchaseOrders filter(Order_No == 'PO100344') ~> filter1",
 						"selectBlanketFields sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
@@ -9817,11 +9818,6 @@
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          PostedPONumber,",
-						"          No,",
-						"          Quantity",
-						"     ),",
 						"     partitionBy('hash', 1)) ~> SaveReceivedFile",
 						"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
