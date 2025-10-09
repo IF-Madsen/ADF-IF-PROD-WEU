@@ -113,6 +113,9 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -412,7 +415,7 @@
 				"PurchaseLines select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectPurchaseLinesFields",
 				"select1, PurchaseReceivedOrders join(Document_No == ReceivedOrderNo,",
-				"     joinType:'right',",
+				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> SelectOnlyPOlines",
@@ -420,7 +423,7 @@
 				"No != \"FREIGHT\" &&",
 				"No == \"HU703401\"",
 				" ) ~> FilterValidItems",
-				"FilteredPostedPurchaseOrders select(mapColumn(",
+				"filter1 select(mapColumn(",
 				"          PurchaseOrderNo = Order_No,",
 				"          ReceivedOrderNo = No",
 				"     ),",
@@ -433,6 +436,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select1",
+				"FilteredPostedPurchaseOrders filter(Order_No == 'PO100344') ~> filter1",
 				"selectBlanketFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",

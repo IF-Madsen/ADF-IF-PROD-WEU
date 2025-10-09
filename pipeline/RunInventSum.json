@@ -27,35 +27,13 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Transform_AllPurchLineFiles",
+									"referenceName": "Calc_InventorySumGlobal",
 									"type": "DataFlowReference",
 									"parameters": {
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										},
-										"parmSourceBlob": {
-											"value": "'@{pipeline().globalParameters.blob_bronze}'",
-											"type": "Expression"
-										},
-										"parmSourceFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmTargetBlob": {
-											"value": "'@{pipeline().globalParameters.blob_silver}'",
-											"type": "Expression"
-										},
-										"parmTargetFolder": {
-											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
-											"type": "Expression"
-										},
-										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
-										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
-										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
-										"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
+										"parmSourceBlob": "'gold'",
+										"parmSourceFolder": "'d365bc'",
+										"parmTargetBlob": "'gold'",
+										"parmTargetFolder": "'d365bc'"
 									}
 								},
 								"compute": {
