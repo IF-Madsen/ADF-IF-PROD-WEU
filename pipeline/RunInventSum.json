@@ -30,6 +30,26 @@
 									"referenceName": "Transform_AllPurchLineFiles",
 									"type": "DataFlowReference",
 									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{pipeline().globalParameters.blob_bronze}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
 										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
