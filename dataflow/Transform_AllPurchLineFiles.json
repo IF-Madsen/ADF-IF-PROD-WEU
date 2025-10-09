@@ -110,6 +110,12 @@
 				},
 				{
 					"name": "SelectFields"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -211,7 +217,7 @@
 				"          Location_Code as string,",
 				"          Bin_Code as string,",
 				"          Sust_Account_No as string,",
-				"          Quantity as decimal(38,18),",
+				"          Quantity as double,",
 				"          Reserved_Quantity as decimal(38,18),",
 				"          Job_Remaining_Qty as decimal(38,18),",
 				"          Unit_of_Measure_Code as string,",
@@ -399,10 +405,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectBlanketFields",
-				"SelectOnlyPOlines select(mapColumn(",
-				"          Document_No = SelectFields@DocumentNo,",
+				"filter1 select(mapColumn(",
 				"          ItemNo,",
-				"          Qty_to_Invoice = QtyReceived",
+				"          PurchaseOrderNo,",
+				"          Qty = QtyReceived,",
+				"          DocumentNo = SelectFields@DocumentNo",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> selectPostedFields",
@@ -426,6 +433,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> SelectFields",
+				"selectPostedFields sort(asc(ItemNo, true)) ~> sort1",
+				"SelectOnlyPOlines filter(ItemNo != 'FREIGHT') ~> filter1",
 				"selectBlanketFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -440,7 +449,7 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
 				"     partitionBy('hash', 1)) ~> SaveInOrderFile",
-				"selectPostedFields sink(allowSchemaDrift: true,",
+				"sort1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: ($parmTargetBlob),",
@@ -478,7 +487,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SaveJSONBlanket",
-				"selectPostedFields sink(allowSchemaDrift: true,",
+				"sort1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
 				"     fileSystem: ($parmTargetBlob),",
