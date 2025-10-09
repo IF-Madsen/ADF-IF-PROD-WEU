@@ -75,21 +75,21 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink1"
+					"name": "SaveJSONBlanket"
 				},
 				{
 					"linkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink2"
+					"name": "SaveJSONPosted"
 				},
 				{
 					"linkedService": {
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink3"
+					"name": "SaveJSONPurchase"
 				}
 			],
 			"transformations": [
@@ -432,12 +432,17 @@
 				"     fileSystem: ($parmTargetBlob),",
 				"     folderPath: ($parmTargetFolder),",
 				"     compressionCodec: 'snappy',",
-				"     partitionFileNames:[($parmPOTargetFile)],",
+				"     partitionFileNames:[(parmPostedPOTargetFile)],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          PostedPONumber,",
+				"          No,",
+				"          Quantity",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> SaveReceivedFile",
 				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -463,7 +468,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1",
+				"     partitionBy('hash', 1)) ~> SaveJSONBlanket",
 				"selectPostedFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
@@ -475,7 +480,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink2",
+				"     partitionBy('hash', 1)) ~> SaveJSONPosted",
 				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
@@ -487,7 +492,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink3"
+				"     partitionBy('hash', 1)) ~> SaveJSONPurchase"
 			]
 		}
 	}
