@@ -14,7 +14,7 @@
 					},
 					"activities": [
 						{
-							"name": "CalculateInventSum",
+							"name": "RunFlow",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
@@ -27,18 +27,15 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Calc_InventorySum",
+									"referenceName": "Transform_AllPurchLineFiles",
 									"type": "DataFlowReference",
 									"parameters": {
-										"parmRegion": {
-											"value": "'@{item()}'",
-											"type": "Expression"
-										},
-										"parmSourceBlob": "'silver'",
-										"parmSourceFolder": "'d365bc'",
-										"parmTargetBlob": "'gold'",
-										"parmTargetFolder": "'d365bc'",
-										"parmSourceFolderJson": "'json'"
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchaseLines',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
