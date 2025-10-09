@@ -107,6 +107,12 @@
 				},
 				{
 					"name": "FilterValidItems"
+				},
+				{
+					"name": "PurchaseReceivedOrders"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -396,12 +402,17 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectBlanketFields",
-				"SelectOnlyPOlines select(skipDuplicateMapInputs: false,",
+				"SelectOnlyPOlines select(mapColumn(",
+				"          Document_No = select1@Document_No,",
+				"          No = PostedPurchaseLines@No,",
+				"          Qty_to_Invoice",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> selectPostedFields",
 				"PurchaseLines select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectPurchaseLinesFields",
-				"FilterValidItems, FilteredPostedPurchaseOrders join(Document_No == Order_No,",
-				"     joinType:'inner',",
+				"select1, PurchaseReceivedOrders join(Document_No == ReceivedOrderNo,",
+				"     joinType:'right',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> SelectOnlyPOlines",
@@ -409,6 +420,19 @@
 				"No != \"FREIGHT\" &&",
 				"No == \"HU703401\"",
 				" ) ~> FilterValidItems",
+				"FilteredPostedPurchaseOrders select(mapColumn(",
+				"          PurchaseOrderNo = Order_No,",
+				"          ReceivedOrderNo = No",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> PurchaseReceivedOrders",
+				"FilterValidItems select(mapColumn(",
+				"          Document_No,",
+				"          No,",
+				"          Qty_to_Invoice",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
 				"selectBlanketFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
