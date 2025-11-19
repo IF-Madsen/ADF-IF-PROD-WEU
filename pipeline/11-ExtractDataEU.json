@@ -1441,7 +1441,7 @@
 								"type": "Expression"
 							},
 							"apipath": {
-								"value": "@pipeline().globalParameters.d365bc_ds_PurchaseOrderLines",
+								"value": "@pipeline().globalParameters.d365bc_ds_PostedPurchaseLines",
 								"type": "Expression"
 							}
 						}
