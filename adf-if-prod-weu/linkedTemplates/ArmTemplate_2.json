@@ -1612,10 +1612,7 @@
 												"FilteredPostedPurchaseOrders": {},
 												"SaveInOrderFile": {},
 												"SaveReceivedFile": {},
-												"SaveInTransitFile": {},
-												"SaveJSONBlanket": {},
-												"SaveJSONPosted": {},
-												"SaveJSONPurchase": {}
+												"SaveInTransitFile": {}
 											}
 										},
 										"staging": {},
@@ -5007,10 +5004,7 @@
 												"PostedPurchaseLines": {},
 												"SavePurchItemSum": {},
 												"SaveBlanketPurchSum": {},
-												"SavePostedPurchItemSum": {},
-												"InTransitJson": {},
-												"sink1": {},
-												"sink2": {}
+												"SavePostedPurchItemSum": {}
 											}
 										},
 										"staging": {},
@@ -5602,10 +5596,7 @@
 												"PostedPurchaseLines": {},
 												"SavePurchItemSum": {},
 												"SaveBlanketPurchSum": {},
-												"SavePostedPurchItemSum": {},
-												"InTransitJson": {},
-												"sink1": {},
-												"sink2": {}
+												"SavePostedPurchItemSum": {}
 											}
 										},
 										"staging": {},
