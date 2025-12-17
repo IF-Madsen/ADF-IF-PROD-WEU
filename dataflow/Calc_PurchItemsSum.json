@@ -51,27 +51,6 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "SavePostedPurchItemSum"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "InTransitJson"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "sink1"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -435,7 +414,8 @@
 				"PurchaseLines aggregate(groupBy(No),",
 				"     SumQty = sum(Quantity)) ~> SumTransitItemsQty",
 				"SumTransitItemsQty filter(No>'') ~> RemoveBlanks",
-				"BlanketPurchaseLines aggregate(groupBy(No),",
+				"BlanketPurchaseLines aggregate(groupBy(No,",
+				"          Document_No),",
 				"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
 				"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
 				"PostedPurchaseLines aggregate(groupBy(Document_No,",
@@ -484,43 +464,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SavePostedPurchItemSum",
-				"RemoveBlanks sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('PurchItemSum',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> InTransitJson",
-				"RemoveBlanks2 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('BlanketPurchItemSum',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1",
-				"RemoveBlanks3 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('PostedPurchItemSum',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink2"
+				"     partitionBy('hash', 1)) ~> SavePostedPurchItemSum"
 			]
 		}
 	}
