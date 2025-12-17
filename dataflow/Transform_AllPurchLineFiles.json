@@ -69,27 +69,6 @@
 						"referenceName": "D365bcDataLakeProd",
 						"type": "LinkedServiceReference"
 					}
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "SaveJSONBlanket"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "SaveJSONPosted"
-				},
-				{
-					"linkedService": {
-						"referenceName": "D365bcDataLakeProd",
-						"type": "LinkedServiceReference"
-					},
-					"name": "SaveJSONPurchase"
 				}
 			],
 			"transformations": [
@@ -447,7 +426,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     saveOrder: 1,",
+				"     saveOrder: 0,",
 				"     partitionBy('hash', 1)) ~> SaveInOrderFile",
 				"sort1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -474,43 +453,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SaveInTransitFile",
-				"selectBlanketFields sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('BlanketPurchaseLines',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SaveJSONBlanket",
-				"sort1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('PostedPurchaseLines',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SaveJSONPosted",
-				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'json',",
-				"     fileSystem: ($parmTargetBlob),",
-				"     folderPath: ($parmTargetFolder),",
-				"     partitionFileNames:[(concat('PurchaseLines',$parmRegion,'.json'))],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SaveJSONPurchase"
+				"     partitionBy('hash', 1)) ~> SaveInTransitFile"
 			]
 		}
 	}
