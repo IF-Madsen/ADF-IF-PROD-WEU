@@ -584,10 +584,6 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          No,",
-				"          Quantity",
-				"     ),",
 				"     partitionBy('hash', 1)) ~> SaveInTransitFile"
 			]
 		}
