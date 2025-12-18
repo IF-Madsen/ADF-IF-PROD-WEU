@@ -133,7 +133,7 @@
 				"     Quantity = sum(Quantity)) ~> SumInOrderItemsQty",
 				"SumInOrderItemsQty filter(No>'') ~> RemoveBlanks2",
 				"PostedPurchaseLines aggregate(groupBy(ItemNo),",
-				"     Quantity = sum(Quantity)) ~> SumPostedItemsQty",
+				"     Quantity = sum(Qty)) ~> SumPostedItemsQty",
 				"SumPostedItemsQty filter(ItemNo>'') ~> RemoveBlanks3",
 				"RemoveBlanks sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
