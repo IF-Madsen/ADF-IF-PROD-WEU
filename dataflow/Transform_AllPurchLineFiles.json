@@ -553,7 +553,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     saveOrder: 0,",
+				"     saveOrder: 2,",
 				"     mapColumn(",
 				"          No,",
 				"          Quantity",
@@ -571,6 +571,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
 				"     partitionBy('hash', 1)) ~> SaveReceivedFile",
 				"selectPurchaseLinesFields sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -584,6 +585,7 @@
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 3,",
 				"     partitionBy('hash', 1)) ~> SaveInTransitFile"
 			]
 		}
