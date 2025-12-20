@@ -42,8 +42,6 @@
 						{
 							"name": "Calculate Inventory Sum",
 							"type": "ExecuteDataFlow",
-							"state": "Inactive",
-							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [
 								{
 									"activity": "Calculate Purchase Orders",
@@ -101,8 +99,6 @@
 						{
 							"name": "Calculate Vendor Items",
 							"type": "ExecuteDataFlow",
-							"state": "Inactive",
-							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [
 								{
 									"activity": "Calculate Inventory Sum",
