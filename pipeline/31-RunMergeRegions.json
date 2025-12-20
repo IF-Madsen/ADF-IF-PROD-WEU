@@ -93,7 +93,7 @@
 				}
 			},
 			{
-				"name": "Data flow1",
+				"name": "Update InventorySumGlobal",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
