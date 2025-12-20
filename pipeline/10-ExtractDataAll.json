@@ -268,6 +268,7 @@
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
 						"recursive": true,
+						"wildcardFileName": "*.parquet",
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -304,6 +305,7 @@
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
 						"recursive": true,
+						"wildcardFileName": "*.parquet",
 						"enablePartitionDiscovery": false
 					}
 				}
