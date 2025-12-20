@@ -4436,8 +4436,7 @@
 									"ReceivedUS": {},
 									"SaveGlobalInventorySum": {},
 									"SaveGlobalPurchases": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
