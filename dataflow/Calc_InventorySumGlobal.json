@@ -323,7 +323,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectInventorySumFields",
-				"InOrderEU, InOrderUS join(InOrderEU@No == ERROR_FUNCTION(''),",
+				"InOrderEU, InOrderUS join(InOrderEU@No == InOrderUS@No,",
 				"     joinType:'outer',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
