@@ -164,7 +164,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "DeleteParquetFiles",
+								"activity": "DeleteBronzeLayer",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -206,7 +206,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "DeleteParquetFiles",
+								"activity": "DeleteBronzeLayer",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -244,9 +244,16 @@
 						}
 					},
 					{
-						"name": "DeleteParquetFiles",
+						"name": "DeleteBronzeLayer",
 						"type": "Delete",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "DeleteSilverLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -271,17 +278,7 @@
 									"filename": "*"
 								}
 							},
-							"logStorageSettings": {
-								"linkedServiceName": {
-									"referenceName": "D365bcDataLakeProd",
-									"type": "LinkedServiceReference"
-								},
-								"path": {
-									"value": "@concat(pipeline().globalParameters.blob_bronze,'/',pipeline().globalParameters.folder_logs)",
-									"type": "Expression"
-								}
-							},
-							"enableLogging": true,
+							"enableLogging": false,
 							"storeSettings": {
 								"type": "AzureBlobFSReadSettings",
 								"recursive": true,
@@ -295,7 +292,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "DeleteParquetFiles",
+								"activity": "DeleteBronzeLayer",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -391,6 +388,82 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {}
+						}
+					},
+					{
+						"name": "DeleteSilverLayer",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "DeleteGoldLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_silver",
+										"type": "Expression"
+									},
+									"folder": "@pipeline().globalParameters.folder_d365bc",
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "DeleteGoldLayer",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_gold",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							}
 						}
 					}
 				],
