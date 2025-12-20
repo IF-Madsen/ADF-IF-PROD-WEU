@@ -30,6 +30,26 @@
 									"referenceName": "Calc_PurchItemsSum",
 									"type": "DataFlowReference",
 									"parameters": {
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": {
+											"value": "'@{pipeline().globalParameters.blob_silver}'",
+											"type": "Expression"
+										},
+										"parmSourceFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
+										"parmTargetBlob": {
+											"value": "'@{pipeline().globalParameters.blob_gold}'",
+											"type": "Expression"
+										},
+										"parmTargetFolder": {
+											"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+											"type": "Expression"
+										},
 										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
 										"parmBlanketPOTargetFile": "concat('BlanketPurchItemSum',$parmRegion,'.parquet')",
 										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
