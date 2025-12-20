@@ -27,13 +27,15 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Calc_InventorySumGlobal",
+									"referenceName": "Calc_PurchItemsSum",
 									"type": "DataFlowReference",
 									"parameters": {
-										"parmSourceBlob": "'gold'",
-										"parmSourceFolder": "'d365bc'",
-										"parmTargetBlob": "'gold'",
-										"parmTargetFolder": "'d365bc'"
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOTargetFile": "concat('BlanketPurchItemSum',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOTargetFile": "concat('PostedPurchItemSum',$parmRegion,'.parquet')",
+										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
+										"parmPOTargetFile": "concat('PurchItemSum',$parmRegion,'.parquet')"
 									}
 								},
 								"compute": {
