@@ -483,8 +483,7 @@
 				"[concat(variables('factoryId'), '/pipelines/12-ExtractDataUS')]",
 				"[concat(variables('factoryId'), '/datasets/ds_Parquet_Prod')]",
 				"[concat(variables('factoryId'), '/datasets/ds_Json_Prod')]",
-				"[concat(variables('factoryId'), '/pipelines/13-ExtractPrimoAll')]",
-				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+				"[concat(variables('factoryId'), '/pipelines/13-ExtractPrimoAll')]"
 			]
 		},
 		{
@@ -4384,6 +4383,69 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Update InventorySumGlobal",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set Folder",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Calc_InventorySumGlobal",
+								"type": "DataFlowReference",
+								"parameters": {
+									"parmSourceBlob": {
+										"value": "'@{pipeline().globalParameters.blob_gold}'",
+										"type": "Expression"
+									},
+									"parmSourceFolder": {
+										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+										"type": "Expression"
+									},
+									"parmTargetBlob": {
+										"value": "'@{pipeline().globalParameters.blob_gold}'",
+										"type": "Expression"
+									},
+									"parmTargetFolder": {
+										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"InventorySumEU": {},
+									"InventorySumUS": {},
+									"InTransitEU": {},
+									"InTransitUS": {},
+									"InOrderEU": {},
+									"InOrderUS": {},
+									"ReceivedEU": {},
+									"ReceivedUS": {},
+									"SaveGlobalInventorySum": {},
+									"SaveGlobalPurchases": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 16,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -4406,7 +4468,8 @@
 				"lastPublishTime": "2025-01-22T17:55:18Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Merge_RegionInventories')]"
+				"[concat(variables('factoryId'), '/dataflows/Merge_RegionInventories')]",
+				"[concat(variables('factoryId'), '/dataflows/Calc_InventorySumGlobal')]"
 			]
 		},
 		{
