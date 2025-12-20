@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ForEachRegion",
+				"name": "Region",
 				"type": "ForEach",
 				"dependsOn": [],
 				"userProperties": [],
