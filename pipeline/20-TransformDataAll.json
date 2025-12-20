@@ -681,14 +681,7 @@
 			{
 				"name": "Set Layer Bronze",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "DeleteSilverFolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -705,14 +698,7 @@
 			{
 				"name": "Set Layer Silver",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "DeleteSilverFolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -729,14 +715,7 @@
 			{
 				"name": "Set folder d365bc",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "DeleteSilverFolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -753,14 +732,7 @@
 			{
 				"name": "Set folder Json",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "DeleteSilverFolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -777,14 +749,7 @@
 			{
 				"name": "Set Layer Gold",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "DeleteSilverFolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -795,43 +760,6 @@
 					"value": {
 						"value": "@pipeline().globalParameters.blob_gold",
 						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "DeleteSilverFolder",
-				"type": "Delete",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "ds_Parquet_Prod",
-						"type": "DatasetReference",
-						"parameters": {
-							"blob": {
-								"value": "@pipeline().globalParameters.blob_silver",
-								"type": "Expression"
-							},
-							"folder": {
-								"value": "@pipeline().globalParameters.folder_d365bc",
-								"type": "Expression"
-							},
-							"filename": "*"
-						}
-					},
-					"enableLogging": false,
-					"storeSettings": {
-						"type": "AzureBlobFSReadSettings",
-						"recursive": true,
-						"wildcardFileName": "*.parquet",
-						"enablePartitionDiscovery": false
 					}
 				}
 			}
