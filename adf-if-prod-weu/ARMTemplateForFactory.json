@@ -6520,7 +6520,7 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {
-					"selfContainedInteractiveAuthoringEnabled": false
+					"selfContainedInteractiveAuthoringEnabled": true
 				}
 			},
 			"dependsOn": []
