@@ -13,151 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Transform_LedgerPeriod')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Create all periods",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveParquetFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Groupby"
-						},
-						{
-							"name": "SortDates"
-						},
-						{
-							"name": "SelectFields"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('silver'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('ItemsLedgerEntries',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('LedgerPeriod',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"LoadFile aggregate(groupBy(StartDate = addDays(Posting_Date,-dayOfMonth(Posting_Date)+1),",
-						"          EndDate = lastDayOfMonth(Posting_Date)),",
-						"     Quantity = sum(Quantity)) ~> Groupby",
-						"Groupby sort(asc(StartDate, true)) ~> SortDates",
-						"SortDates select(mapColumn(",
-						"          StartDate,",
-						"          EndDate",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SelectFields",
-						"SelectFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'none',",
-						"     partitionFileNames:[($parmTargetFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveParquetFile"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Transform_TopRankVendor')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1889,7 +1744,6 @@
 				"lastPublishTime": "2025-01-28T12:05:04Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Transform_LedgerPeriod')]",
 				"[concat(variables('factoryId'), '/dataflows/Transform_TopRankVendor')]"
 			]
 		},
@@ -5427,6 +5281,337 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/31-RunMergeRegions')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/10-ExtractDataAll')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute EU",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "DeleteBronzeLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "company",
+								"value": "IFE"
+							},
+							{
+								"name": "application",
+								"value": "D365bc"
+							}
+						],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "11-ExtractDataEU",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"parmRegion": {
+									"value": "@pipeline().globalParameters.Region_EU",
+									"type": "Expression"
+								},
+								"parmLoaded": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Execute US",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "DeleteBronzeLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "company",
+								"value": "IFA"
+							},
+							{
+								"name": "application",
+								"value": "D365bc"
+							}
+						],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "12-ExtractDataUS",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"parmRegion": {
+									"value": "@pipeline().globalParameters.Region_US",
+									"type": "Expression"
+								},
+								"parmLoaded": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "DeleteBronzeLayer",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "DeleteSilverLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "CopyJsonfile",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "DeleteBronzeLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().globalParameters.folder_json",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_Json_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"Cointainer": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_Json_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"Cointainer": {
+										"value": "@concat(pipeline().globalParameters.blob_silver,'/',pipeline().globalParameters.folder_json)",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Create Primo",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute EU",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Execute US",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "13-ExtractPrimoAll",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "DeleteSilverLayer",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "DeleteGoldLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_silver",
+										"type": "Expression"
+									},
+									"folder": "@pipeline().globalParameters.folder_d365bc",
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "DeleteGoldLayer",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_gold",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "ItemForecast"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/11-ExtractDataEU')]",
+				"[concat(variables('factoryId'), '/pipelines/12-ExtractDataUS')]",
+				"[concat(variables('factoryId'), '/pipelines/13-ExtractPrimoAll')]"
 			]
 		}
 	]

@@ -6479,18 +6479,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/HOME25')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {
-					"selfContainedInteractiveAuthoringEnabled": true
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Calc_InventorySum')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
