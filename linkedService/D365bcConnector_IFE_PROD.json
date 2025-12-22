@@ -1,6 +1,5 @@
 {
 	"name": "D365bcConnector_IFE_PROD",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"description": "OData Connector to D365 BC IFE PROD\n(West-Europe)",
 		"annotations": [
@@ -22,6 +21,11 @@
 				},
 				"secretName": "ar-D365BC-prod-DK"
 			}
+		},
+		"connectVia": {
+			"referenceName": "HOME25",
+			"type": "IntegrationRuntimeReference"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
