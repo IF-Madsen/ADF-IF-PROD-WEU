@@ -20,7 +20,11 @@
 				"timeZone": "Romance Standard Time",
 				"schedule": {
 					"weekDays": [
-						"Thursday"
+						"Monday",
+						"Thursday",
+						"Wendsday",
+						"Thursday",
+						"Friday"
 					]
 				}
 			}
