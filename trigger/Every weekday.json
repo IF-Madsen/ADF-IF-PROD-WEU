@@ -1,5 +1,5 @@
 {
-	"name": "Once a Week  - Thursday",
+	"name": "Every weekday",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
@@ -22,9 +22,11 @@
 					"weekDays": [
 						"Monday",
 						"Thursday",
-						"Wendsday",
+						null,
 						"Thursday",
-						"Friday"
+						"Friday",
+						"Tuesday",
+						"Wednesday"
 					]
 				}
 			}
