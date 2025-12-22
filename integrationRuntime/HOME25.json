@@ -1,9 +1,0 @@
-{
-	"name": "HOME25",
-	"properties": {
-		"type": "SelfHosted",
-		"typeProperties": {
-			"selfContainedInteractiveAuthoringEnabled": true
-		}
-	}
-}
