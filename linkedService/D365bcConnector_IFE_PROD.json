@@ -21,10 +21,6 @@
 				},
 				"secretName": "ar-D365BC-prod-DK"
 			}
-		},
-		"connectVia": {
-			"referenceName": "HOME25",
-			"type": "IntegrationRuntimeReference"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
