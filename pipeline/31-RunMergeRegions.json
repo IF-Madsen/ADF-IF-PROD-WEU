@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Set Folder",
+						"activity": "Update InventorySumGlobal",
 						"dependencyConditions": [
 							"Succeeded"
 						]
