@@ -44,7 +44,7 @@
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "Calculate Purchase Orders",
+									"activity": "Calculate Purchase Orders Lines",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -154,7 +154,7 @@
 							}
 						},
 						{
-							"name": "Calculate Purchase Orders",
+							"name": "Calculate Purchase Orders Lines",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
