@@ -4284,7 +4284,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "Set Folder",
+								"activity": "Update InventorySumGlobal",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -6441,6 +6441,47 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Every weekday')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "00-RunItemForecast",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2024-09-05T01:00:00",
+						"timeZone": "Romance Standard Time",
+						"schedule": {
+							"weekDays": [
+								"Monday",
+								"Thursday",
+								null,
+								"Thursday",
+								"Friday",
+								"Tuesday",
+								"Wednesday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/00-RunItemForecast')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Once a month')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -7967,9 +8008,9 @@
 						"     parmSourceFolder as string,",
 						"     parmTargetBlob as string,",
 						"     parmTargetFolder as string,",
-						"     parmBlanketPOSourceFile as string (concat('BlanketPurchaseOrders',$parmRegion,'.parquet')),",
+						"     parmBlanketPOSourceFile as string (concat('BlanketPurchaseLines',$parmRegion,'.parquet')),",
 						"     parmBlanketPOTargetFile as string (concat('BlanketPurchItemSum',$parmRegion,'.parquet')),",
-						"     parmPostedPOSourceFile as string (concat('PostedPurchaseOrders',$parmRegion,'.parquet')),",
+						"     parmPostedPOSourceFile as string (concat('PostedPurchaseLines',$parmRegion,'.parquet')),",
 						"     parmPostedPOTargetFile as string (concat('PostedPurchItemSum',$parmRegion,'.parquet')),",
 						"     parmPOSourceFile as string (concat('PurchaseLines',$parmRegion,'.parquet')),",
 						"     parmPOTargetFile as string (concat('PurchItemSum',$parmRegion,'.parquet'))",
@@ -12804,47 +12845,6 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Every weekday')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "00-RunItemForecast",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Week",
-						"interval": 1,
-						"startTime": "2024-09-05T01:00:00",
-						"timeZone": "Romance Standard Time",
-						"schedule": {
-							"weekDays": [
-								"Monday",
-								"Thursday",
-								null,
-								"Thursday",
-								"Friday",
-								"Tuesday",
-								"Wednesday"
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/00-RunItemForecast')]"
-			]
 		}
 	]
 }
