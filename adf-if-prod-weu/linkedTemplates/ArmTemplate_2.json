@@ -4909,7 +4909,7 @@
 									"type": "ExecuteDataFlow",
 									"dependsOn": [
 										{
-											"activity": "Calculate Purchase Orders",
+											"activity": "Calculate Purchase Orders Lines",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -5040,7 +5040,7 @@
 									}
 								},
 								{
-									"name": "Calculate Purchase Orders",
+									"name": "Calculate Purchase Orders Lines",
 									"type": "ExecuteDataFlow",
 									"dependsOn": [],
 									"policy": {
@@ -5076,9 +5076,9 @@
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
-												"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+												"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 												"parmBlanketPOTargetFile": "concat('BlanketPurchItemSum',$parmRegion,'.parquet')",
-												"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+												"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
 												"parmPostedPOTargetFile": "concat('PostedPurchItemSum',$parmRegion,'.parquet')",
 												"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
 												"parmPOTargetFile": "concat('PurchItemSum',$parmRegion,'.parquet')"
