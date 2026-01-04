@@ -6461,17 +6461,15 @@
 					"recurrence": {
 						"frequency": "Week",
 						"interval": 1,
-						"startTime": "2024-09-05T01:00:00",
+						"startTime": "2024-09-04T03:00:00",
 						"timeZone": "Romance Standard Time",
 						"schedule": {
 							"weekDays": [
 								"Monday",
-								"Thursday",
-								null,
-								"Thursday",
-								"Friday",
 								"Tuesday",
-								"Wednesday"
+								"Wednesday",
+								"Thursday",
+								"Friday"
 							]
 						}
 					}
