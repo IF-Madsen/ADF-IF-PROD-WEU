@@ -7175,42 +7175,48 @@
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "InTransitEU"
+							"name": "InTransitEU",
+							"description": "Import data from D365bcDataLakeProd\n(Purchase Order Lines EU)"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "InTransitUS"
+							"name": "InTransitUS",
+							"description": "Import data from D365bcDataLakeProd\n(Purchase Order Lines US)"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "InOrderEU"
+							"name": "InOrderEU",
+							"description": "Import data from D365bcDataLakeProd\n(Blanket Purchase Order Lines EU)"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "InOrderUS"
+							"name": "InOrderUS",
+							"description": "Import data from D365bcDataLakeProd\n(Blanket Purchase Order Lines US)"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "ReceivedEU"
+							"name": "ReceivedEU",
+							"description": "Import data from D365bcDataLakeProd\n(Posted Purchase Order Lines EU)"
 						},
 						{
 							"linkedService": {
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "ReceivedUS"
+							"name": "ReceivedUS",
+							"description": "Import data from D365bcDataLakeProd\n(Posted Purchase Order Lines US)"
 						}
 					],
 					"sinks": [
@@ -7456,7 +7462,7 @@
 						"allignInTransitFields select(mapColumn(",
 						"          ItemNoInTransit = ItemNoEU,",
 						"          InTransitUS = SumQtyUS,",
-						"          InTransitEU = SumQtyUS",
+						"          InTransitEU = SumQtyEU",
 						"     ),",
 						"     skipDuplicateMapInputs: false,",
 						"     skipDuplicateMapOutputs: false) ~> InTransitSum",
@@ -7523,11 +7529,11 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectReceivedFields",
-						"selectReceivedFields derive(ItemNo = iifNull(ItemNoUS,ItemNoEU),",
+						"selectReceivedFields derive(ItemNoEU = iifNull(ItemNoUS,ItemNoEU),",
 						"          ReceivedEU = iifNull(QuantityEU,0),",
 						"          ReceivedUS = iifNull(QuantityUS,0)) ~> allignReceivedFields",
 						"allignReceivedFields select(mapColumn(",
-						"          ItemNoReceived = ItemNo,",
+						"          ItemNoReceived = ItemNoEU,",
 						"          ReceivedEU,",
 						"          ReceivedUS",
 						"     ),",
