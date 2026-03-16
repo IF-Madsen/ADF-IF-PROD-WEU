@@ -8160,7 +8160,11 @@
 								"referenceName": "D365bcDataLakeProd",
 								"type": "LinkedServiceReference"
 							},
-							"name": "saveFile"
+							"name": "saveFile",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
