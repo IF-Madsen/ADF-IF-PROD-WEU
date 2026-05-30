@@ -114,8 +114,11 @@
 				"value": "'https://ironfortressinc.crm4.dynamics.com/'"
 			},
 			"d365bc_ExtCustomer1": {
-				"type": "string",
-				"value": "D00482"
+				"type": "array",
+				"value": [
+					"D00482",
+					"D0280"
+				]
 			},
 			"folderExcel": {
 				"type": "string",
