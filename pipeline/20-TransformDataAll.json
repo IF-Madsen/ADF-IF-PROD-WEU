@@ -432,15 +432,19 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmExtCustNo": {
+										"parmExtCustNo1": {
 											"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer1}'",
 											"type": "Expression"
 										},
-										"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
+										"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+										"parmExtCustNo2": {
+											"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer2}'",
+											"type": "Expression"
+										}
 									}
 								},
 								"compute": {
-									"coreCount": 8,
+									"coreCount": 16,
 									"computeType": "General"
 								},
 								"traceLevel": "Fine"
