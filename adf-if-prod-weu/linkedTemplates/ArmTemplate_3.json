@@ -2329,7 +2329,7 @@
 							{
 								"activity": "Empty Folders",
 								"dependencyConditions": [
-									"Succeeded"
+									"Completed"
 								]
 							}
 						],
