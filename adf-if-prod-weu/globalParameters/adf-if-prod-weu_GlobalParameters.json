@@ -112,7 +112,7 @@
 	},
 	"d365bc_ExtCustomer1": {
 		"type": "string",
-		"value": "D00482"
+		"value": "\"D00482\""
 	},
 	"folderExcel": {
 		"type": "string",
@@ -149,5 +149,9 @@
 	"d365bc_ds_PostedPurchaseLines": {
 		"type": "string",
 		"value": "ADF_PostedPurchaseLines"
+	},
+	"d365bc_ExtCustomer2": {
+		"type": "string",
+		"value": "\"D0280\""
 	}
 }

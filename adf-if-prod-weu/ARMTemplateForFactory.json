@@ -74,7 +74,14 @@
 						"name": "Extract Data",
 						"description": "Import data from sources to Bronze Layer",
 						"type": "ExecutePipeline",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Empty Folders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"secureInput": false
 						},
@@ -136,6 +143,23 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Empty Folders",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "01-EmptyAllLayers",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"policy": {
@@ -150,7 +174,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/10-ExtractDataAll')]",
 				"[concat(variables('factoryId'), '/pipelines/30-CalculateDataAll')]",
-				"[concat(variables('factoryId'), '/pipelines/20-TransformDataAll')]"
+				"[concat(variables('factoryId'), '/pipelines/20-TransformDataAll')]",
+				"[concat(variables('factoryId'), '/pipelines/01-EmptyAllLayers')]"
 			]
 		},
 		{
@@ -164,7 +189,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "DeleteBronzeLayer",
+								"activity": "CopyJsonfile",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -206,7 +231,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "DeleteBronzeLayer",
+								"activity": "CopyJsonfile",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -244,60 +269,9 @@
 						}
 					},
 					{
-						"name": "DeleteBronzeLayer",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "DeleteSilverLayer",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_bronze",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": "*"
-								}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.parquet",
-								"enablePartitionDiscovery": false
-							}
-						}
-					},
-					{
 						"name": "CopyJsonfile",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "DeleteBronzeLayer",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -389,84 +363,6 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
-					},
-					{
-						"name": "DeleteSilverLayer",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "DeleteGoldLayer",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_silver",
-										"type": "Expression"
-									},
-									"folder": "@pipeline().globalParameters.folder_d365bc",
-									"filename": "*"
-								}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.parquet",
-								"enablePartitionDiscovery": false
-							}
-						}
-					},
-					{
-						"name": "DeleteGoldLayer",
-						"type": "Delete",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "ds_Parquet_Prod",
-								"type": "DatasetReference",
-								"parameters": {
-									"blob": {
-										"value": "@pipeline().globalParameters.blob_gold",
-										"type": "Expression"
-									},
-									"folder": {
-										"value": "@pipeline().globalParameters.folder_d365bc",
-										"type": "Expression"
-									},
-									"filename": "*"
-								}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.parquet",
-								"enablePartitionDiscovery": false
-							}
-						}
 					}
 				],
 				"policy": {
@@ -481,7 +377,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/11-ExtractDataEU')]",
 				"[concat(variables('factoryId'), '/pipelines/12-ExtractDataUS')]",
-				"[concat(variables('factoryId'), '/datasets/ds_Parquet_Prod')]",
 				"[concat(variables('factoryId'), '/datasets/ds_Json_Prod')]",
 				"[concat(variables('factoryId'), '/pipelines/13-ExtractPrimoAll')]"
 			]
@@ -3428,11 +3323,15 @@
 													"value": "'@{variables('folderD365bc')}'",
 													"type": "Expression"
 												},
-												"parmExtCustNo": {
+												"parmExtCustNo1": {
 													"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer1}'",
 													"type": "Expression"
 												},
-												"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
+												"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+												"parmExtCustNo2": {
+													"value": "'@{pipeline().globalParameters.d365bc_ExtCustomer2}'",
+													"type": "Expression"
+												}
 											},
 											"datasetParameters": {
 												"LoadFile": {},
@@ -3448,7 +3347,7 @@
 										},
 										"staging": {},
 										"compute": {
-											"coreCount": 8,
+											"coreCount": 16,
 											"computeType": "General"
 										},
 										"traceLevel": "Fine"
@@ -5469,7 +5368,7 @@
 										"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 										"type": "Expression"
 									},
-									"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+									"parmExtCustNo1": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
 									"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 								},
 								"datasetParameters": {
@@ -5826,6 +5725,28 @@
 						"type": "UTF8"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "D365bcDataLakeProd",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					}
+				},
+				"schema": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]"
@@ -10516,8 +10437,9 @@
 						"     parmSourceFolder as string ('d365bc'),",
 						"     parmTargetBlob as string ('silver'),",
 						"     parmTargetFolder as string ('d365bc'),",
-						"     parmExtCustNo as string ('D00482'),",
-						"     parmExtCustSalesFile as string (concat('InventorySumSalesExtCust',$parmRegion,'.parquet'))",
+						"     parmExtCustNo1 as string ('D00482'),",
+						"     parmExtCustSalesFile as string (concat('InventorySumSalesExtCust',$parmRegion,'.parquet')),",
+						"     parmExtCustNo2 as string ('D0280')",
 						"}",
 						"source(output(",
 						"          Entry_No as integer,",
@@ -10656,7 +10578,8 @@
 						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> excludedItems",
 						"AddEndDate filter(startsWith(Entry_Type,\"Sale\") && ",
 						"startsWith(Source_Type, \"Customer\") &&",
-						"Source_No == $parmExtCustNo) ~> OnlyExternSales",
+						"(Source_No == $parmExtCustNo1 || ",
+						"Source_No == $parmExtCustNo2)) ~> OnlyExternSales",
 						"OnlyExternSales aggregate(groupBy(Region,",
 						"          Item_No,",
 						"          EndDate),",
@@ -12800,6 +12723,64 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "1.Bronze"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Json1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "D365bcDataLakeProd",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     limit: 10000,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'bronze',",
+						"     folderPath: 'd365bc',",
+						"     fileName: 'BlanketPurchaseLinesEU.parquet') ~> source1",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/D365bcDataLakeProd')]",
+				"[concat(variables('factoryId'), '/datasets/Json1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AppRegD365EU')]",
 			"type": "Microsoft.DataFactory/factories/credentials",
 			"apiVersion": "2018-06-01",
@@ -12853,6 +12834,134 @@
 			"apiVersion": "2018-06-01",
 			"properties": {},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/01-EmptyAllLayers')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DeleteBronzeLayer",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_bronze",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "DeleteSilverLayer",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_silver",
+										"type": "Expression"
+									},
+									"folder": "@pipeline().globalParameters.folder_d365bc",
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					},
+					{
+						"name": "DeleteGoldLayer",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_Parquet_Prod",
+								"type": "DatasetReference",
+								"parameters": {
+									"blob": {
+										"value": "@pipeline().globalParameters.blob_gold",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@pipeline().globalParameters.folder_d365bc",
+										"type": "Expression"
+									},
+									"filename": "*"
+								}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "ItemForecast"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-22T17:55:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_Parquet_Prod')]"
+			]
 		}
 	]
 }

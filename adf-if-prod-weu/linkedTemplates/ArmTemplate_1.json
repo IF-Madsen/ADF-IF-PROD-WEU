@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-if-prod-weu"
 		},
+		"Dataverse_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "98c52d81-2480-4351-9e23-51ae9dae9755"
+		},
 		"Dynamics365BusinessCentral_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "@{linkedService().ServicePrincipalID}"
@@ -16,6 +20,31 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataverse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CommonDataServiceForApps",
+				"typeProperties": {
+					"deploymentType": "Online",
+					"serviceUri": "https://ironfortressapsdefault.crm4.dynamics.com",
+					"authenticationType": "AADServicePrincipal",
+					"servicePrincipalId": "[parameters('Dataverse_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultProd",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "ar-D365BC-prod-DK"
+					},
+					"servicePrincipalCredentialType": "ServicePrincipalKey"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Dynamics365BusinessCentral')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -3967,8 +3996,9 @@
 						"     parmSourceFolder as string ('d365bc'),",
 						"     parmTargetBlob as string ('silver'),",
 						"     parmTargetFolder as string ('d365bc'),",
-						"     parmExtCustNo as string ('D00482'),",
-						"     parmExtCustSalesFile as string (concat('InventorySumSalesExtCust',$parmRegion,'.parquet'))",
+						"     parmExtCustNo1 as string ('D00482'),",
+						"     parmExtCustSalesFile as string (concat('InventorySumSalesExtCust',$parmRegion,'.parquet')),",
+						"     parmExtCustNo2 as string ('D0280')",
 						"}",
 						"source(output(",
 						"          Entry_No as integer,",
@@ -4107,7 +4137,8 @@
 						"!startsWith(Item_No, \"LSGIFTCARD\")) ~> excludedItems",
 						"AddEndDate filter(startsWith(Entry_Type,\"Sale\") && ",
 						"startsWith(Source_Type, \"Customer\") &&",
-						"Source_No == $parmExtCustNo) ~> OnlyExternSales",
+						"(Source_No == $parmExtCustNo1 || ",
+						"Source_No == $parmExtCustNo2)) ~> OnlyExternSales",
 						"OnlyExternSales aggregate(groupBy(Region,",
 						"          Item_No,",
 						"          EndDate),",
@@ -5356,151 +5387,6 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> SaveFile"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Transform_LedgerPeriod')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Create all periods",
-				"folder": {
-					"name": "2.Silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "D365bcDataLakeProd",
-								"type": "LinkedServiceReference"
-							},
-							"name": "SaveParquetFile"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Groupby"
-						},
-						{
-							"name": "SortDates"
-						},
-						{
-							"name": "SelectFields"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     parmSourceBlob as string ('bronze'),",
-						"     parmSourceFolder as string ('d365bc'),",
-						"     parmTargetBlob as string ('silver'),",
-						"     parmTargetFolder as string ('d365bc'),",
-						"     parmRegion as string,",
-						"     parmSourceFile as string (concat('ItemsLedgerEntries',$parmRegion,'.parquet')),",
-						"     parmTargetFile as string (concat('LedgerPeriod',$parmRegion,'.parquet'))",
-						"}",
-						"source(output(",
-						"          Entry_No as integer,",
-						"          Posting_Date as date,",
-						"          Entry_Type as string,",
-						"          Document_Type as string,",
-						"          Document_No as string,",
-						"          Document_Line_No as integer,",
-						"          Item_No as string,",
-						"          Variant_Code as string,",
-						"          Description as string,",
-						"          Return_Reason_Code as string,",
-						"          Global_Dimension_1_Code as string,",
-						"          Global_Dimension_2_Code as string,",
-						"          Expiration_Date as string,",
-						"          Serial_No as string,",
-						"          Lot_No as string,",
-						"          Package_No as string,",
-						"          Location_Code as string,",
-						"          Quantity as decimal(38,18),",
-						"          RunningBalance as decimal(38,18),",
-						"          RunningBalanceLoc as decimal(38,18),",
-						"          Invoiced_Quantity as decimal(38,18),",
-						"          Remaining_Quantity as decimal(38,18),",
-						"          Shipped_Qty_Not_Returned as decimal(38,18),",
-						"          Reserved_Quantity as decimal(38,18),",
-						"          Qty_per_Unit_of_Measure as decimal(38,18),",
-						"          Unit_of_Measure_Code as string,",
-						"          Sales_Amount_Expected as decimal(38,18),",
-						"          Sales_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Expected as decimal(38,18),",
-						"          Cost_Amount_Actual as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl as decimal(38,18),",
-						"          Cost_Amount_Expected_ACY as decimal(38,18),",
-						"          Cost_Amount_Actual_ACY as decimal(38,18),",
-						"          Cost_Amount_Non_Invtbl_ACY as decimal(38,18),",
-						"          Completely_Invoiced as boolean,",
-						"          Open as boolean,",
-						"          Drop_Shipment as boolean,",
-						"          Assemble_to_Order as boolean,",
-						"          Applied_Entry_to_Adjust as boolean,",
-						"          Order_Type as string,",
-						"          Order_No as string,",
-						"          Order_Line_No as integer,",
-						"          Prod_Order_Comp_Line_No as integer,",
-						"          Job_No as string,",
-						"          Job_Task_No as string,",
-						"          Dimension_Set_ID as integer,",
-						"          Shortcut_Dimension_3_Code as string,",
-						"          Shortcut_Dimension_4_Code as string,",
-						"          Shortcut_Dimension_5_Code as string,",
-						"          Shortcut_Dimension_6_Code as string,",
-						"          Shortcut_Dimension_7_Code as string,",
-						"          Shortcut_Dimension_8_Code as string,",
-						"          Source_Type as string,",
-						"          Source_No as string,",
-						"          Region as string,",
-						"          Loaded as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmSourceBlob),",
-						"     folderPath: ($parmSourceFolder),",
-						"     fileName: ($parmSourceFile),",
-						"     compressionCodec: 'snappy') ~> LoadFile",
-						"LoadFile aggregate(groupBy(StartDate = addDays(Posting_Date,-dayOfMonth(Posting_Date)+1),",
-						"          EndDate = lastDayOfMonth(Posting_Date)),",
-						"     Quantity = sum(Quantity)) ~> Groupby",
-						"Groupby sort(asc(StartDate, true)) ~> SortDates",
-						"SortDates select(mapColumn(",
-						"          StartDate,",
-						"          EndDate",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SelectFields",
-						"SelectFields sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: ($parmTargetBlob),",
-						"     folderPath: ($parmTargetFolder),",
-						"     compressionCodec: 'none',",
-						"     partitionFileNames:[($parmTargetFile)],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> SaveParquetFile"
 					]
 				}
 			},
