@@ -337,10 +337,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "TransferGlobal2Dataverse",
-						"type": "DataFlowReference"
-					},
 					"compute": {
 						"coreCount": 32,
 						"computeType": "MemoryOptimized"
@@ -547,7 +543,7 @@
 								"value": "'@{pipeline().globalParameters.folder_d365bc}'",
 								"type": "Expression"
 							},
-							"parmExtCustNo": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
+							"parmExtCustNo1": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')",
 							"parmExtCustSalesFile": "concat('InventorySumSalesExtCust',$parmRegion,'.parquet')"
 						}
 					},

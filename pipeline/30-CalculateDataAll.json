@@ -42,9 +42,14 @@
 						{
 							"name": "Calculate Inventory Sum",
 							"type": "ExecuteDataFlow",
-							"state": "Inactive",
-							"onInactiveMarkAs": "Succeeded",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Calculate Purchase Orders Lines",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -85,7 +90,7 @@
 									}
 								},
 								"compute": {
-									"coreCount": 8,
+									"coreCount": 16,
 									"computeType": "General"
 								},
 								"traceLevel": "Fine"
@@ -94,8 +99,6 @@
 						{
 							"name": "Calculate Vendor Items",
 							"type": "ExecuteDataFlow",
-							"state": "Inactive",
-							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [
 								{
 									"activity": "Calculate Inventory Sum",
@@ -151,16 +154,9 @@
 							}
 						},
 						{
-							"name": "Calculate Purchase Orders",
+							"name": "Calculate Purchase Orders Lines",
 							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "Calculate Vendor Items",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -194,9 +190,9 @@
 											"value": "'@{variables('folderD365bc')}'",
 											"type": "Expression"
 										},
-										"parmBlanketPOSourceFile": "concat('BlanketPurchaseOrders',$parmRegion,'.parquet')",
+										"parmBlanketPOSourceFile": "concat('BlanketPurchaseLines',$parmRegion,'.parquet')",
 										"parmBlanketPOTargetFile": "concat('BlanketPurchItemSum',$parmRegion,'.parquet')",
-										"parmPostedPOSourceFile": "concat('PostedPurchaseOrders',$parmRegion,'.parquet')",
+										"parmPostedPOSourceFile": "concat('PostedPurchaseLines',$parmRegion,'.parquet')",
 										"parmPostedPOTargetFile": "concat('PostedPurchItemSum',$parmRegion,'.parquet')",
 										"parmPOSourceFile": "concat('PurchaseLines',$parmRegion,'.parquet')",
 										"parmPOTargetFile": "concat('PurchItemSum',$parmRegion,'.parquet')"

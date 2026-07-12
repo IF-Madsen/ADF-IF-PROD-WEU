@@ -6,7 +6,14 @@
 				"name": "Extract Data",
 				"description": "Import data from sources to Bronze Layer",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Empty Folders",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"secureInput": false
 				},
@@ -61,6 +68,22 @@
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "20-TransformDataAll",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Empty Folders",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "01-EmptyAllLayers",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true

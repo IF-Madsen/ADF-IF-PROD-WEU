@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ForEach1",
+				"name": "Region",
 				"type": "ForEach",
 				"dependsOn": [],
 				"userProperties": [],
@@ -14,7 +14,7 @@
 					},
 					"activities": [
 						{
-							"name": "RunFlow",
+							"name": "RunFlow_Calc_InventSum",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
@@ -27,17 +27,22 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "Calc_InventorySumGlobal",
+									"referenceName": "Calc_InventorySum",
 									"type": "DataFlowReference",
 									"parameters": {
-										"parmSourceBlob": "'gold'",
+										"parmRegion": {
+											"value": "'@{item()}'",
+											"type": "Expression"
+										},
+										"parmSourceBlob": "'silver'",
 										"parmSourceFolder": "'d365bc'",
 										"parmTargetBlob": "'gold'",
-										"parmTargetFolder": "'d365bc'"
+										"parmTargetFolder": "'d365bc'",
+										"parmSourceFolderJson": "'json'"
 									}
 								},
 								"compute": {
-									"coreCount": 8,
+									"coreCount": 16,
 									"computeType": "General"
 								},
 								"traceLevel": "Fine"
@@ -48,7 +53,7 @@
 			}
 		],
 		"folder": {
-			"name": "ItemForecast"
+			"name": "Development"
 		},
 		"annotations": [],
 		"lastPublishTime": "2025-01-22T17:55:18Z"

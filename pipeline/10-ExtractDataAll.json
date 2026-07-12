@@ -7,7 +7,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "DeleteParquetFiles",
+						"activity": "CopyJsonfile",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -49,7 +49,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "DeleteParquetFiles",
+						"activity": "CopyJsonfile",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -87,63 +87,9 @@
 				}
 			},
 			{
-				"name": "DeleteParquetFiles",
-				"type": "Delete",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "ds_Parquet_Prod",
-						"type": "DatasetReference",
-						"parameters": {
-							"blob": {
-								"value": "@pipeline().globalParameters.blob_bronze",
-								"type": "Expression"
-							},
-							"folder": {
-								"value": "@pipeline().globalParameters.folder_d365bc",
-								"type": "Expression"
-							},
-							"filename": "*"
-						}
-					},
-					"logStorageSettings": {
-						"linkedServiceName": {
-							"referenceName": "D365bcDataLakeProd",
-							"type": "LinkedServiceReference"
-						},
-						"path": {
-							"value": "@concat(pipeline().globalParameters.blob_bronze,'/',pipeline().globalParameters.folder_logs)",
-							"type": "Expression"
-						}
-					},
-					"enableLogging": true,
-					"storeSettings": {
-						"type": "AzureBlobFSReadSettings",
-						"recursive": true,
-						"wildcardFileName": "*.parquet",
-						"enablePartitionDiscovery": false
-					}
-				}
-			},
-			{
 				"name": "CopyJsonfile",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "DeleteParquetFiles",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
