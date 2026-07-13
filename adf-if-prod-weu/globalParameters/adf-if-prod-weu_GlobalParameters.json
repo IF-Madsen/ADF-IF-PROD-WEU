@@ -81,7 +81,7 @@
 	},
 	"d365bc_vendor_rank": {
 		"type": "int",
-		"value": 30
+		"value": 100
 	},
 	"Region_EU": {
 		"type": "string",

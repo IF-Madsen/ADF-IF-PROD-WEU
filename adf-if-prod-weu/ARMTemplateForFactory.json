@@ -11617,7 +11617,6 @@
 						"&& !Purchasing_Blocked",
 						"&& Vendor_No!=\"\"",
 						"&& Type!=\"Service\" ",
-						"&& Vendor_No!=\"\" ",
 						"&& No != 'FREIGHT' && No != 'SAMPLES'",
 						"&& !startsWith(No,\"BOX\") ",
 						"&& !startsWith(No, \"PREBOX\") ",
@@ -12179,6 +12178,9 @@
 						},
 						{
 							"name": "sortRank"
+						},
+						{
+							"name": "NotBlockedVendors"
 						}
 					],
 					"scriptLines": [
@@ -12403,13 +12405,14 @@
 						"SortByItemsReleated keyGenerate(output(Rank as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> Rank",
-						"TopRanks, Vendors join(Vendor_No == No,",
+						"TopRanks, NotBlockedVendors join(Vendor_No == No,",
 						"     joinType:'inner',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
 						"join1 filter(Vendor_No>'') ~> SkipBlank",
 						"SkipBlank sort(asc(Rank, true)) ~> sortRank",
+						"Vendors filter(Blocked!=\"All\" || Blocked!=\"Payment\") ~> NotBlockedVendors",
 						"sortRank sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'json',",

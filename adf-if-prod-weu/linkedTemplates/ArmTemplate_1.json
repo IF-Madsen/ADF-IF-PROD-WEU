@@ -5040,7 +5040,6 @@
 						"&& !Purchasing_Blocked",
 						"&& Vendor_No!=\"\"",
 						"&& Type!=\"Service\" ",
-						"&& Vendor_No!=\"\" ",
 						"&& No != 'FREIGHT' && No != 'SAMPLES'",
 						"&& !startsWith(No,\"BOX\") ",
 						"&& !startsWith(No, \"PREBOX\") ",
