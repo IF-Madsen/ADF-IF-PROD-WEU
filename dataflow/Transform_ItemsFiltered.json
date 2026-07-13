@@ -200,6 +200,7 @@
 				"&& Type!=\"Service\" ",
 				"&& Vendor_No!=\"\" ",
 				"&& No != 'FREIGHT' && No != 'SAMPLES'",
+				"&& !startsWith(No, \"9999\") ",
 				"&& !startsWith(No,\"BOX\") ",
 				"&& !startsWith(No, \"PREBOX\") ",
 				"&& !startsWith(No, \"ZIP\") ",
