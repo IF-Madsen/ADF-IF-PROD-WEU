@@ -281,7 +281,7 @@
 				"SortByItemsReleated keyGenerate(output(Rank as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> Rank",
-				"TopRanks, Vendors join(Vendor_No == No,",
+				"TopRanks, NotBlockedVendors join(Vendor_No == No,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
