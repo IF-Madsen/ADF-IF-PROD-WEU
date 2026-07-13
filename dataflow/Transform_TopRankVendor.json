@@ -288,7 +288,7 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(Vendor_No>'') ~> SkipBlank",
 				"SkipBlank sort(asc(Rank, true)) ~> sortRank",
-				"Vendors filter(Blocked==Null) ~> NotBlockedVendors",
+				"Vendors filter(Blocked=='') ~> NotBlockedVendors",
 				"sortRank sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
