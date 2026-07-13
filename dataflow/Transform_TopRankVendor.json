@@ -54,6 +54,9 @@
 				},
 				{
 					"name": "sortRank"
+				},
+				{
+					"name": "NotBlockedVendors"
 				}
 			],
 			"scriptLines": [
@@ -285,6 +288,7 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(Vendor_No>'') ~> SkipBlank",
 				"SkipBlank sort(asc(Rank, true)) ~> sortRank",
+				"Vendors filter(!Blocked) ~> NotBlockedVendors",
 				"sortRank sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'json',",
