@@ -36,9 +36,6 @@
 					"name": "selectItemFields1"
 				},
 				{
-					"name": "RemoveBOM"
-				},
-				{
 					"name": "selectPriceFields"
 				},
 				{
@@ -99,7 +96,7 @@
 				"     folderPath: ($parmSourceFolder),",
 				"     fileName: 'ItemPrices.parquet',",
 				"     compressionCodec: 'snappy') ~> ItemPrices",
-				"RemoveBOM select(mapColumn(",
+				"Items select(mapColumn(",
 				"          VendorNo,",
 				"          Name,",
 				"          ItemNo,",
@@ -109,7 +106,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectItemFields1",
-				"Items filter(!AssemblyBOM) ~> RemoveBOM",
 				"ItemPrices select(mapColumn(",
 				"          ItemNo,",
 				"          UnitCostPrice = Unit_Cost",
