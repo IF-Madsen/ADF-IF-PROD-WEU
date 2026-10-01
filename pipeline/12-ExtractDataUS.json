@@ -863,10 +863,12 @@
 		],
 		"parameters": {
 			"parmRegion": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "'US'"
 			},
 			"parmLoaded": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "@utcNow()"
 			}
 		},
 		"folder": {
